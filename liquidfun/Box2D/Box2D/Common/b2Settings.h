@@ -25,13 +25,22 @@
 #include <float.h>
 
 #define B2_NOT_USED(x) ((void)(x))
+
 #if DEBUG && !defined(NDEBUG)
-#define b2Assert(A) assert(A)
-#define B2_ASSERT_ENABLED 1
+    //#define b2Assert(A) assert(A)
+    class b2AssertException {};
+    #define b2Assert(A) if (!(A)) { PyErr_SetString(PyExc_AssertionError, #A); throw b2AssertException(); }
+    #define B2_ASSERT_ENABLED 1
 #else
-#define b2Assert(A)
-#define B2_ASSERT_ENABLED 0
+    class b2AssertException {};
+    #define b2Assert(A)
+    #define B2_ASSERT_ENABLED 0
 #endif
+
+
+
+#define USE_EXCEPTIONS
+
 
 // Statement which is compiled out when DEBUG isn't defined.
 #if DEBUG
