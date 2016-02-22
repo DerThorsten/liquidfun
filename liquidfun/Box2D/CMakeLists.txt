@@ -1,7 +1,32 @@
 cmake_minimum_required(VERSION 2.8)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 project(Box2D)
 find_package (Threads)
+
+
+include(CheckCXXCompilerFlag)
+
+
+option(WITH_BOOST_COMPUTE OFF)
+option(BUILD_NIFTY_PYTHON OFF)
+
+
+#-------------------------------------------------------------------------------------------------------------------
+# check for c++ 11 support
+#-------------------------------------------------------------------------------------------------------------------
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+    CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
+    if (HAS_CPP14_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    elseif (HAS_CPP11_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    else()
+        message(FATAL_ERROR "Unsupported compiler -- nifty  requires C++11 support!")
+    endif()
+endif()
+
 
 if(UNIX)
   set(BOX2D_INSTALL_BY_DEFAULT ON)
@@ -21,7 +46,7 @@ set(BOX2D_INSTALL_BY_DEFAULT OFF)
 
 option(BOX2D_INSTALL "Install Box2D libs, includes, and CMake scripts" ${BOX2D_INSTALL_BY_DEFAULT})
 option(BOX2D_INSTALL_DOC "Install Box2D documentation" OFF)
-option(BOX2D_BUILD_SHARED "Build Box2D shared libraries" OFF)
+option(BOX2D_BUILD_SHARED "Build Box2D shared libraries" ON)
 option(BOX2D_BUILD_STATIC "Build Box2D static libraries" ON)
 option(BOX2D_BUILD_EXAMPLES "Build Box2D examples" ON)
 option(BOX2D_BUILD_UNITTESTS "Build Box2D Unit Tests" ON)
@@ -63,16 +88,33 @@ foreach(FLAGS_TYPE C CXX)
 endforeach(FLAGS_TYPE)
 include("flags.cmake")
 
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+    CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
+    if (HAS_CPP14_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    elseif (HAS_CPP11_FLAG)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    else()
+        message(FATAL_ERROR "Unsupported compiler -- nifty  requires C++11 support!")
+    endif()
+endif()
+
+include_directories(.)
+
+
 set(C_FLAGS_WARNINGS "")
 if(MSVC)
   set(C_FLAGS_WARNINGS "/W4 /WX")
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR
        CMAKE_COMPILER_IS_CLANGXX)
   # Set the maximum warning level for gcc.
-  set(C_FLAGS_WARNINGS "-Wall -Werror -Wno-long-long -Wno-variadic-macros")
+  set(C_FLAGS_WARNINGS "-Wall  -Wno-long-long -Wno-variadic-macros")
 endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_FLAGS_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C_FLAGS_WARNINGS}")
+
 
 # Configure flags for gcov when the code coverage config is enabled.
 if (BOX2D_CODE_COVERAGE AND
@@ -93,6 +135,9 @@ if (BOX2D_CODE_COVERAGE AND
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${GCOV_FLAGS}")
 endif()
 
+
+
+
 # The XCode generator ignores CMAKE_C_FLAGS AND CMAKE_CXX_FLAGS so flags
 # need to be added with target properties.
 # The following functions track the list of targets so that it's possible to
@@ -112,6 +157,7 @@ endfunction(add_executable)
 
 # The Box2D library.
 add_subdirectory(Box2D)
+add_subdirectory(pybox2d)
 
 if(BOX2D_BUILD_EXAMPLES)
   # HelloWorld console example.
@@ -162,3 +208,5 @@ foreach(target ${ALL_TARGETS})
     LIBRARY_OUTPUT_DIRECTORY "${LIB_OUTPUT_DIR}"
     RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
 endforeach(target)
+
+# The Box2D library.

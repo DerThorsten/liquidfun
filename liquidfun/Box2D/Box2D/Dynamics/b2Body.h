@@ -435,10 +435,16 @@ private:
 		e_activeFlag		= 0x0020,
 		e_toiFlag			= 0x0040
 	};
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+public:
 
 	b2Body(const b2BodyDef* bd, b2World* world);
 	~b2Body();
-
+private:
+#else
+    b2Body(const b2BodyDef* bd, b2World* world);
+    ~b2Body();
+#endif
 	void SynchronizeFixtures();
 	void SynchronizeTransform();
 

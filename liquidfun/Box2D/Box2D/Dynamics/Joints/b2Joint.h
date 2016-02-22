@@ -158,8 +158,28 @@ protected:
 	static b2Joint* Create(const b2JointDef* def, b2BlockAllocator* allocator);
 	static void Destroy(b2Joint* joint, b2BlockAllocator* allocator);
 
-	b2Joint(const b2JointDef* def);
-	virtual ~b2Joint() {}
+	//b2Joint(const b2JointDef* def);
+
+
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+public:
+    b2Joint(const b2JointDef* def);
+protected:
+#else
+    b2Joint(const b2JointDef* def);
+#endif
+
+
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+public:
+    virtual ~b2Joint(){}
+protected:
+#else
+    virtual ~b2Joint();
+#endif
+
+
+
 
 	virtual void InitVelocityConstraints(const b2SolverData& data) = 0;
 	virtual void SolveVelocityConstraints(const b2SolverData& data) = 0;

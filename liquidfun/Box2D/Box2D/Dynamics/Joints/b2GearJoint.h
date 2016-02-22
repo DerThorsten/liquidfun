@@ -56,6 +56,10 @@ struct b2GearJointDef : public b2JointDef
 class b2GearJoint : public b2Joint
 {
 public:
+    #if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+    using b2Joint::b2Joint;
+    #endif
+    
 	b2Vec2 GetAnchorA() const;
 	b2Vec2 GetAnchorB() const;
 

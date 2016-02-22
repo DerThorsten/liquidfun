@@ -207,7 +207,13 @@ protected:
 	friend class b2Contact;
 	friend class b2ContactManager;
 
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+public:
 	b2Fixture();
+protected:
+#else
+    b2Fixture();
+#endif
 
 	// We need separation create/destroy functions from the constructor/destructor because
 	// the destructor cannot access the allocator (no destructor arguments allowed by C++).

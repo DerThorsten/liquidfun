@@ -60,7 +60,10 @@ struct b2MouseJointDef : public b2JointDef
 class b2MouseJoint : public b2Joint
 {
 public:
-
+    #if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+    using b2Joint::b2Joint;
+    #endif
+    
 	/// Implements b2Joint.
 	b2Vec2 GetAnchorA() const;
 
