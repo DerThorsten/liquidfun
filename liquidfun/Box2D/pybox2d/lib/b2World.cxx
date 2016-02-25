@@ -63,6 +63,10 @@ void exportB2World(py::module & pybox2dModule){
         .def("_GetJointList", []( b2World & w){
             return  w.GetJointList();
         }, py::return_value_policy::reference_internal)
+
+
+        // particles
+        .def("CreateParticleSystem",&b2World::CreateParticleSystem, py::return_value_policy::reference_internal)
     ;
 
 }

@@ -281,7 +281,13 @@ private:
 	void* m_userData;
 
 	b2ParticleGroup();
+    #ifdef LIQUIDFUN_EXTERNAL_LANGUAGE_API
+    public:
 	~b2ParticleGroup();
+    private:
+    #else
+    ~b2ParticleGroup();
+    #endif
 	void UpdateStatistics() const;
 
 };

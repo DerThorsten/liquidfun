@@ -1270,7 +1270,7 @@ void b2World::DrawDebugData()
 
 	uint32 flags = m_debugDraw->GetFlags();
 
-	if (true)//flags & b2Draw::e_shapeBit)
+	if (flags & b2Draw::e_shapeBit)
 	{
 		for (b2Body* b = m_bodyList; b; b = b->GetNext())
 		{

@@ -30,19 +30,14 @@ class Draw(object):
     def DrawSolidPolygon(self, vertices, color):
         print "DrawSolidPolygon",vertices.shape
         c = color.r*255.0,color.g*255.0,color.b*255.0,255
-        print c
-        vertices *=self.ppm 
-        vertices[:,1] = self.h - vertices[:,1]
         pygame.draw.polygon(self.screen, c, vertices)
 
 
     def DrawCircle(self, center, radius, color):
         print "DrawCircle"
     def DrawSolidCircle(self, center, radius, color):
-        center = int(center.x*self.ppm) ,self.h-int(center.y*self.ppm)
-        r = int(radius*self.ppm+0.5)
         c = color.r*255,color.g*255,color.b*255,255
-        pygame.draw.circle(self.screen, c, center, r)
+        pygame.draw.circle(self.screen, c, center, radius)
         
     def DrawParticles(self, centers, radius, colors, count):
         print "DrawParticles"

@@ -43,7 +43,12 @@ class Web(Framework):
 
         fixture = fixtureDef(shape=polygonShape(box=(0.5, 0.5)),
                                density=5, friction=0.2)
+        bodyDef = b2BodyDef()
+        bodyDef.fixedRotation = True
+        bodyDef.angularDamping = 2.0
+        bodyDef.linearDamping = 2.0
         self.bodies = [self.world.CreateDynamicBody(
+            bodyDef=bodyDef,                                                    
             position=pos,
             fixtures=fixture
         ) for pos in ((20+-5, 5), (10+5, 5), (10+5, 15), (10+-5, 15))]
@@ -67,8 +72,8 @@ class Web(Framework):
         self.joints = []
         for bodyA, bodyB, localAnchorA, localAnchorB in sets:
             dfn = distanceJointDef(
-                frequencyHz=4.0,
-                dampingRatio=0.5,
+                frequencyHz=1.0,
+                dampingRatio=2.1,
                 bodyA=bodyA,
                 bodyB=bodyB,
                 localAnchorA=localAnchorA,

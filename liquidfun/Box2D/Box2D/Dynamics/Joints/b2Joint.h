@@ -161,7 +161,7 @@ protected:
 	//b2Joint(const b2JointDef* def);
 
 
-#if LIQUIDFUN_EXTERNAL_LANGUAGE_API2
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
 public:
     b2Joint(const b2JointDef* def);
 protected:
@@ -170,7 +170,7 @@ protected:
 #endif
 
 
-#if LIQUIDFUN_EXTERNAL_LANGUAGE_API2
+#if LIQUIDFUN_EXTERNAL_LANGUAGE_API
 public:
     virtual ~b2Joint(){}
 protected:

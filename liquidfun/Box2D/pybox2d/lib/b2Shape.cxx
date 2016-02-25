@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <Box2D/Box2D.h>
 
@@ -157,6 +158,10 @@ void exportB2Shape(py::module & pybox2dModule){
     ;
     py::class_<b2ChainShape>(pybox2dModule,"b2ChainShape",shapeCls)
         .def(py::init<>())
+        .def("CreateLoop",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
+            s->CreateLoop(verts.data(), verts.size());
+        }
+        )
     ;
     py::class_<b2PolygonShape>(pybox2dModule,"b2PolygonShape",shapeCls)
         .def(py::init<>())

@@ -148,7 +148,7 @@ void exportb2Joint(py::module & pybox2dModule){
    
    
     py::class_<b2DistanceJoint>(pybox2dModule,"b2DistanceJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2DistanceJointDef>(pybox2dModule,"b2DistanceJointDef",jdClass)
         .def(py::init<>())
@@ -160,49 +160,49 @@ void exportb2Joint(py::module & pybox2dModule){
     ;
     
     py::class_<b2FrictionJoint>(pybox2dModule,"b2FrictionJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2FrictionJointDef>(pybox2dModule,"b2FrictionJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2GearJoint>(pybox2dModule,"b2GearJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2GearJointDef>(pybox2dModule,"b2GearJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2PrismaticJoint>(pybox2dModule,"b2PrismaticJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2PrismaticJointDef>(pybox2dModule,"b2PrismaticJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2PulleyJoint>(pybox2dModule,"b2PulleyJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2PulleyJointDef>(pybox2dModule,"b2PulleyJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2RevoluteJoint>(pybox2dModule,"b2RevoluteJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2RevoluteJointDef>(pybox2dModule,"b2RevoluteJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2RopeJoint>(pybox2dModule,"b2RopeJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2RopeJointDef>(pybox2dModule,"b2RopeJointDef",jdClass)
         .def(py::init<>())
     ;
 
     py::class_<b2WeldJoint>(pybox2dModule,"b2WeldJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+       // .def(py::init<const b2JointDef* >())
     ;
     py::class_<b2WeldJointDef>(pybox2dModule,"b2WeldJointDef",jdClass)
         .def(py::init<>())

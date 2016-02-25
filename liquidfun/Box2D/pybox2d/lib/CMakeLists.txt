@@ -62,6 +62,8 @@ add_library(pybox2d SHARED
   b2Shape.cxx
   b2Joint.cxx
   b2Particle.cxx
+  b2ParticleSystem.cxx
+  b2ParticleGroup.cxx
   b2WorldCallbacks.cxx
   b2Contact.cxx
   b2Draw.cxx

@@ -10,10 +10,10 @@ class Framework(object):
 
     def __init__(self,gravity=Vec2(0,9.81)):
         self.world = b2d.b2World(gravity)
-        self.gui = GuiPyGame(w=640,h=480,ppm=5.0)
+        self.gui = GuiPyGame(w=640,h=480,ppm=80.0)
         self.world.SetDebugDraw(self.gui.debugDrawCaller)
     def run(self):
-        tfps = 60
+        tfps = 120.0
         dt = 1.0 / tfps
         
         running = True
@@ -21,7 +21,7 @@ class Framework(object):
             if self.gui.exit():
                 break
             self.gui.drawDebugData(self.world)
-            self.world.Step(dt, 10, 10)
+            self.world.Step(dt, 30, 30)
 
 class DrawPyGame(object):
 
@@ -31,42 +31,54 @@ class DrawPyGame(object):
         self.w = w
         self.h = h
 
-
     def DrawPolygon(self, vertices, color):
-        print "DrawPolygon"
-    def DrawSolidPolygon(self, vertices, color):
-        print "DrawSolidPolygon",vertices.shape
         c = color.r*255.0,color.g*255.0,color.b*255.0,255
-        print c
-        vertices *=self.ppm 
-        vertices[:,1] = self.h - vertices[:,1]
+        pygame.draw.polygon(self.screen, c, vertices,1)
+
+    def DrawSolidPolygon(self, vertices, color):
+        c = color.r*255.0,color.g*255.0,color.b*255.0,255
         pygame.draw.polygon(self.screen, c, vertices)
 
 
     def DrawCircle(self, center, radius, color):
-        print "DrawCircle"
-    def DrawSolidCircle(self, center, radius, color):
-        center = int(center.x*self.ppm) ,self.h-int(center.y*self.ppm)
-        r = int(radius*self.ppm+0.5)
         c = color.r*255,color.g*255,color.b*255,255
-        pygame.draw.circle(self.screen, c, center, r)
+        cent = (int(center.x),int(center.y))
+        pygame.draw.circle(self.screen, c, cent, int(radius+0.5),1)
+    def DrawSolidCircle(self, center, radius, color):        
+        c = color.r*255,color.g*255,color.b*255,255
+        pygame.draw.circle(self.screen, c, center, radius)
         
-    def DrawParticles(self, centers, radius, colors, count):
-        print "DrawParticles"
+    def DrawParticles(self, centers, radius, colors):
+        np = centers.shape[0]
+        for p in range(np):
+            pygame.draw.circle(self.screen, (100,)*4, centers[p,:], int(radius+0.5))
+        
     def DrawSegment(self, p1, p2, color):
-        print "DrawSegment"
-    def DrawTransform(self, xf):
-        print "DrawTransform"
+        c = color.r*255,color.g*255,color.b*255,255
+        pygame.draw.aaline(self.screen, c, (p1.x,p1.y), (p2.x,p2.y), 1)
+    #def DrawTransform(self, xf):
+    #    print "DrawTransform"
 
 
 class GuiPyGame(object):
-    def __init__(self,w,h, ppm):
+    def __init__(self,w,h, ppm, offset = Vec2(5,1)):
         self.w = w
         self.h = h
         self.ppm = ppm
+        self.offset = offset
         self.screen = pygame.display.set_mode((w, h), 0, 32)
         self.debugDraw = DrawPyGame(screen=self.screen,w=w,h=h,ppm=ppm)
-        self.debugDrawCaller = b2DrawCaller = b2d.b2DrawCaller(self.debugDraw)
+
+
+        self.debugDrawCaller = b2DrawCaller = b2d.b2DrawCaller(self.debugDraw,
+                                                               scale=self.ppm,offset=self.offset,
+                                                               flipY=False)
+        self.debugDrawCaller.AppendFlags(int(b2d.DrawFlags.shapeBit))
+        self.debugDrawCaller.AppendFlags(int(b2d.DrawFlags.jointBit))
+        #self.debugDrawCaller.AppendFlags(int(b2d.DrawFlags.aabbBit))
+        self.debugDrawCaller.AppendFlags(int(b2d.DrawFlags.centerOfMassBit))
+        self.debugDrawCaller.AppendFlags(int(b2d.DrawFlags.particleBit))
+
         pygame.display.set_caption('Simple pygame example')
         self.clock = pygame.time.Clock()
 
@@ -80,7 +92,7 @@ class GuiPyGame(object):
         self.screen.fill((0, 0, 0, 0))
         world.DrawDebugData()
         pygame.display.flip()
-        self.clock.tick(60)
+        self.clock.tick(120.0)
 def main(exampleCls):
     example = exampleCls()
     example.run()

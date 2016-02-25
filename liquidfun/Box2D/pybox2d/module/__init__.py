@@ -1,12 +1,33 @@
 from pybox2d import *
 
-
 Vec2  = b2Vec2
 Vec3  = b2Vec3
 Vec4  = b2Vec4
 Mat22 = b2Mat22
 Mat33 = b2Mat33
 
+class DrawFlags(object):
+    shapeBit              = 0x0001
+    jointBit              = 0x0002
+    aabbBit               = 0x0004
+    pairBit               = 0x0008
+    centerOfMassBit       = 0x0010
+    particleBit           = 0x0020
+
+
+
+class ParticleGroupFlag(object):
+    # prevents overlapping or leaking.
+    solidParticleGroup = 1 << 0
+    # Keeps its shape.
+    rigidParticleGroup = 1 << 1
+    # Won't be destroyed if it gets empty.
+    particleGroupCanBeEmpty = 1 << 2
+    # Will be destroyed on next simulation step.
+    particleGroupWillBeDestroyed = 1 << 3
+    # Updates depth data on next simulation step.
+    particleGroupNeedsUpdateDepth = 1 << 4
+    particleGroupInternalMask = particleGroupWillBeDestroyed | particleGroupNeedsUpdateDepth
 
 
 def vec2(*args):
@@ -36,14 +57,16 @@ class GenericB2dIter(object):
             self.currentBody = c.GetNext()
             return c
 
-
 def extendWorld():
     
-    def _CreateBody(self,btype, position=None,angle=None, shape=None,fixtures=None, density = 1.0):
+    def _CreateBody(self,btype=None, bodyDef=None,position=None,angle=None, shape=None,fixtures=None, density = 1.0):
         if position is not None  and not isinstance(position,b2Vec2):
             position  = b2Vec2(position[0],position[1])
-        bodyDef = b2BodyDef()
-        bodyDef.type = btype
+
+        if bodyDef is not None:
+            bodyDef = b2BodyDef()
+        if btype  is not None:
+            bodyDef.type = btype
 
         if position is not None:
             bodyDef.position = vec2(position)
@@ -61,44 +84,39 @@ def extendWorld():
     b2World._CreateBody = _CreateBody
 
 
-    def CreateStaticBody(self, position=None,angle=None, shape=None, density = 1.0):
-        return self._CreateBody(btype= b2BodyType.b2_staticBody,position=position,
+    def CreateStaticBody(self,bodyDef=None, position=None,angle=None, shape=None, density = 1.0):
+        return self._CreateBody(btype= b2BodyType.b2_staticBody,bodyDef=bodyDef,position=position,
                                 angle=angle, shape=shape,fixtures=fixtures, density=density)
     
     b2World.CreateStaticBody = CreateStaticBody
 
-    def CreateDynamicBody(self, position=None,angle=None, shape=None,fixtures=None, density = 1.0):
-        return self._CreateBody(btype= b2BodyType.b2_dynamicBody,position=position,
+    def CreateDynamicBody(self,bodyDef=None, position=None,angle=None, shape=None,fixtures=None, density = 1.0):
+        return self._CreateBody(btype= b2BodyType.b2_dynamicBody,bodyDef=bodyDef,position=position,
                                 angle=angle, shape=shape,fixtures=fixtures, density=density)
     b2World.CreateDynamicBody = CreateDynamicBody
 
 
     def CreateBody(self,bodyDef=None,btype=None,position=None,shapes=None):
-        if bodyDef is not None:
-            if btype is not None:
-                bodyDef.btype =  btype
-            if position is not None:
-                bodyDef.position = vec2(position)
-            return self._CreateBodyCpp(bodyDef)
-        else:
-            if shapes is not None:
-                if btype is None:
-                    btype = b2BodyType.b2_staticBody
+        if shapes is not None:
+            if btype is None:
+                btype = b2BodyType.b2_staticBody
 
+            if bodyDef is None:
                 bodyDef = b2BodyDef()
+            if btype is not None:
                 bodyDef.type = btype
-                if position is not None:
-                    bodyDef.position = position
+            if position is not None:
+                bodyDef.position = position
 
-                body = self._CreateBodyCpp(bodyDef)
-                if isinstance(shapes, b2Shape):
-                    fd = fixtureDef(shape=shapes)
-                    body.CreateFixture(fd)
-                else:
-                    for s in shapes:
-                        assert False
+            body = self._CreateBodyCpp(bodyDef)
+            if isinstance(shapes, b2Shape):
+                fd = fixtureDef(shape=shapes)
+                body.CreateFixture(fd)
+            else:
+                for s in shapes:
+                    assert False
 
-                return body
+            return body
 
     b2World.CreateBody = CreateBody
 
@@ -117,14 +135,8 @@ def extendWorld():
             blist = self._GetJointList()
         return GenericB2dIter(blist)
     b2World.GetJointList = GetJointList
-
-
-
-
-
 extendWorld()
 del extendWorld
-
 
 def extendB2Vec2():
     
@@ -136,13 +148,8 @@ def extendB2Vec2():
         else:
             raise RuntimeError("wrong index")
     b2Vec2.__getitem__ = __getitem__
-
-
 extendB2Vec2()
 del extendB2Vec2
-
-
-
 
 def extendBody():
 
@@ -195,8 +202,6 @@ def extendBody():
             blist = self._GetJointList()
         return GenericB2dIter(blist)
     b2Body.GetJointList = GetJointList
-
-
 extendBody()
 del extendBody
 
@@ -209,11 +214,7 @@ def jointDef(jtype,bodyA,bodyB,collideConnected=False):
     jd.collideConnected = collideConnected 
     return jd
 
-def distanceJointDef(bodyA,bodyB,
-                     localAnchorA,localAnchorB,
-                     collideConnected=False,
-                     length=1.0, frequencyHz=0.0,dampingRatio=0.0):
-
+def distanceJointDef(bodyA,bodyB,localAnchorA,localAnchorB,collideConnected=False,length=1.0, frequencyHz=0.0,dampingRatio=0.0):
     jd = b2DistanceJointDef()
     jd.jtype = b2JointType.e_distanceJoint
     jd.bodyA = bodyA
@@ -225,7 +226,6 @@ def distanceJointDef(bodyA,bodyB,
     jd.frequencyHz = frequencyHz
     jd.dampingRatio = dampingRatio
     return jd
-
 
 def extendJoint():
     def GetNext(self):
@@ -264,16 +264,8 @@ def extendFixture():
         else:
             return None
     b2Fixture.GetNext = GetNext
-
-
-    
-
-    
 extendFixture()
 del extendFixture
-
-
-
 
 
 # shape factories
@@ -285,6 +277,12 @@ def edgeShape(vertices):
     s = b2EdgeShape()
     s.Set(Vec2(*v1),Vec2(*v2))
     return s
+
+def chainShape(vertices):
+    s = b2ChainShape()
+    s.CreateLoop(vertices)
+    return s
+
 def extendShape():
 
     def asMostDerived(self):
@@ -303,12 +301,10 @@ def extendShape():
 extendShape()
 del extendShape
 
-
-
-def polygonShape(box=None):
+def polygonShape(box=None,center=None,angle=None):
     assert box is not None
     s = b2PolygonShape()
-    s.SetAsBox(box[0],box[1])
+    s.SetAsBox(box[0],box[1],centerX=center[0],centerY=center[1],angle=angle)
     return s
 
 def extendPolygonShape():
@@ -320,3 +316,89 @@ def extendPolygonShape():
 
 extendPolygonShape()
 del extendPolygonShape
+
+
+
+def particleSystemDef(
+    strictContactCheck = False,
+    density = 1.0,
+    gravityScale = 1.0,
+    radius = 1.0,
+    maxCount = 0,
+    pressureStrength = 0.05,
+    dampingStrength = 1.0,
+    elasticStrength = 0.25,
+    springStrength = 0.25,
+    viscousStrength = 0.25,
+    surfaceTensionPressureStrength = 0.2,
+    surfaceTensionNormalStrength = 0.2,
+    repulsiveStrength = 1.0,
+    powderStrength = 0.5,
+    ejectionStrength = 0.5,
+    staticPressureStrength = 0.2,
+    staticPressureRelaxation = 0.2,
+    staticPressureIterations = 8,
+    colorMixingStrength = 0.5,
+    destroyByAge = True,
+    lifetimeGranularity = 1.0 / 60.0
+):
+    d = b2ParticleSystemDef()
+    d.pressureStrength = pressureStrength
+    d.dampingStrength = dampingStrength
+    d.elasticStrength = elasticStrength
+    d.springStrength = springStrength
+    d.viscousStrength = viscousStrength
+    d.surfaceTensionPressureStrength = surfaceTensionPressureStrength
+    d.surfaceTensionNormalStrength = surfaceTensionNormalStrength
+    d.repulsiveStrength = repulsiveStrength
+    d.powderStrength = powderStrength
+    d.ejectionStrength = ejectionStrength
+    d.staticPressureStrength = staticPressureStrength
+    d.staticPressureRelaxation = staticPressureRelaxation
+    d.staticPressureIterations = staticPressureIterations
+    d.colorMixingStrength = colorMixingStrength
+    d.destroyByAge = destroyByAge
+    d.lifetimeGranularity = lifetimeGranularity
+
+    return d
+
+
+def particleGroupDef(flags=None,groupFlags=None,position=None,
+                     angle=None,linearVelocity=None,angularVelocity=None,
+                     color=None,strength=None,shape=None,stride=None,
+                     particleCount=None,group=None):
+    
+    d = b2ParticleGroupDef()
+
+    if flags is not None:
+        d.flags = flags
+    if groupFlags is not None:
+        d.groupFlags = groupFlags
+    if position is not None:
+        d.position = position
+    if angle is not None:
+        d.angle = angle
+    if linearVelocity is not None:
+        d.linearVelocity = linearVelocity
+    if angularVelocity is not None:
+        d.angularVelocity = angularVelocity
+    if color is not None:
+        d.color = color
+    if linearVelocity is not None:
+        d.linearVelocity = linearVelocity
+    if angularVelocity is not None:
+        d.angularVelocity = angularVelocity
+    if color is not None:
+        d.color = color
+    if strength is not None:
+        d.strength = strength
+    if shape is not None:
+        d.SetShape(shape)
+    if stride is not None:
+        d.stride = stride
+    if particleCount is not None:
+        d.particleCount = particleCount
+    if group is not None:
+        d.SetGroupr(shape)
+    
+    return d

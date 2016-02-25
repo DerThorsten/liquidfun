@@ -12,6 +12,8 @@ void exportB2WorldCallbacks(py::module & );
 void exportContact(py::module & );
 void exportB2Draw(py::module & );
 void exportB2Particle(py::module & );
+void exportB2ParticleSystem(py::module & );
+void exportB2ParticleGroup(py::module & );
 
 PYBIND11_PLUGIN(pybox2d) {
     py::module pybox2dModule("pybox2d", "pybox2d python bindings");
@@ -26,6 +28,8 @@ PYBIND11_PLUGIN(pybox2d) {
     exportContact(pybox2dModule);
     exportB2Draw(pybox2dModule);
     exportB2Particle(pybox2dModule);
+    exportB2ParticleSystem(pybox2dModule);
+    exportB2ParticleGroup(pybox2dModule);
 
     
     return pybox2dModule.ptr();

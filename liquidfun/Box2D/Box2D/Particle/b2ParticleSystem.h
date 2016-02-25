@@ -860,7 +860,14 @@ private:
 		b2_staticPressureParticle;
 
 	b2ParticleSystem(const b2ParticleSystemDef* def, b2World* world);
+
+    #if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+public:
+    ~b2ParticleSystem();
+private:
+    #else
 	~b2ParticleSystem();
+    #endif
 
 	template <typename T> void FreeBuffer(T** b, int capacity);
 	template <typename T> void FreeUserOverridableBuffer(
