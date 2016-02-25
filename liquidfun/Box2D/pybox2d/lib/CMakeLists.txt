@@ -55,12 +55,16 @@ include_directories(${PYTHON_INCLUDE_DIR})
 # Create the binding library
 add_library(pybox2d SHARED
   pybox2d.cxx
-  b2math.cxx
-  b2world.cxx
-  b2body.cxx
-  b2fixture.cxx
-  b2shape.cxx
+  b2Math.cxx
+  b2World.cxx
+  b2Body.cxx
+  b2Fixture.cxx
+  b2Shape.cxx
   b2Joint.cxx
+  b2Particle.cxx
+  b2WorldCallbacks.cxx
+  b2Contact.cxx
+  b2Draw.cxx
 )
 add_dependencies(pybox2d Box2D_shared)
 #target_link_libraries(pybox2d ${Box2D})

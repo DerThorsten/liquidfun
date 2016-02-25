@@ -19,7 +19,12 @@ void exportB2Fixture(py::module & pybox2dModule){
 
     py::class_<b2FixtureDef>(pybox2dModule,"b2FixtureDef")
         .def(py::init<>())
-        .def_readwrite("shape", &b2FixtureDef::shape)
+        .def("SetShape",
+            [](b2FixtureDef & f, const b2Shape * s){
+                f.shape = s;
+            }, py::keep_alive<1,2>()
+        )
+        .def_readonly("shape", &b2FixtureDef::shape)
         //.def_readwrite("userData", &b2FixtureDef::userData)
         .def_readwrite("friction", &b2FixtureDef::friction)
         .def_readwrite("restitution", &b2FixtureDef::restitution)

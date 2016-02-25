@@ -33,7 +33,7 @@ public:
             Clone,        /* Name of function */
             allocator     /* Argument(s) */
         );
-        //return NULL;
+        return NULL;
     }
 
     int32 GetChildCount() const {
@@ -42,7 +42,7 @@ public:
             b2Shape,      /* Parent class */
             GetChildCount        /* Name of function */
         )
-        //return 0;
+        return 0;
     }
 
     bool TestPoint(const b2Transform& xf, const b2Vec2& p) const{
@@ -116,7 +116,6 @@ void exportB2Shape(py::module & pybox2dModule){
 
 
     auto shapeCls = py::class_<PyB2Shape>(pybox2dModule,"b2Shape");
-    
     shapeCls
         .alias<b2Shape>()
         .def(py::init<>())
@@ -128,12 +127,11 @@ void exportB2Shape(py::module & pybox2dModule){
         .def("IsChainShape",&isType<b2ChainShape>)
         .def("IsEdgeShape",&isType<b2EdgeShape>)
         .def("IsPolygonShape",&isType<b2PolygonShape>)
-
-        .def("AsCircleShape",&asType<b2CircleShape>, py::return_value_policy::dont_cache_cast,py::keep_alive<1,0>())
-        .def("AsChainShape",&asType<b2ChainShape>, py::return_value_policy::dont_cache_cast,py::keep_alive<1,0>())
-        .def("AsEdgeShape",&asType<b2EdgeShape>, py::return_value_policy::dont_cache_cast,py::keep_alive<1,0>())
-        .def("AsPolygonShape",&asType<b2PolygonShape>, py::return_value_policy::dont_cache_cast,py::keep_alive<1,0>())
-
+        .def_readwrite("radius", &b2Shape::m_radius)
+        .def_dynamic_cast<b2Shape,b2CircleShape>("AsCircleShape")
+        .def_dynamic_cast<b2Shape,b2ChainShape>("AsChainShape")
+        .def_dynamic_cast<b2Shape,b2EdgeShape>("AsEdgeShape")
+        .def_dynamic_cast<b2Shape,b2PolygonShape>("AsPolygonShape")
         //.defIseadwrite("categoryBits", &b2Shape::categoryBits)
         //.def_readwrite("maskBits", &b2Shape::maskBits)
         //.def_readwrite("groupIndex", &b2Shape::groupIndex)
@@ -150,9 +148,12 @@ void exportB2Shape(py::module & pybox2dModule){
     // derived shapes
     py::class_<b2CircleShape>(pybox2dModule,"b2CircleShape",shapeCls)
         .def(py::init<>())
+        .def_readwrite("pos", &b2CircleShape::m_p)
     ;
     py::class_<b2EdgeShape>(pybox2dModule,"b2EdgeShape",shapeCls)
         .def(py::init<>())
+        .def("Set",[](b2EdgeShape * s,const b2Vec2 & v1,const b2Vec2 & v2)
+             {s->Set(v1,v2);},py::arg("v1"),py::arg("v2"))
     ;
     py::class_<b2ChainShape>(pybox2dModule,"b2ChainShape",shapeCls)
         .def(py::init<>())

@@ -185,7 +185,15 @@ protected:
 
 	b2Contact() : m_fixtureA(NULL), m_fixtureB(NULL) {}
 	b2Contact(b2Fixture* fixtureA, int32 indexA, b2Fixture* fixtureB, int32 indexB);
-	virtual ~b2Contact() {}
+	
+    #if LIQUIDFUN_EXTERNAL_LANGUAGE_API
+    public:
+        virtual ~b2Contact() {}
+    protected:
+    #else
+        virtual ~b2Contact() {}
+    #endif
+
 
 	void Update(b2ContactListener* listener);
 
