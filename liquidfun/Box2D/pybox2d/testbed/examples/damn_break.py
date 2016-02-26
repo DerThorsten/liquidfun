@@ -23,7 +23,7 @@ sys.path.append('../../')
 print sys.path[0]
 import testbed
 import testbed.framework
-from testbed.framework import main,Framework
+from testbed.framework import Testbed,Framework
 
 from pybox2d import *
 
@@ -38,28 +38,52 @@ class DamnBreak(Framework):
 
         verts=[
             b2Vec2(-2, 0),
-            b2Vec2(2, 0),
-            b2Vec2(2, 4),
-            b2Vec2(-2, 4)
+            b2Vec2(4, 0),
+            b2Vec2(4, 8),
+            b2Vec2(-2, 8)
         ]
-        ground = self.world.CreateBody(
+        groundbody = self.world.CreateBody(
             shapes=chainShape(vertices=verts)
         )
 
 
 
-        pdef = particleSystemDef()
-        psystem = self.world.CreateParticleSystem(pdef)
-        psystem.SetRadius(0.025)
-        psystem.SetDamping(0.2)
+
+        fixture = fixtureDef(shape=circleShape(0.5),density=2.2, friction=0.2)
+        body = self.world.CreateDynamicBody(
+            #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
+            position=(1,2.5),
+            fixtures=fixture
+        ) 
+
+        fixture = fixtureDef(shape=polygonShape(box=(1,1)),density=2.2, friction=0.2)
+        body = self.world.CreateDynamicBody(
+            #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
+            position=(1,7.5),
+            fixtures=fixture
+        ) 
+
+        if True:
+
+            pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
+            psystem = self.world.CreateParticleSystem(pdef)
+            psystem.SetRadius(0.025)
+            psystem.SetDamping(0.2)
 
 
-        shape = polygonShape(box=(0.8,1.0),center=vec2(-1.2,1.01),angle=0)
-        pgDef = particleGroupDef(shape=shape,flags=ParticleGroupFlag.solidParticleGroup)
+            shape = polygonShape(box=(0.4,1.0),center=vec2(0,2.01),angle=0)
+            pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, groupFlags=ParticleGroupFlag.solidParticleGroup,
+                                     shape=shape,strength=0.0
+                                     )
 
-        group = psystem.CreateParticleGroup(pgDef)
+            group = psystem.CreateParticleGroup(pgDef)
 
        
 
 if __name__ == "__main__":
-    main(DamnBreak)
+
+    testbed = Testbed(guiType='kivy')
+    testbed.setExample(DamnBreak)
+    testbed.run()
+
+    #main(DamnBreak)

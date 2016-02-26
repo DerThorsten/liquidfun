@@ -23,7 +23,8 @@ sys.path.append('../../')
 print sys.path[0]
 import testbed
 import testbed.framework
-from testbed.framework import main,Framework
+from testbed.framework import Testbed,Framework
+
 
 from pybox2d import *
 
@@ -40,7 +41,6 @@ class Web(Framework):
         ground = self.world.CreateBody(
             shapes=edgeShape(vertices=[(-40, 0), (40, 0)])
         )
-
         fixture = fixtureDef(shape=polygonShape(box=(0.5, 0.5)),
                                density=5, friction=0.2)
         bd = bodyDef(fixedRotation=True,angularDamping=2.0,userData=['a,b'])
@@ -113,4 +113,7 @@ class Web(Framework):
                   % len(self.joints))
 
 if __name__ == "__main__":
-    main(Web)
+
+    testbed = Testbed(guiType='kivy')
+    testbed.setExample(Web)
+    testbed.run()

@@ -66,6 +66,7 @@ add_library(pybox2d SHARED
   b2ParticleGroup.cxx
   b2WorldCallbacks.cxx
   b2Contact.cxx
+  b2Collision.cxx
   b2Draw.cxx
 )
 add_dependencies(pybox2d Box2D_shared)

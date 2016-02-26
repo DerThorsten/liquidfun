@@ -17,7 +17,51 @@ class ParticleGroupFlag(object):
 
 
 
-
+class ParticleFlag(object):
+    waterParticle = 0
+    # Removed after next simulation step.
+    zombieParticle = 1 << 1
+    # Zero velocity.
+    wallParticle = 1 << 2
+    # With restitution from stretching.
+    springParticle = 1 << 3
+    # With restitution from deformation.
+    elasticParticle = 1 << 4
+    # With viscosity.
+    viscousParticle = 1 << 5
+    # Without isotropic pressure.
+    powderParticle = 1 << 6
+    # With surface tension.
+    tensileParticle = 1 << 7
+    # Mix color between contacting particles.
+    colorMixingParticle = 1 << 8
+    # Call b2DestructionListener on destruction.
+    destructionListenerParticle = 1 << 9
+    # Prevents other particles from leaking.
+    barrierParticle = 1 << 10
+    # Less compressibility.
+    staticPressureParticle = 1 << 11
+    # Makes pairs or triads with other particles.
+    reactiveParticle = 1 << 12
+    # With high repulsive force.
+    repulsiveParticle = 1 << 13
+    # Call b2ContactListener when this particle is about to interact with
+    # a rigid body or stops interacting with a rigid body.
+    # This results in an expensive operation compared to using
+    # fixtureContactFilterParticle to detect collisions between
+    # particles.
+    fixtureContactListenerParticle = 1 << 14
+    # Call b2ContactListener when this particle is about to interact with
+    # another particle or stops interacting with another particle.
+    # This results in an expensive operation compared to using
+    # particleContactFilterParticle to detect collisions between
+    # particles.
+    particleContactListenerParticle = 1 << 15
+    # Call b2ContactFilter when this particle interacts with rigid bodies.
+    fixtureContactFilterParticle = 1 << 16
+    # Call b2ContactFilter when this particle interacts with other
+    # particles.
+    particleContactFilterParticle = 1 << 17
 
 def particleSystemDef(
     strictContactCheck = False,

@@ -1,5 +1,6 @@
 
 from pybox2d import *
+import numpy 
 
 Vec2  = b2Vec2
 Vec3  = b2Vec3
@@ -31,5 +32,17 @@ def extendB2Vec2():
         else:
             raise RuntimeError("wrong index")
     b2Vec2.__getitem__ = __getitem__
+
+    def isfinite(self):
+        return numpy.isfinite(self.x) and numpy.isfinite(self.y)
+    b2Vec2.isfinite = isfinite
+    
+    def __repr__(self):
+        return "(%f,%f)"%(self.x,self.y)
+    b2Vec2.__repr__ = __repr__
+
+    def __str__(self):
+        return "(%f,%f)"%(self.x,self.y)
+    b2Vec2.__str__ = __str__
 extendB2Vec2()
 del extendB2Vec2

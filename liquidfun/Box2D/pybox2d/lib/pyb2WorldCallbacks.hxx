@@ -52,16 +52,19 @@ public:
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB) {
         py::object f = object_.attr("ShouldCollideFixtureFixture");
         bool ret = f.call(fixtureA, fixtureB);
+        return ret;
     }
 
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2ParticleSystem* particleSystem, int32 particleIndex) {
         py::object f = object_.attr("ShouldCollideFixtureParticle");
         bool ret = f.call(fixtureA, particleSystem, particleIndex);
+        return ret;
     }
 
     virtual bool ShouldCollide(b2ParticleSystem* particleSystem, int32 particleIndexA, int32 particleIndexB) {
         py::object f = object_.attr("ShouldCollideParticleParticle");
         bool ret = f.call(particleSystem, particleIndexA, particleIndexB);
+        return ret;
     }
 private:
     py::object object_;
@@ -97,7 +100,7 @@ public:
     virtual void EndContact(b2Fixture* fixture,
                             b2ParticleSystem* particleSystem, int32 index){
         py::object f = object_.attr("EndContactFixtureParticle");
-        f.call(fixture, particleSystem, particleBodyContact);  
+        f.call(fixture, particleSystem, index);  
     }
 
     virtual void BeginContact(b2ParticleSystem* particleSystem,
@@ -126,5 +129,51 @@ private:
 };
 
 
+
+
+
+class PyB2QueryCallbackCaller : public b2QueryCallback{
+public:
+
+
+    virtual ~PyB2QueryCallbackCaller() {}
+    PyB2QueryCallbackCaller(const py::object & object)
+    : object_(object){
+    }
+
+    virtual bool ReportFixture(b2Fixture* fixture){
+        py::object f = object_.attr("ReportFixture");
+        bool ret = f.call(fixture);
+        return ret;
+    }
+
+    /// Called for each particle found in the query AABB.
+    /// @return false to terminate the query.
+    virtual bool ReportParticle(const b2ParticleSystem* particleSystem,
+                                int32 index)
+    {
+
+        py::object f = object_.attr("ReportParticle");
+        bool ret = f.call(particleSystem, index);
+        return ret;
+    }
+
+    /// Cull an entire particle system from b2World::QueryAABB. Ignored for
+    /// b2ParticleSystem::QueryAABB.
+    /// @return true if you want to include particleSystem in the AABB query,
+    /// or false to cull particleSystem from the AABB query.
+    virtual bool ShouldQueryParticleSystem(
+        const b2ParticleSystem* particleSystem)
+    {
+        
+        py::object f = object_.attr("ShouldQueryParticleSystem");
+        bool ret = f.call(particleSystem);
+        return ret;
+    }
+
+
+private:
+    py::object object_;
+};
 
 

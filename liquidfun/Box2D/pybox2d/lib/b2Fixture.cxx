@@ -81,6 +81,7 @@ void exportB2Fixture(py::module & pybox2dModule){
             delete ud;
             b.SetUserData(nullptr);
         })
+        .def("TestPoint",&b2Fixture::TestPoint)
     ;
 
 }

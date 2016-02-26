@@ -58,13 +58,28 @@ public:
 
     // They are protected
     virtual void InitVelocityConstraints(const b2SolverData& data){
-
+        PYBIND11_OVERLOAD_PURE(
+            void,       // Return type 
+            b2Joint,      // Parent class 
+            InitVelocityConstraints,    // Name of function 
+            data
+        );
     }
     virtual void SolveVelocityConstraints(const b2SolverData& data){
-
+        PYBIND11_OVERLOAD_PURE(
+            void,       // Return type 
+            b2Joint,      // Parent class 
+            SolveVelocityConstraints,    // Name of function 
+            data
+        );
     }
     virtual bool SolvePositionConstraints(const b2SolverData& data){
-
+        PYBIND11_OVERLOAD_PURE(
+            bool,       // Return type 
+            b2Joint,      // Parent class 
+            SolvePositionConstraints,    // Name of function 
+            data
+        );
     }
 
 
@@ -143,7 +158,10 @@ void exportb2Joint(py::module & pybox2dModule){
         .def("GetReactionForce",&b2Joint::GetReactionForce, py::arg("iv_dt"))
         .def("GetReactionTorque",&b2Joint::GetReactionTorque, py::arg("iv_dt"))
         .def("HasNext", [](b2Joint * j){ return j->GetNext()!=nullptr;})
-        .def("_GetNext", [](b2Joint * j){return j->GetNext();}, py::return_value_policy::reference_internal)        
+        .def("_GetNext", [](b2Joint * j){return j->GetNext();}, py::return_value_policy::reference_internal)
+
+        .def_dynamic_cast<b2Joint,b2DistanceJoint>("AsDistanceJoint")
+        .def_dynamic_cast<b2Joint,b2MouseJoint>("AsMouseJoint")
     ;
    
    
@@ -209,12 +227,23 @@ void exportb2Joint(py::module & pybox2dModule){
     ;
 
     py::class_<b2WheelJoint>(pybox2dModule,"b2WheelJoint",jointCls)
-        .def(py::init<const b2JointDef* >())
+        //.def(py::init<const b2JointDef* >())
     ;
     py::class_<b2WheelJointDef>(pybox2dModule,"b2WheelJointDef",jdClass)
         .def(py::init<>())
     ;
 
+    py::class_<b2MouseJoint>(pybox2dModule,"b2MouseJoint",jointCls)
+        //.def(py::init<const b2JointDef* >())
+        .def("SetTarget",&b2MouseJoint::SetTarget)
+    ;
+    py::class_<b2MouseJointDef>(pybox2dModule,"b2MouseJointDef",jdClass)
+        .def(py::init<>())
+        .def_readwrite("target", &b2MouseJointDef::target)
+        .def_readwrite("maxForce", &b2MouseJointDef::maxForce)
+        .def_readwrite("frequencyHz", &b2MouseJointDef::frequencyHz)
+        .def_readwrite("dampingRatio", &b2MouseJointDef::dampingRatio)
+    ;
 
 }
 

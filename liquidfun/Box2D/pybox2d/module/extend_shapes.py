@@ -15,6 +15,12 @@ def chainShape(vertices):
     s.CreateLoop(vertices)
     return s
 
+
+def circleShape(r):
+    s = b2CircleShape()
+    s.radius = r
+    return s
+
 def polygonShape(box=None,center=None,angle=None):
     assert box is not None
     s = b2PolygonShape()

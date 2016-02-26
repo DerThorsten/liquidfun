@@ -25,6 +25,20 @@ def distanceJointDef(bodyA,bodyB,localAnchorA,localAnchorB,collideConnected=Fals
     jd.dampingRatio = dampingRatio
     return jd
 
+def mouseJointDef(bodyA,bodyB,collideConnected=False,target=vec2(0,0),
+                     maxForce=0.0, frequencyHz=5.0,dampingRatio=0.7):
+    jd = b2MouseJointDef()
+    jd.jtype = b2JointType.e_mouseJoint
+    jd.bodyA = bodyA
+    jd.bodyB = bodyB
+    jd.collideConnected = collideConnected 
+    jd.target = target
+    jd.maxForce = maxForce
+    jd.frequencyHz = frequencyHz
+    jd.dampingRatio = dampingRatio
+    return jd
+
+
 def extendJoint():
     def GetNext(self):
         if self.HasNext():

@@ -2,6 +2,7 @@
 
 #include <Box2D/Box2D.h>
 #include "pyb2Draw.hxx"
+#include "pyb2WorldCallbacks.hxx"
 
 namespace py = pybind11;
 
@@ -47,7 +48,10 @@ void exportB2World(py::module & pybox2dModule){
         .def("CalculateReasonableParticleIterations",&b2World::CalculateReasonableParticleIterations)
         .def("ClearForces",&b2World::ClearForces)
         .def("DrawDebugData",&b2World::DrawDebugData)
-            //.def("QueryAABB",&b2World::QueryAABB)
+        .def("QueryAABB", 
+            [](const b2World & world, PyB2QueryCallbackCaller * cb, const b2AABB & aabb ){
+                return world.QueryAABB(cb, aabb);
+        })
             //.def("RayCast",&b2World::QueryAABB)
                 // lists
         .def("_GetBodyList", [](const b2World & w){

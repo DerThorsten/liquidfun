@@ -14,6 +14,7 @@ void exportB2Draw(py::module & );
 void exportB2Particle(py::module & );
 void exportB2ParticleSystem(py::module & );
 void exportB2ParticleGroup(py::module & );
+void exportb2Collision(py::module & );
 
 PYBIND11_PLUGIN(pybox2d) {
     py::module pybox2dModule("pybox2d", "pybox2d python bindings");
@@ -30,7 +31,7 @@ PYBIND11_PLUGIN(pybox2d) {
     exportB2Particle(pybox2dModule);
     exportB2ParticleSystem(pybox2dModule);
     exportB2ParticleGroup(pybox2dModule);
-
+    exportb2Collision(pybox2dModule);
     
     return pybox2dModule.ptr();
 }

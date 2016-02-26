@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 #include <Box2D/Box2D.h>
 #include <iostream>
 
@@ -8,6 +9,10 @@ namespace py = pybind11;
 
 class PyB2Draw : public b2Draw {
 public:
+
+    typedef std::pair<float32,float32> P;
+    typedef std::tuple<float32,float32,float32> C;
+
     /* Inherit the constructors */
     //using b2Draw::b2Draw;
 
@@ -54,7 +59,7 @@ public:
             ptr[i*2 +1] *= yScale();
         }
         py::object f = object_.attr("DrawPolygon");
-        f.call(npVertices,color);
+        f.call(npVertices,C(color.r,color.g,color.b));
     }
 
     virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
@@ -76,7 +81,7 @@ public:
             ptr[i*2 +1] *= yScale();
         }
         py::object f = object_.attr("DrawSolidPolygon");
-        f.call(npVertices,color);
+        f.call(npVertices,C(color.r,color.g,color.b));
     }
 
     virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color) {
@@ -84,7 +89,7 @@ public:
         auto c = b2Mul(transform_, center) + offset_;
         c.x *=scale_;
         c.y *=yScale(); 
-        f.call(c,radius*scale_,color);
+        f.call(P(c.x,c.y),radius*scale_,C(color.r,color.g,color.b));
     }
 
     virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color) {
@@ -92,7 +97,7 @@ public:
         auto c = b2Mul(transform_, center) + offset_;
         c.x *=scale_;
         c.y *=yScale(); 
-        f.call(c,radius*scale_,color);
+        f.call(P(c.x,c.y),radius*scale_,P(axis.x,axis.y), C(color.r,color.g,color.b));
     }
 
     virtual void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, const int32 count) {
@@ -133,7 +138,7 @@ public:
                 ptrColors[i*4 +2] = c.b;
                 ptrColors[i*4 +3] = c.a;
             }
-            f.call(npCenters,radius,npColors);
+            f.call(npCenters,radius*scale_,npColors);
         }
         else{
             for(size_t i=0;  i<size_t(count); ++i){
@@ -143,7 +148,7 @@ public:
                 ptrCenters[i*2 ]   *= scale_;
                 ptrCenters[i*2 +1] *= yScale();
             }
-            f.call(npCenters,radius);
+            f.call(npCenters,radius*scale_);
         }
     }
 
@@ -155,7 +160,10 @@ public:
         auto pp2 = b2Mul(transform_, p2)  + offset_;
         pp2.x *=scale_;
         pp2.y *=yScale(); 
-        f.call(pp1,pp2,color);
+
+
+
+        f.call(P(pp1.x,pp1.y),P(pp2.x,pp2.y),C(color.r,color.g,color.b));
     }
 
     virtual void DrawTransform(const b2Transform& xf) {
