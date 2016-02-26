@@ -95,7 +95,7 @@ public:
         f.call(c,radius*scale_,color);
     }
 
-    virtual void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, int32 count) {
+    virtual void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, const int32 count) {
         py::object f = object_.attr("DrawParticles");
 
         auto npCenters = py::array(py::buffer_info(
@@ -107,33 +107,44 @@ public:
             { 2*sizeof(float32),sizeof(float32)}  /* Strides for each dimension */
         ));
 
-        auto npColors = py::array(py::buffer_info(
-            nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
-            sizeof(uint8),     /* Size of one item */
-            py::format_descriptor<uint8>::value(), /* Buffer format */
-            2,          /* How many dimensions? */
-            { size_t(count), size_t(4) },  /* Number of elements for each dimension */
-            { 4*sizeof(uint8),sizeof(uint8)}  /* Strides for each dimension */
-        ));
-
+        
 
         float32 * ptrCenters  = static_cast<float32* >(npCenters.request().ptr);
-        uint8 * ptrColors  = static_cast<uint8 * >(npColors.request().ptr);
+        if(colors != nullptr){
+            auto npColors = py::array(py::buffer_info(
+                nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
+                sizeof(uint8),     /* Size of one item */
+                py::format_descriptor<uint8>::value(), /* Buffer format */
+                2,          /* How many dimensions? */
+                { size_t(count), size_t(4) },  /* Number of elements for each dimension */
+                { 4*sizeof(uint8),sizeof(uint8)}  /* Strides for each dimension */
+            ));
+            uint8 * ptrColors  = static_cast<uint8 * >(npColors.request().ptr);
 
-       for(size_t i=0;  i<size_t(count); ++i){
-           auto ce = b2Mul(transform_, centers[i]);
-           ptrCenters[i*2 ]   = ce.x+ offset_.x;
-           ptrCenters[i*2 +1] = ce.y+ offset_.y; 
-           ptrCenters[i*2 ]   *= scale_;
-           ptrCenters[i*2 +1] *= yScale();
-           //auto c = colors[i];
-           //ptrColors[i*4 ]   = 0;//c.r;
-           //ptrColors[i*4 +1] = 0;//c.g;
-           //ptrColors[i*4 +2] = 0;//c.b;
-           //ptrColors[i*4 +3] = 0;//c.a;
-       }
-
-        f.call(npCenters,radius,npColors);
+            for(size_t i=0;  i<size_t(count); ++i){
+                auto ce = b2Mul(transform_, centers[i]);
+                ptrCenters[i*2 ]   = ce.x+ offset_.x;
+                ptrCenters[i*2 +1] = ce.y+ offset_.y; 
+                ptrCenters[i*2 ]   *= scale_;
+                ptrCenters[i*2 +1] *= yScale();
+                const b2ParticleColor c = colors[i];
+                ptrColors[i*4 ]   = c.r;
+                ptrColors[i*4 +1] = c.g;
+                ptrColors[i*4 +2] = c.b;
+                ptrColors[i*4 +3] = c.a;
+            }
+            f.call(npCenters,radius,npColors);
+        }
+        else{
+            for(size_t i=0;  i<size_t(count); ++i){
+                auto ce = b2Mul(transform_, centers[i]);
+                ptrCenters[i*2 ]   = ce.x+ offset_.x;
+                ptrCenters[i*2 +1] = ce.y+ offset_.y; 
+                ptrCenters[i*2 ]   *= scale_;
+                ptrCenters[i*2 +1] *= yScale();
+            }
+            f.call(npCenters,radius);
+        }
     }
 
     virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {

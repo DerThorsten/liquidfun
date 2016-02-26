@@ -31,6 +31,22 @@ void exportB2Fixture(py::module & pybox2dModule){
         .def_readwrite("density", &b2FixtureDef::density)
         .def_readwrite("isSensor", &b2FixtureDef::isSensor)
         .def_readwrite("filter", &b2FixtureDef::filter)
+        .def("_SetUserData",[](b2FixtureDef & b, const py::object & ud){
+            auto ptr = new py::object(ud);
+            b.userData = ptr;
+        })
+        .def("_GetUserData",[](const b2FixtureDef & b){
+            auto vuserData = b.userData;
+            auto ud = static_cast<py::object *>(vuserData);
+            auto ret = py::object(*ud);
+            return ret;
+        })
+        .def("_DeleteUserData",[](b2FixtureDef & b){
+            auto vuserData = b.userData;
+            auto ud = static_cast<py::object *>(vuserData);
+            delete ud;
+            b.userData = nullptr;
+        })
     ;
 
     py::class_<b2Fixture>(pybox2dModule,"b2Fixture")
@@ -47,6 +63,24 @@ void exportB2Fixture(py::module & pybox2dModule){
             auto next = f.GetNext();
             return next;
         }, py::return_value_policy::reference_internal)
+
+        .def("HasUserData",[](const b2Fixture & b){return b.GetUserData()!=nullptr;})
+        .def("_SetUserData",[](b2Fixture & b, const py::object & ud){
+            auto ptr = new py::object(ud);
+            b.SetUserData(ptr);
+        })
+        .def("_GetUserData",[](const b2Fixture & b){
+            auto vuserData = b.GetUserData();
+            auto ud = static_cast<py::object *>(vuserData);
+            auto ret = py::object(*ud);
+            return ret;
+        })
+        .def("_DeleteUserData",[](b2Fixture & b){
+            auto vuserData = b.GetUserData();
+            auto ud = static_cast<py::object *>(vuserData);
+            delete ud;
+            b.SetUserData(nullptr);
+        })
     ;
 
 }

@@ -11,6 +11,7 @@ namespace py = pybind11;
 void exportB2Body(py::module & pybox2dModule){
 
 
+
     py::enum_<b2BodyType>(pybox2dModule, "b2BodyType")
         .value("b2_staticBody", b2BodyType::b2_staticBody)
         .value("b2_kinematicBody", b2BodyType::b2_kinematicBody)
@@ -33,6 +34,23 @@ void exportB2Body(py::module & pybox2dModule){
         .def_readwrite("fixedRotation", &b2BodyDef::fixedRotation)
         .def_readwrite("bullet", &b2BodyDef::bullet)
         //.def_readwrite("userData", &b2BodyDef::userData)
+        .def("HasUserData",[](const b2BodyDef & b){return b.userData!=nullptr;})
+        .def("_SetUserData",[](b2BodyDef & b, const py::object & ud){
+            auto ptr = new py::object(ud);
+            b.userData = ptr;
+        })
+        .def("_GetUserData",[](const b2BodyDef & b){
+            auto vuserData = b.userData;
+            auto ud = static_cast<py::object *>(vuserData);
+            auto ret = py::object(*ud);
+            return ret;
+        })
+        .def("_DeleteUserData",[](b2BodyDef & b){
+            auto vuserData = b.userData;
+            auto ud = static_cast<py::object *>(vuserData);
+            delete ud;
+            b.userData = nullptr;
+        })
         .def_readwrite("gravityScale", &b2BodyDef::gravityScale)
     ;
 
@@ -52,6 +70,8 @@ void exportB2Body(py::module & pybox2dModule){
             py::arg("fixtureDef"), py::return_value_policy::reference_internal
         )
         .def("DestroyFixture",&b2Body::DestroyFixture,py::arg("fixture"))
+
+        
         .def("SetTransform", 
             (void (b2Body::*)(const b2Vec2 &, float32)) &b2Body::SetTransform,
             py::arg("position"),py::arg("angle")
@@ -119,8 +139,24 @@ void exportB2Body(py::module & pybox2dModule){
         .def("GetWorld",[]( b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
         .def("GetWorld",[](const b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
 
-        // SET AND GET USER DATA IS MISSING
 
+        .def("HasUserData",[](const b2Body & b){return b.GetUserData()!=nullptr;})
+        .def("_SetUserData",[](b2Body & b, const py::object & ud){
+            auto ptr = new py::object(ud);
+            b.SetUserData(ptr);
+        })
+        .def("_GetUserData",[](const b2Body & b){
+            auto vuserData = b.GetUserData();
+            auto ud = static_cast<py::object *>(vuserData);
+            auto ret = py::object(*ud);
+            return ret;
+        })
+        .def("_DeleteUserData",[](b2Body & b){
+            auto vuserData = b.GetUserData();
+            auto ud = static_cast<py::object *>(vuserData);
+            delete ud;
+            b.SetUserData(nullptr);
+        })
 
         // in order
         

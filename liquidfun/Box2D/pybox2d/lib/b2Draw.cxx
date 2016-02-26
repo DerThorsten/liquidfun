@@ -28,6 +28,7 @@ void exportB2Draw(py::module & pybox2dModule){
         .def("GetFlags",[](PyB2Draw * draw){return draw->GetFlags();})
         .def("AppendFlags",[](PyB2Draw * draw,const int flag){draw->AppendFlags(flag);})
         .def("ClearFlags",[](PyB2Draw * draw,const int flag){draw->ClearFlags(flag);})
+        .def_readwrite("scale",&PyB2Draw::scale_)
     ;
 }
 

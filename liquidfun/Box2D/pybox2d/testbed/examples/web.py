@@ -43,18 +43,17 @@ class Web(Framework):
 
         fixture = fixtureDef(shape=polygonShape(box=(0.5, 0.5)),
                                density=5, friction=0.2)
-        bodyDef = b2BodyDef()
-        bodyDef.fixedRotation = True
-        bodyDef.angularDamping = 2.0
-        bodyDef.linearDamping = 2.0
+        bd = bodyDef(fixedRotation=True,angularDamping=2.0,userData=['a,b'])
         self.bodies = [self.world.CreateDynamicBody(
-            bodyDef=bodyDef,                                                    
+            bodyDef=bd,                                                    
             position=pos,
             fixtures=fixture
         ) for pos in ((20+-5, 5), (10+5, 5), (10+5, 15), (10+-5, 15))]
 
         bodies = self.bodies
 
+        for b  in bodies:
+            print b.GetUserData()
         # Create the joints between each of the bodies and also the ground
         #         bodyA      bodyB   localAnchorA localAnchorB
         sets = [(ground,    bodies[0], (-10, 0),   (-0.5, -0.5)),
@@ -66,6 +65,9 @@ class Web(Framework):
                 (bodies[2], bodies[3], (-0.5, 0),  (0.5, 0)),
                 (bodies[3], bodies[0], (0, -0.5),  (0, 0.5)),
                 ]
+
+        #for b in self.bodies:
+        #    print b.GetUserData()
 
         # We will define the positions in the local body coordinates, the length
         # will automatically be set by the __init__ of the b2DistanceJointDef

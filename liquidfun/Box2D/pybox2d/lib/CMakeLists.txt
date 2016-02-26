@@ -130,10 +130,21 @@ ADD_CUSTOM_COMMAND(
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different $<TARGET_FILE:pybox2d> ${CMAKE_BINARY_DIR}/python/pybox2d/
         COMMENT "Copying target _graph to temporary module directory")
 
-add_custom_target(copy_python__init__ ALL#POST_BUILD
-    COMMAND cmake -E copy_if_different 
-    ${CMAKE_SOURCE_DIR}/pybox2d/module/__init__.py 
-    ${CMAKE_BINARY_DIR}/python/pybox2d/__init__.py)
+
+
+file(GLOB PYTHON_HEADERS
+  ${CMAKE_SOURCE_DIR}/pybox2d/module/*.py
+)
+
+MATH(EXPR VAR "0")
+FOREACH(file_path ${PYTHON_HEADERS})
+    MATH(EXPR VAR "${VAR}+1")
+    add_custom_target( copy_python_file_nr_${VAR} ALL#POST_BUILD
+        COMMAND cmake -E copy_if_different 
+        ${file_path}
+        ${CMAKE_BINARY_DIR}/python/pybox2d/)
+ENDFOREACH()
+
 
 
 
