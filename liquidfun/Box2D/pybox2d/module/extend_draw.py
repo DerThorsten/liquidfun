@@ -1,4 +1,5 @@
 from pybox2d import b2DrawCaller
+from tools import _classExtender, GenericB2dIter
 
 class DrawFlags(object):
     shapeBit              = 0x0001
@@ -22,9 +23,35 @@ DrawFlagsDict = {
 def extendB2DrawCaller():
     
     def appendFlags(self, flagList):
+        if isinstance(flagList, str):
+            flagList = [flagList]
         for flag in flagList:
             self.AppendFlags(DrawFlagsDict[flag])
     b2DrawCaller.appendFlags =appendFlags
-    
-extendB2DrawCaller()
-del extendB2DrawCaller
+
+    def clearFlags(self, flagList):
+        if isinstance(flagList, str):
+            flagList = [flagList]
+        for flag in flagList:
+            self.ClearFlags(DrawFlagsDict[flag])
+    b2DrawCaller.clearFlags =clearFlags
+
+
+
+class _DrawCaller(b2DrawCaller):
+    def appendFlags(self, flagList):
+        if isinstance(flagList, str):
+            flagList = [flagList]
+        for flag in flagList:
+            self.AppendFlags(DrawFlagsDict[flag])
+
+
+    def clearFlags(self, flagList):
+        if isinstance(flagList, str):
+            flagList = [flagList]
+        for flag in flagList:
+            self.ClearFlags(DrawFlagsDict[flag])
+
+_classExtender(_DrawCaller,['appendFlags','clearFlags'])
+
+

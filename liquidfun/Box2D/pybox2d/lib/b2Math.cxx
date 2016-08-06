@@ -15,28 +15,32 @@ void exportB2Math(py::module & pybox2dModule){
 
 
     py::class_<b2Vec2>(pybox2dModule,"b2Vec2")
-        .def(py::init<>())
-        .def(py::init<float32,float32>(),py::arg("x"),py::arg("y"))
-        .def_readwrite("x", &b2Vec2::x)
-        .def_readwrite("y", &b2Vec2::y)
-        // member functions
-        .def("SetZero",&b2Vec2::SetZero)
-        .def("Set",&b2Vec2::Set,py::arg("x"),py::arg("y"))
-        .def("Length",&b2Vec2::Length)
-        .def("LengthSquared",&b2Vec2::LengthSquared)
-        .def("Normalize",&b2Vec2::Normalize)
-        .def("IsValid",&b2Vec2::IsValid)
-        .def("Skew",&b2Vec2::Skew)
-        // operators
-        .def(py::self += py::self)
-        .def(py::self -= py::self)
-        .def(py::self *= float32())
-        .def(py::self +  float32())
-        .def(py::self -  float32())
-        .def(py::self *  float32())
-        .def(py::self /  float32())
-        .def(py::self +  py::self)
-        .def(py::self -  py::self)
+       .def(py::init<>())
+       .def(py::init<float32,float32>(),py::arg("x"),py::arg("y"))
+       .def_readwrite("x", &b2Vec2::x)
+       .def_readwrite("y", &b2Vec2::y)
+       // member functions
+       .def("SetZero",&b2Vec2::SetZero)
+       .def("Set",&b2Vec2::Set,py::arg("x"),py::arg("y"))
+       //.def("Length",&b2Vec2::Length)
+       .def("normalize",&b2Vec2::Normalize)
+       .def("isValid",&b2Vec2::IsValid)
+       .def("skew",&b2Vec2::Skew)
+       .def("__len__",[](const b2Vec2 & vec){return 2;})
+       // operators
+       .def(py::self += py::self)
+       .def(py::self -= py::self)
+       .def(py::self *= float32())
+       .def(py::self +  float32())
+       .def(py::self -  float32())
+       .def(float32() *  py::self)
+       .def(py::self *  float32())
+       .def(py::self /  float32())
+       .def(py::self +  py::self)
+       .def(py::self -  py::self)
+
+       .def_property_readonly("length",&b2Vec2::Length)
+       .def_property_readonly("lengthSquared",&b2Vec2::LengthSquared)
     ;
 
     py::class_<b2Vec3>(pybox2dModule,"b2Vec3")
@@ -117,6 +121,7 @@ void exportB2Math(py::module & pybox2dModule){
         .def(py::init<>())
         .def(py::init<const b2Vec2 &, const b2Rot & >(),py::arg("position"),py::arg("rotation"))
         .def_readwrite("p", &b2Transform::p)
+        .def_readwrite("position", &b2Transform::p)
         .def_readwrite("q", &b2Transform::q)
         // member functions
         .def("Set",&b2Transform::Set,py::arg("position"),py::arg("angle"))

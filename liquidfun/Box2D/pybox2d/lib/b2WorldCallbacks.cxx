@@ -24,7 +24,28 @@ void exportB2WorldCallbacks(py::module & pybox2dModule){
         .def(py::init<const py::object &>(),py::arg("queryCallback")
         )
     ;
+
+    py::class_<PyB2RayCastCallbackCaller>(pybox2dModule,"b2RayCastCallbackCaller")
+        .def(py::init<const py::object &>(),py::arg("rayCastCallback")
+        )
+    ;
+
+    py::class_<PyB2DestructionListenerCaller>(pybox2dModule,"b2DestructionListenerCaller")
+        .def(py::init<const py::object &>(),py::arg("destructionListener")
+        )
+    ;
+  
+    py::class_<PyB2ContactListenerCaller>(pybox2dModule,"b2ContactListenerCaller")
+        .def(py::init<const py::object &>(),py::arg("contactListener")
+        )
+    ;
    
+
+ 
+
+
+   
+
 }
 
 

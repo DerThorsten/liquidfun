@@ -1,3 +1,5 @@
+add_definitions(-DLIQUIDFUN_MULTI_GRAVITY=1)
+
 #-------------------------------------------------------------------------------------------------------------------
 # check for c++ 11 support
 #-------------------------------------------------------------------------------------------------------------------
@@ -61,6 +63,7 @@ add_library(pybox2d SHARED
   b2Fixture.cxx
   b2Shape.cxx
   b2Joint.cxx
+  b2JointDef.cxx
   b2Particle.cxx
   b2ParticleSystem.cxx
   b2ParticleGroup.cxx
@@ -68,6 +71,7 @@ add_library(pybox2d SHARED
   b2Contact.cxx
   b2Collision.cxx
   b2Draw.cxx
+  b2Vectorization.cxx
 )
 add_dependencies(pybox2d Box2D_shared)
 #target_link_libraries(pybox2d ${Box2D})
@@ -149,8 +153,10 @@ ENDFOREACH()
 
 
 
+
+
 add_custom_target(copy_python_test ALL#POST_BUILD
     COMMAND cmake -E copy_if_different 
-    ${CMAKE_SOURCE_DIR}/pybox2d/test/test_python.py 
-    ${CMAKE_BINARY_DIR}/test_python/test_python.py)
+    ${CMAKE_SOURCE_DIR}/pybox2d/test/test.py 
+    ${CMAKE_BINARY_DIR}/test_python/test.py)
 

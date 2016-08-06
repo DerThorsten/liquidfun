@@ -22,8 +22,8 @@ void exportB2Body(py::module & pybox2dModule){
 
     py::class_<b2BodyDef>(pybox2dModule,"b2BodyDef")
         .def(py::init<>())
-        .def_readwrite("type", &b2BodyDef::type)
-        .def_readwrite("position", &b2BodyDef::position)
+        .def_readwrite("btype", &b2BodyDef::type)
+        .def_readwrite("_position", &b2BodyDef::position)
         .def_readwrite("angle", &b2BodyDef::angle)
         .def_readwrite("linearVelocity", &b2BodyDef::linearVelocity)
         .def_readwrite("angularVelocity", &b2BodyDef::angularVelocity)
@@ -34,18 +34,18 @@ void exportB2Body(py::module & pybox2dModule){
         .def_readwrite("fixedRotation", &b2BodyDef::fixedRotation)
         .def_readwrite("bullet", &b2BodyDef::bullet)
         //.def_readwrite("userData", &b2BodyDef::userData)
-        .def("HasUserData",[](const b2BodyDef & b){return b.userData!=nullptr;})
-        .def("_SetUserData",[](b2BodyDef & b, const py::object & ud){
+        .def("_hasUserData",[](const b2BodyDef & b){return b.userData!=nullptr;})
+        .def("_setUserData",[](b2BodyDef & b, const py::object & ud){
             auto ptr = new py::object(ud);
             b.userData = ptr;
         })
-        .def("_GetUserData",[](const b2BodyDef & b){
+        .def("_getUserData",[](const b2BodyDef & b){
             auto vuserData = b.userData;
             auto ud = static_cast<py::object *>(vuserData);
             auto ret = py::object(*ud);
             return ret;
         })
-        .def("_DeleteUserData",[](b2BodyDef & b){
+        .def("_deleteUserData",[](b2BodyDef & b){
             auto vuserData = b.userData;
             auto ud = static_cast<py::object *>(vuserData);
             delete ud;
@@ -56,102 +56,107 @@ void exportB2Body(py::module & pybox2dModule){
 
     py::class_<b2Body>(pybox2dModule,"b2Body")
         //.def(py::init<>())
-        .def("CreateFixture",
+        .def("createFixture",
             [&](b2Body & body, b2Shape * shape, float32 density){
                 return body.CreateFixture(shape, density);
             },
             py::arg("shape"),
             py::arg("density") = 1.0, py::return_value_policy::reference_internal
         )
-        .def("CreateFixture",
+        .def("createFixture",
             [&](b2Body & body, const b2FixtureDef * def){
                 return body.CreateFixture(def);
             },
             py::arg("fixtureDef"), py::return_value_policy::reference_internal
         )
-        .def("DestroyFixture",&b2Body::DestroyFixture,py::arg("fixture"))
+        .def("_createFixtureFromFixtureDef",
+            [&](b2Body & body, const b2FixtureDef * def){
+                return body.CreateFixture(def);
+            },
+            py::arg("fixtureDef"), py::return_value_policy::reference_internal
+        )
+        .def("destroyFixture",&b2Body::DestroyFixture,py::arg("fixture"))
 
         
-        .def("SetTransform", 
+        .def("setTransform", 
             (void (b2Body::*)(const b2Vec2 &, float32)) &b2Body::SetTransform,
             py::arg("position"),py::arg("angle")
         )
-        .def("SetTransform", 
+        .def("setTransform", 
             (void (b2Body::*)(float32, float32, float32)) &b2Body::SetTransform,
             py::arg("positionX"),py::arg("positionY"),py::arg("angle")
         )
-        .def("GetTransform", &b2Body::GetTransform, py::return_value_policy::reference_internal)
-        .def("GetPosition", &b2Body::GetPosition, py::return_value_policy::reference_internal)
+
+
+        .def_property_readonly("transform", &b2Body::GetTransform)
         .def_property_readonly("position", &b2Body::GetPosition)
-        .def("GetAngle", &b2Body::GetAngle)
         .def_property_readonly("angle", &b2Body::GetAngle)
-        .def("GetWorldCenter", &b2Body::GetWorldCenter, py::return_value_policy::reference_internal)
-        .def("GetLocalCenter", &b2Body::GetLocalCenter, py::return_value_policy::reference_internal)
-        .def("SetLinearVelocity", &b2Body::SetLinearVelocity, py::arg("v"))
-        .def("GetLinearVelocity", &b2Body::GetLinearVelocity, py::return_value_policy::reference_internal)
-        .def("SetAngularVelocity", &b2Body::SetAngularVelocity, py::arg("omega"))
-        .def("GetAngularVelocity", &b2Body::GetAngularVelocity)
-        .def("ApplyForce", &b2Body::ApplyForce, py::arg("force"), py::arg("point"), py::arg("wake"))
-        .def("ApplyForceToCenter", &b2Body::ApplyForceToCenter, py::arg("force"), py::arg("wake"))
-        .def("ApplyTorque", &b2Body::ApplyTorque, py::arg("torque"), py::arg("wake"))
-        .def("ApplyLinearImpulse", &b2Body::ApplyLinearImpulse, py::arg("impulse"), py::arg("point"), py::arg("wake"))
-        .def("ApplyAngularImpulse", &b2Body::ApplyAngularImpulse, py::arg("impulse"), py::arg("wake"))
-        .def("GetMass", &b2Body::GetMass)
-        .def("GetInertia", &b2Body::GetInertia)
-        .def("GetMassData", &b2Body::GetMassData, py::arg("data"))
-        .def("SetMassData", &b2Body::SetMassData, py::arg("data"))
-        .def("ResetMassData", &b2Body::ResetMassData)  
-        .def("GetWorldPoint", &b2Body::GetWorldPoint, py::arg("localPoint"))
-        .def("GetWorldVector", &b2Body::GetWorldVector, py::arg("localVector"))
-        .def("GetLocalPoint", &b2Body::GetLocalPoint, py::arg("worldPoint"))
-        .def("GetLocalVector", &b2Body::GetLocalVector, py::arg("worldVector"))
-        .def("GetLinearVelocityFromWorldPoint", &b2Body::GetLinearVelocityFromWorldPoint, py::arg("worldPoint"))
-        .def("GetLinearVelocityFromLocalPoint", &b2Body::GetLinearVelocityFromLocalPoint, py::arg("localPoint"))
-        .def("GetLinearDamping", &b2Body::GetLinearDamping)
-        .def("SetLinearDamping", &b2Body::SetLinearDamping, py::arg("linearDamping"))
-        .def("GetAngularDamping", &b2Body::GetAngularDamping)
-        .def("SetAngularDamping", &b2Body::SetAngularDamping, py::arg("angularDamping"))
-        .def("GetGravityScale", &b2Body::GetGravityScale)
-        .def("SetGravityScale", &b2Body::SetGravityScale, py::arg("scale"))
-        .def("GetType", &b2Body::GetType)
-        .def("SetType", &b2Body::SetType, py::arg("bodyType"))
-        .def("SetBullet", &b2Body::SetBullet, py::arg("flag"))
-        .def("IsBullet", &b2Body::IsBullet)
-        .def("SetSleepingAllowed", &b2Body::SetSleepingAllowed, py::arg("flag"))
-        .def("IsSleepingAllowed", &b2Body::IsSleepingAllowed)
-        .def("SetAwake", &b2Body::SetAwake, py::arg("flag"))
-        .def("IsAwake", &b2Body::IsAwake)
-        .def("SetActive", &b2Body::SetActive, py::arg("flag"))
-        .def("IsActive", &b2Body::IsActive)
-        .def("SetFixedRotation", &b2Body::SetFixedRotation, py::arg("flag"))
-        .def("IsFixedRotation", &b2Body::IsFixedRotation)
-        .def("HasFixtureList",[]( b2Body & body){return body.GetFixtureList()!= nullptr;})
-        .def("_GetFixtureList",[]( b2Body & body){return body.GetFixtureList();}, py::return_value_policy::reference_internal)
-        .def("_GetFixtureList",[](const b2Body & body){return body.GetFixtureList();}, py::return_value_policy::reference_internal)
-        .def("HasJointList",[]( b2Body & body){return body.GetJointList()!= nullptr;})
+        .def_property_readonly("worldCenter",&b2Body::GetWorldCenter)
+        .def_property_readonly("getLocalCenter",&b2Body::GetLocalCenter)
+        .def_property_readonly("mass",&b2Body::GetMass)
+        .def_property_readonly("inertia",&b2Body::GetInertia)
+
+
+
+        //.def_property_readonly("world",&b2Body::GetWorl)
+
+        .def_property("linearVelocity",&b2Body::GetLinearVelocity,&b2Body::SetLinearVelocity)
+        .def_property("angularVelocity",&b2Body::GetAngularVelocity,&b2Body::SetAngularVelocity)
+        .def_property("massData",&b2Body::GetMassData,&b2Body::SetMassData)
+        .def_property("bullet",&b2Body::IsBullet,&b2Body::SetBullet)
+        .def_property("btype",&b2Body::GetType,&b2Body::SetType)
+        .def_property("sleepingAllowed",&b2Body::IsSleepingAllowed,&b2Body::SetSleepingAllowed)
+        .def_property("awake",&b2Body::IsAwake,&b2Body::SetAwake)
+        .def_property("active",&b2Body::IsActive,&b2Body::SetActive)
+        .def_property("fixedRotation",&b2Body::IsFixedRotation,&b2Body::SetFixedRotation)
+        .def_property("gravityScale",&b2Body::GetGravityScale,&b2Body::SetGravityScale)
+        .def_property("linearDamping",&b2Body::GetLinearDamping,&b2Body::SetLinearDamping)
+        .def_property("angularDamping",&b2Body::GetAngularDamping,&b2Body::SetAngularDamping)
+
+
+        .def("applyForce", &b2Body::ApplyForce, py::arg("force"), py::arg("point"), py::arg("wake"))
+        .def("applyForceToCenter", &b2Body::ApplyForceToCenter, py::arg("force"), py::arg("wake"))
+        .def("applyTorque", &b2Body::ApplyTorque, py::arg("torque"), py::arg("wake"))
+        .def("applyLinearImpulse", &b2Body::ApplyLinearImpulse, py::arg("impulse"), py::arg("point"), py::arg("wake"))
+        .def("applyAngularImpulse", &b2Body::ApplyAngularImpulse, py::arg("impulse"), py::arg("wake"))
+
+        .def("resetMassData", &b2Body::ResetMassData)  
+        .def("getWorldPoint", &b2Body::GetWorldPoint, py::arg("localPoint"))
+        .def("getWorldVector", &b2Body::GetWorldVector, py::arg("localVector"))
+        .def("getLocalPoint", &b2Body::GetLocalPoint, py::arg("worldPoint"))
+        .def("getLocalVector", &b2Body::GetLocalVector, py::arg("worldVector"))
+        .def("getLinearVelocityFromWorldPoint", &b2Body::GetLinearVelocityFromWorldPoint, py::arg("worldPoint"))
+        .def("getLinearVelocityFromLocalPoint", &b2Body::GetLinearVelocityFromLocalPoint, py::arg("localPoint"))
+
+     
+        // will be extended on the python side
+        .def("_hasFixtureList",[]( b2Body & body){return body.GetFixtureList()!= nullptr;})
+        .def("_getFixtureList",[]( b2Body & body){return body.GetFixtureList();}, py::return_value_policy::reference_internal)
+        .def("_getFixtureList",[](const b2Body & body){return body.GetFixtureList();}, py::return_value_policy::reference_internal)
+        .def("_hasJointList",[]( b2Body & body){return body.GetJointList()!= nullptr;})
         .def("_GetJointList",[]( b2Body & body){return body.GetJointList();}, py::return_value_policy::reference_internal)
         .def("_GetJointList",[](const b2Body & body){return body.GetJointList();}, py::return_value_policy::reference_internal)
-        .def("HasContactList",[]( b2Body & body){return body.GetContactList()!= nullptr;})
+        .def("_hasContactList",[]( b2Body & body){return body.GetContactList()!= nullptr;})
         .def("_GetContactList",[]( b2Body & body){return body.GetContactList();}, py::return_value_policy::reference_internal)
         .def("_GetContactList",[](const b2Body & body){return body.GetContactList();}, py::return_value_policy::reference_internal)
-        .def("HasNext", [](b2Body &b){ return b.GetNext()!=nullptr;})
-        .def("_GetNext", [](b2Body &b){return b.GetNext();}, py::return_value_policy::reference_internal)        
-        .def("GetWorld",[]( b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
-        .def("GetWorld",[](const b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
+        .def("_hasNext", [](b2Body &b){ return b.GetNext()!=nullptr;})
+        .def("_getNext", [](b2Body &b){return b.GetNext();}, py::return_value_policy::reference_internal)        
+        .def("_getWorld",[]( b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
+        .def("_getWorld",[](const b2Body & body){return body.GetWorld();}, py::return_value_policy::reference_internal)
 
 
-        .def("HasUserData",[](const b2Body & b){return b.GetUserData()!=nullptr;})
-        .def("_SetUserData",[](b2Body & b, const py::object & ud){
+        .def("_hasUserData",[](const b2Body & b){return b.GetUserData()!=nullptr;})
+        .def("_setUserData",[](b2Body & b, const py::object & ud){
             auto ptr = new py::object(ud);
             b.SetUserData(ptr);
         })
-        .def("_GetUserData",[](const b2Body & b){
+        .def("_getUserData",[](const b2Body & b){
             auto vuserData = b.GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             auto ret = py::object(*ud);
             return ret;
         })
-        .def("_DeleteUserData",[](b2Body & b){
+        .def("_deleteUserData",[](b2Body & b){
             auto vuserData = b.GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             delete ud;

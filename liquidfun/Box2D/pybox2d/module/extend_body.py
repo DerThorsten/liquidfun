@@ -1,7 +1,20 @@
 from pybox2d import *
-from tools import GenericB2dIter
+from tools import _classExtender, GenericB2dIter
+from extend_math import vec2
+from extend_shapes import *
 
 
+BodyDef = b2BodyDef
+Body = b2Body
+
+b2_staticBody    = b2BodyType.b2_staticBody
+b2_kinematicBody = b2BodyType.b2_kinematicBody
+b2_dynamicBody   = b2BodyType.b2_dynamicBody
+
+class BodyTypes(object):
+    staticBody = b2_staticBody
+    kinematicBody = b2_kinematicBody
+    dynamicBody = b2_dynamicBody
 
 def bodyDef(btype=None,position=None,angle=None,linearVelocity=None,
             angularVelocity=None,linearDamping=None,angularDamping=None,
@@ -11,13 +24,13 @@ def bodyDef(btype=None,position=None,angle=None,linearVelocity=None,
     if btype is not None:
         d.btype = btype
     if position is not None:
-        d.position = position
+        d.position = vec2(position)
     if angle is not None:
         d.angle = angle
     if linearVelocity is not None:
-        d.linearVelocity = linearVelocity
+        d.linearVelocity = vec2(linearVelocity)
     if angularVelocity is not None:
-        d.angularVelocity = angularVelocity
+        d.angularVelocity = float(angularVelocity)
     if linearDamping is not None:
         d.linearDamping = linearDamping
     if angularDamping is not None:
@@ -31,49 +44,72 @@ def bodyDef(btype=None,position=None,angle=None,linearVelocity=None,
     if bullet is not None:
         d.bullet = bullet
     if userData is not None:
-        d.SetUserData(userData)
+        d.userData = userData
     return d
 
 
+class _BodyDef(b2BodyDef):
 
-def extendBodyDef():
-    
-    def GetUserData(self):
-        if self.HasUserData():
-            return self._GetUserData()
+    @property
+    def position(self):
+        return self._position
+    @position.setter
+    def position(self, pos):
+        self._position = vec2(pos)
+
+
+    @property
+    def userData(self):
+        if self._hasUserData():
+            return self._getUserData()
         else:
             return None
-    b2BodyDef.GetUserData = GetUserData
-
-    def SetUserData(self,data):
-        if self.HasUserData():
-            return self._DeleteUserData()
-        self._SetUserData(data)
-    b2BodyDef.SetUserData = SetUserData 
+    @userData.setter
+    def userData(self, ud):
+        if self._hasUserData():
+            return self._deleteUserData()
+        self._setUserData(ud)
 
 
-extendBodyDef()
-del extendBodyDef
 
-def extendBody():
+_classExtender(_BodyDef,['userData','position'])
 
-    def CreatePolygonFixture(self, box=None, density=1.0, friction=0.2):
+
+
+
+class _Body(b2Body):
+
+    @property
+    def userData(self):
+        if self._hasUserData():
+            return self._getUserData()
+        else:
+            return None
+    @userData.setter
+    def userData(self, ud):
+        if self._hasUserData():
+            return self._deleteUserData()
+        self._setUserData(ud)
+    @property
+    def world(self):
+        return self._getWorld()
+
+    def createPolygonFixture(self, box=None,**kwargs):
 
         fixtureDef = b2FixtureDef()
 
         assert box is not None
         shape = b2PolygonShape()
-        shape.SetAsBox(box[0],box[1])
+        shape.setAsBox(box[0],box[1])
 
-      
-        fixtureDef.friction = friction
-        fixtureDef.density = density
         fixtureDef.shape = shape 
-        return self.CreateFixture(fixtureDef)
 
-    b2Body.CreatePolygonFixture = CreatePolygonFixture  
+        for kw in kwargs:
+            setattr(fixtureDef,kw, kwargs[kw])
 
-    def CreateCircleFixture(self, radius, density=1, friction=0.2):
+        return self.createFixture(fixtureDef)
+
+    def createCircleFixture(self, radius, density=1, friction=0.2):
         fixtureDef = b2FixtureDef()
 
         shape = b2CircleShape()
@@ -81,47 +117,64 @@ def extendBody():
         fixtureDef.friction = friction
         fixtureDef.density = density
         fixtureDef.shape = shape 
-        return self.CreateFixture(fixtureDef)
+        return self.createFixture(fixtureDef)
 
-    b2Body.CreateCircleFixture = CreateCircleFixture  
+    def createEdgeChainFixture(self, vertices, density=1, friction=0.2):
+        fixtureDef = b2FixtureDef()
+        shape = chainShape(vertices=vertices,loop=False)
+        fixtureDef.shape = shape 
+        return self.createFixture(fixtureDef)
 
-    def GetNext(self):
-        if self.HasNext():
-            return self._GetNext()
+
+
+    def createFixturesFromShapes(self, shapes, density=1.0):
+        if isinstance(shapes, b2Shape):
+            shapes = [shapes]
+        fixtures = []
+        for shape in shapes:
+            fixtureDef = b2FixtureDef()
+            fixtureDef.density = density
+            fixtureDef.shape = shape 
+            fixtures.append( self.createFixture(fixtureDef))
+        return fixtures
+
+    @property
+    def type(self):
+        return self.btype
+
+    @property
+    def next(self):
+        if self._hasNext():
+            return self._getNext()
         else:
             return None
-    b2Body.GetNext = GetNext
+
+    @property
+    def fixtures(self):
+        flist = None
+        if self._hasFixtureList():
+            flist = self._getFixtureList()
+        return GenericB2dIter(flist)
+
+    @property
+    def joints(self):
+        jlist = None
+        if self._hasJointList():
+            jlist = self._getJointList()
+        return GenericB2dIter(jlist)
+
+    @property
+    def jointList(self):
+        return list(self.joints)
+        
+    @property
+    def jointList(self):
+        return list(self.joints)
 
 
-    def GetFixtureList(self):
-        blist = None
-        if self.HasFixtureList():
-            blist = self._GetFixtureList()
-        return GenericB2dIter(blist)
-    b2Body.GetFixtureList = GetFixtureList
-
-    def GetJointList(self):
-        blist = None
-        if self.HasFixtureList():
-            blist = self._GetJointList()
-        return GenericB2dIter(blist)
-    b2Body.GetJointList = GetJointList
-
-    def GetUserData(self):
-        if self.HasUserData():
-            return self._GetUserData()
-        else:
-            return None
-    b2Body.GetUserData = GetUserData
-
-    def SetUserData(self,data):
-        if self.HasUserData():
-            return self._DeleteUserData()
-        self._SetUserData(data)
-    b2Body.SetUserData = SetUserData 
-
-extendBody()
-del extendBody
-
+_classExtender(_Body,['userData','type','world','createPolygonFixture','createCircleFixture',
+                      'createEdgeChainFixture',
+                    'createFixturesFromShapes',
+                     'next','fixtures','joints'])
 
 

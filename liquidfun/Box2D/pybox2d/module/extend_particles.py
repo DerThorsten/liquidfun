@@ -1,4 +1,5 @@
 from pybox2d import *
+from tools import _classExtender
 
 
 class ParticleGroupFlag(object):
@@ -13,9 +14,6 @@ class ParticleGroupFlag(object):
     # Updates depth data on next simulation step.
     particleGroupNeedsUpdateDepth = 1 << 4
     particleGroupInternalMask = particleGroupWillBeDestroyed | particleGroupNeedsUpdateDepth
-
-
-
 
 class ParticleFlag(object):
     waterParticle = 0
@@ -111,9 +109,7 @@ def particleGroupDef(flags=None,groupFlags=None,position=None,
                      angle=None,linearVelocity=None,angularVelocity=None,
                      color=None,strength=None,shape=None,stride=None,
                      particleCount=None,group=None):
-    
     d = b2ParticleGroupDef()
-
     if flags is not None:
         d.flags = flags
     if groupFlags is not None:
@@ -137,12 +133,40 @@ def particleGroupDef(flags=None,groupFlags=None,position=None,
     if strength is not None:
         d.strength = strength
     if shape is not None:
-        d.SetShape(shape)
+        d.shape = shape
     if stride is not None:
         d.stride = stride
     if particleCount is not None:
         d.particleCount = particleCount
     if group is not None:
-        d.SetGroupr(shape)
+        d.group(shape)
     
     return d
+
+
+
+#class _ParticleSystem(b2ParticleSystem):
+#    pass
+#_classExtender(_ParticleSystem,['group','shape'])
+
+
+class _ParticleGroupDef(b2ParticleGroupDef):
+
+    @property
+    def group(self):
+        return self._group()
+    @group.setter
+    def group(self, group):
+        self._setGroup(shape)
+
+
+    @property
+    def shape(self):
+        return self._shape()
+    @shape.setter
+    def shape(self, shape):
+        self._setShape(shape)
+
+_classExtender(_ParticleGroupDef,['group','shape'])
+
+

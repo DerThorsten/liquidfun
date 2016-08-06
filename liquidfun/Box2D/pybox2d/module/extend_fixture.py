@@ -1,34 +1,16 @@
 from pybox2d import *
+from tools import _classExtender
+
+FixtureDef = b2FixtureDef
 
 
 
 
 
-def extendFixtureDef():
-    
-    def GetUserData(self):
-        if self.HasUserData():
-            return self._GetUserData()
-        else:
-            return None
-    b2FixtureDef.GetUserData = GetUserData
-
-    def SetUserData(self,data):
-        if self.HasUserData():
-            return self._DeleteUserData()
-        self._SetUserData(data)
-    b2FixtureDef.SetUserData = SetUserData 
-
-
-extendFixtureDef()
-del extendFixtureDef
-
-
-
-def fixtureDef(shape=None,friction=None,restitution=None, density=None, isSensor=None, ffilter=None, userData=None):
+def fixtureDef(shape=None,friction=None,restitution=None, density=None, isSensor=None, shapeFilter=None, userData=None):
     fd = b2FixtureDef()
     if shape is not None : 
-        fd.SetShape(shape)
+        fd.shape = shape
     if friction is not None : 
         fd.friction = friction
     if restitution is not None : 
@@ -37,37 +19,61 @@ def fixtureDef(shape=None,friction=None,restitution=None, density=None, isSensor
         fd.density = density
     if isSensor is not None : 
         fd.isSensor = isSensor
-    if ffilter is not None : 
-        fd.filter = ffilter
+    if shapeFilter is not None : 
+        fd.filter = shapeFilter
     if userData is not None:
-        fd.SetUserData(userData)
+        fd.userData = userData
     return fd
 
 
+class _FixtureDef(b2FixtureDef):
+
+    @property
+    def userData(self):
+        if self._hasUserData():
+            return self._getUserData()
+        else:
+            return None
+    @userData.setter
+    def userData(self, ud):
+        if self._hasUserData():
+            return self._deleteUserData()
+        self._setUserData(ud)
+
+
+    @property
+    def shape(self):
+        return self._shape
+    @shape.setter
+    def shape(self, shape):
+        self._setShape(shape)
+
+_classExtender(_FixtureDef,['userData','shape'])
+
+
     
-def extendFixture():
+class _Fixture(b2Fixture):
 
-
-    def GetNext(self):
-        if self.HasNext():
-            return self._GetNext()
+    @property
+    def userData(self):
+        if self._hasUserData():
+            return self._getUserData()
         else:
             return None
-    b2Fixture.GetNext = GetNext
+    @userData.setter
+    def userData(self, ud):
+        if self._hasUserData():
+            return self._deleteUserData()
+        self._setUserData(ud)
 
-
-    def GetUserData(self):
-        if self.HasUserData():
-            return self._GetUserData()
+    @property
+    def next(self):
+        if self._hasNext():
+            return self._getNext()
         else:
             return None
-    b2Fixture.GetUserData = GetUserData
+    @property
+    def shape(self):
+        return self._getShape()
+_classExtender(_Fixture,['userData','next','shape'])
 
-    def SetUserData(self,data):
-        if self.HasUserData():
-            return self._DeleteUserData()
-        self._SetUserData(data)
-    b2Fixture.SetUserData = SetUserData 
-
-extendFixture()
-del extendFixture

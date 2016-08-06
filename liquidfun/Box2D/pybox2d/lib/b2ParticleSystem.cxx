@@ -34,9 +34,9 @@ void exportB2ParticleSystem(py::module & pybox2dModule){
     ;
 
     py::class_<b2ParticleSystem>(pybox2dModule, "b2ParticleSystem")
-        .def("SetRadius",&b2ParticleSystem::SetRadius)
-        .def("SetDamping",&b2ParticleSystem::SetDamping)
-        .def("CreateParticleGroup",&b2ParticleSystem::CreateParticleGroup,py::return_value_policy::reference_internal)
+        .def_property("radius", &b2ParticleSystem::GetRadius, &b2ParticleSystem::SetRadius)
+        .def_property("damping", &b2ParticleSystem::GetDamping, &b2ParticleSystem::SetDamping)
+        .def("createParticleGroup",&b2ParticleSystem::CreateParticleGroup,py::return_value_policy::reference_internal)
     ;
 
 }

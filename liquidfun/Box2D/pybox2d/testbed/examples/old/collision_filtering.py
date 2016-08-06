@@ -98,17 +98,17 @@ class CollisionFiltering (Framework):
             )
         )
 
-        world.CreateDynamicBody(
+        world.createDynamicBody(
             position=(-5, 2),
             fixtures=triangle,
         )
 
         # Large triangle (recycle definitions)
         triangle.shape.vertices = [
-            2.0 * b2Vec2(v) for v in triangle.shape.vertices]
+            2.0 * v for v in triangle.shape.vertices]
         triangle.filter.groupIndex = largeGroup
 
-        trianglebody = world.CreateDynamicBody(
+        trianglebody = world.createDynamicBody(
             position=(-5, 6),
             fixtures=triangle,
             fixedRotation=True,  # <--
@@ -127,7 +127,7 @@ class CollisionFiltering (Framework):
             )
         )
 
-        world.CreateDynamicBody(
+        world.createDynamicBody(
             position=(0, 2),
             fixtures=box,
         )
@@ -135,7 +135,7 @@ class CollisionFiltering (Framework):
         # Large box
         box.shape.box = (2, 1)
         box.filter.groupIndex = largeGroup
-        world.CreateDynamicBody(
+        world.createDynamicBody(
             position=(0, 6),
             fixtures=box,
         )
@@ -151,7 +151,7 @@ class CollisionFiltering (Framework):
             )
         )
 
-        world.CreateDynamicBody(
+        world.createDynamicBody(
             position=(5, 2),
             fixtures=circle,
         )
@@ -159,7 +159,7 @@ class CollisionFiltering (Framework):
         # Large circle
         circle.shape.radius *= 2
         circle.filter.groupIndex = largeGroup
-        world.CreateDynamicBody(
+        world.createDynamicBody(
             position=(5, 6),
             fixtures=circle,
         )
@@ -169,7 +169,7 @@ class CollisionFiltering (Framework):
         # filter settings of the attached triangle.
         box = b2FixtureDef(shape=b2PolygonShape(box=(0.5, 1)), density=1)
 
-        testbody = world.CreateDynamicBody(
+        testbody = world.createDynamicBody(
             position=(-5, 10),
             fixtures=box,
         )

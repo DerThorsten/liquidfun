@@ -29,7 +29,8 @@ void exportB2ParticleGroup(py::module & pybox2dModule){
     .def_readwrite("angularVelocity",&b2ParticleGroupDef::angularVelocity)
     .def_readwrite("color",&b2ParticleGroupDef::color)
     .def_readwrite("strength",&b2ParticleGroupDef::strength)
-    .def("SetShape",
+    .def_readwrite("_shape",&b2ParticleGroupDef::shape)
+    .def("_setShape",
         [](b2ParticleGroupDef & d, const b2Shape * s){
             d.shape = s;
         }, py::keep_alive<1,2>()
@@ -42,8 +43,8 @@ void exportB2ParticleGroup(py::module & pybox2dModule){
     //.def_readwrite("positionData",&b2ParticleGroupDef::positionData)
     .def_readwrite("lifetime",&b2ParticleGroupDef::lifetime)
     //.def_readwrite("userData",&b2ParticleGroupDef::userData)
-    .def_readwrite("group",&b2ParticleGroupDef::group)
-    .def("SetGroup",
+    .def_readwrite("_group",&b2ParticleGroupDef::group)
+    .def("_setGroup",
         [](b2ParticleGroupDef & d, b2ParticleGroup * g){
             d.group = g;
         }, py::keep_alive<1,2>()
