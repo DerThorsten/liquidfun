@@ -172,7 +172,7 @@ if(BOX2D_BUILD_SHARED)
 	)
 
 	if(UNIX AND NOT APPLE)
-		target_link_libraries(Box2D_shared rt)
+		#target_link_libraries(Box2D_shared rt)
 	endif(UNIX AND NOT APPLE)
 endif()
 
@@ -203,7 +203,7 @@ if(BOX2D_BUILD_STATIC)
 	)
 
 	if(UNIX AND NOT APPLE)
-		target_link_libraries(Box2D rt)
+		#target_link_libraries(Box2D rt)
 	endif(UNIX AND NOT APPLE)
 endif()
 
