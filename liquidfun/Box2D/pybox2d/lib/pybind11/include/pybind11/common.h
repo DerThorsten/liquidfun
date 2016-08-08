@@ -9,6 +9,25 @@
 
 #pragma once
 
+
+
+
+#include <string>
+#include <sstream>
+
+namespace stl
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
+
+
+
+
 #if !defined(NAMESPACE_BEGIN)
 #  define NAMESPACE_BEGIN(name) namespace name {
 #endif
