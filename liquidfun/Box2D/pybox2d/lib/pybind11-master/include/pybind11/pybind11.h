@@ -29,6 +29,7 @@
 #  pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
+#include "stl_fix.h"
 #include "attr.h"
 
 NAMESPACE_BEGIN(pybind11)
