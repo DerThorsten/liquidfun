@@ -116,7 +116,7 @@ void exportB2Shape(py::module & pybox2dModule){
 
 
 
-    auto shapeCls = py::class_< PyB2Shape
+    auto shapeCls = py::class_< b2Shape
     , std::unique_ptr<b2Shape>, PyB2Shape
     >(pybox2dModule,"b2Shape");
     shapeCls
