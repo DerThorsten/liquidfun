@@ -285,6 +285,7 @@ struct internals {
     decltype(PyThread_create_key()) tstate = 0; // Usually an int but a long on Cygwin64 with Python 3.x
     PyInterpreterState *istate = nullptr;
 #endif
+    
 };
 
 /// Return a reference to the current 'internals' information
