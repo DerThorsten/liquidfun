@@ -151,6 +151,7 @@ void exportB2Shape(py::module & pybox2dModule){
         //.exportValues()
     ;
     
+    
     // derived shapes
     py::class_<b2ChainShape>(pybox2dModule,"b2CircleShape",shapeCls)
         .def(py::init<>())
