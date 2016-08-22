@@ -141,7 +141,7 @@ void exportb2Joint(py::module & pybox2dModule){
         // A lot to do
     ;
 
-    auto jointCls = py::class_<PyB2Joint>(pybox2dModule,"b2Joint");
+    auto jointCls = py::class_<b2Joint, std::unique_ptr<b2Joint>, PyB2Joint>(pybox2dModule,"b2Joint");
     
     jointCls
         //.alias<b2Joint>()
