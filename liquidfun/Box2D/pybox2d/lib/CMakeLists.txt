@@ -1,7 +1,9 @@
 add_definitions(-DLIQUIDFUN_MULTI_GRAVITY=1)
 
 
-#add_definitions(-DPYBIND11_PYTHON_VERSION=2.7)
+add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING=1)
+
+DPYBIND11_HAS_NO_STD_TO_STRING
 cmake_minimum_required(VERSION 2.8.12)
 project(example)
 
