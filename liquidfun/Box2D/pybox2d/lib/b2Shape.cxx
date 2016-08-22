@@ -116,7 +116,9 @@ void exportB2Shape(py::module & pybox2dModule){
 
 
 
-    auto shapeCls = py::class_< b2Shape, std::unique_ptr<b2Shape>, PyB2Shape>(pybox2dModule,"b2Shape");
+    auto shapeCls = py::class_< PyB2Shape
+    //, std::unique_ptr<b2Shape>, PyB2Shape
+    >(pybox2dModule,"b2Shape");
     shapeCls
         //.alias<b2Shape>()
         .def(py::init<>())
@@ -150,16 +152,20 @@ void exportB2Shape(py::module & pybox2dModule){
     ;
     
     // derived shapes
-    py::class_<b2CircleShape, std::unique_ptr<b2CircleShape>,PyB2Shape>(pybox2dModule,"b2CircleShape",shapeCls)
+    py::class_<PyB2Shape>(pybox2dModule,"b2CircleShape",shapeCls)
         .def(py::init<>())
         .def_readwrite("pos", &b2CircleShape::m_p)
     ;
-    py::class_<b2EdgeShape, std::unique_ptr<b2EdgeShape>,PyB2Shape>(pybox2dModule,"b2EdgeShape",shapeCls)
+    py::class_<b2EdgeShape
+    //, std::unique_ptr<b2EdgeShape>,PyB2Shape
+    >(pybox2dModule,"b2EdgeShape",shapeCls)
         .def(py::init<>())
         .def("set",[](b2EdgeShape * s,const b2Vec2 & v1,const b2Vec2 & v2)
              {s->Set(v1,v2);},py::arg("v1"),py::arg("v2"))
     ;
-    py::class_<b2ChainShape, std::unique_ptr<b2ChainShape>,PyB2Shape >(pybox2dModule,"b2ChainShape",shapeCls)
+    py::class_<b2ChainShape
+        //, std::unique_ptr<b2ChainShape>,PyB2Shape 
+    >(pybox2dModule,"b2ChainShape",shapeCls)
         .def(py::init<>())
         .def("createLoop",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
             s->CreateLoop(verts.data(), verts.size());
@@ -177,7 +183,9 @@ void exportB2Shape(py::module & pybox2dModule){
         })
     ;
 
-    py::class_<b2PolygonShape, std::unique_ptr<b2PolygonShape>,PyB2Shape>(pybox2dModule,"b2PolygonShape",shapeCls)
+    py::class_<b2PolygonShape
+    //, std::unique_ptr<b2PolygonShape>,PyB2Shape
+    >(pybox2dModule,"b2PolygonShape",shapeCls)
         .def(py::init<>())
         .def("setAsBox",
             [&](

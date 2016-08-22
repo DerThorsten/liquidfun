@@ -141,7 +141,7 @@ void exportb2Joint(py::module & pybox2dModule){
         // A lot to do
     ;
 
-    auto jointCls = py::class_<b2Joint, std::unique_ptr<b2Joint>, PyB2Joint>(pybox2dModule,"b2Joint");
+    auto jointCls = py::class_<PyB2Joint>(pybox2dModule,"b2Joint");
     
     jointCls
         //.alias<b2Joint>()
@@ -195,23 +195,41 @@ void exportb2Joint(py::module & pybox2dModule){
         .def_property("frequency",&b2DistanceJoint::GetFrequency, &b2DistanceJoint::SetFrequency)
         .def_property("dampingRatio",&b2DistanceJoint::GetDampingRatio, &b2DistanceJoint::SetDampingRatio)
     ;  
-    py::class_<b2FrictionJoint, std::unique_ptr<b2FrictionJoint>, PyB2Joint >(pybox2dModule,"b2FrictionJoint",jointCls)
+    py::class_<b2FrictionJoint
+    //    , std::unique_ptr<b2FrictionJoint>, PyB2Joint 
+    >(pybox2dModule,"b2FrictionJoint",jointCls)
     ;
-    py::class_<b2GearJoint, std::unique_ptr<b2GearJoint>, PyB2Joint >(pybox2dModule,"b2GearJoint",jointCls)
+    py::class_<b2GearJoint
+    //    , std::unique_ptr<b2GearJoint>, PyB2Joint 
+    >(pybox2dModule,"b2GearJoint",jointCls)
     ;
-    py::class_<b2PrismaticJoint, std::unique_ptr<b2PrismaticJoint>, PyB2Joint >(pybox2dModule,"b2PrismaticJoint",jointCls)
+    py::class_<b2PrismaticJoint
+    //    , std::unique_ptr<b2PrismaticJoint>, PyB2Joint 
+    >(pybox2dModule,"b2PrismaticJoint",jointCls)
     ;
-    py::class_<b2PulleyJoint, std::unique_ptr<b2PulleyJoint>, PyB2Joint >(pybox2dModule,"b2PulleyJoint",jointCls)
+    py::class_<b2PulleyJoint
+    //    , std::unique_ptr<b2PulleyJoint>, PyB2Joint 
+    >(pybox2dModule,"b2PulleyJoint",jointCls)
     ;
-    py::class_<b2RevoluteJoint, std::unique_ptr<b2RevoluteJoint>, PyB2Joint >(pybox2dModule,"b2RevoluteJoint",jointCls)
+    py::class_<b2RevoluteJoint
+    //    , std::unique_ptr<b2RevoluteJoint>, PyB2Joint 
+    >(pybox2dModule,"b2RevoluteJoint",jointCls)
     ;
-    py::class_<b2RopeJoint, std::unique_ptr<b2RopeJoint>, PyB2Joint >(pybox2dModule,"b2RopeJoint",jointCls)
+    py::class_<b2RopeJoint
+    //    , std::unique_ptr<b2RopeJoint>, PyB2Joint 
+    >(pybox2dModule,"b2RopeJoint",jointCls)
     ;
-    py::class_<b2WeldJoint, std::unique_ptr<b2WeldJoint>, PyB2Joint >(pybox2dModule,"b2WeldJoint",jointCls)
+    py::class_<b2WeldJoint
+    //    , std::unique_ptr<b2WeldJoint>, PyB2Joint 
+    >(pybox2dModule,"b2WeldJoint",jointCls)
     ;
-    py::class_<b2WheelJoint, std::unique_ptr<b2WheelJoint>, PyB2Joint >(pybox2dModule,"b2WheelJoint",jointCls)
+    py::class_<b2WheelJoint
+    //    , std::unique_ptr<b2WheelJoint>, PyB2Joint 
+    >(pybox2dModule,"b2WheelJoint",jointCls)
     ;
-    py::class_<b2MouseJoint, std::unique_ptr<b2MouseJoint>, PyB2Joint >(pybox2dModule,"b2MouseJoint",jointCls)
+    py::class_<b2MouseJoint
+    //    , std::unique_ptr<b2MouseJoint>, PyB2Joint 
+    >(pybox2dModule,"b2MouseJoint",jointCls)
         .def("SetTarget",&b2MouseJoint::SetTarget)
     ;
    
