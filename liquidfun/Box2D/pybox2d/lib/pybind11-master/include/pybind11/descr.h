@@ -14,7 +14,7 @@
 
 
 
-#if 1//PYBIND11_HAS_NO_STD_TO_STRING
+
 #include <string>
 #include <sstream>
 namespace std
@@ -26,7 +26,6 @@ namespace std
         return stm.str() ;
     }
 }
-#endif
 
 
 
