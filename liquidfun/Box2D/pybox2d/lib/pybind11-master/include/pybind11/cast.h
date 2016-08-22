@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "stl_fix.h"
+
 #include "pytypes.h"
 #include "typeid.h"
 #include "descr.h"
