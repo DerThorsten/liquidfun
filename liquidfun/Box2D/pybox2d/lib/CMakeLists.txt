@@ -2,13 +2,15 @@ add_definitions(-DLIQUIDFUN_MULTI_GRAVITY=1)
 
 
 add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING=1)
+add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING)
 
-
+add_definitions(-DPYBIND11_NO_EXCEPTION_PTR=1)
+add_definitions(-DPYBIND11_NO_EXCEPTION_PTR)
 
 cmake_minimum_required(VERSION 2.8.12)
 project(example)
 
-add_subdirectory(pybind11-1.8.1)
+add_subdirectory(pybind11)
 pybind11_add_module(pybox2d 
   pybox2d.cxx
   b2Math.cxx
