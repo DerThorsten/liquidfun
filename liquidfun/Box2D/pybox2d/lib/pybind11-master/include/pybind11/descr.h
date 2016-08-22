@@ -13,7 +13,7 @@
 #include "common.h"
 
 
-#ifdef PYBIND11_HAS_NO_STD_TO_STRING
+#if 1//PYBIND11_HAS_NO_STD_TO_STRING
 #include <string>
 #include <sstream>
 namespace std
