@@ -13,7 +13,7 @@
 #include <string>
 #include <sstream>
 
-#ifdef PYBIND11_HAS_NO_STD_TO_STRING
+#if 1
 namespace std
 {
    template < typename T > 
