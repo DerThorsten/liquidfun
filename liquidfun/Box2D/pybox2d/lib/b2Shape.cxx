@@ -152,7 +152,7 @@ void exportB2Shape(py::module & pybox2dModule){
     ;
     
     // derived shapes
-    py::class_<PyB2Shape>(pybox2dModule,"b2CircleShape",shapeCls)
+    py::class_<b2ChainShape>(pybox2dModule,"b2CircleShape",shapeCls)
         .def(py::init<>())
         .def_readwrite("pos", &b2CircleShape::m_p)
     ;
