@@ -14,7 +14,7 @@ class Web(Framework):
         super(Web, self).__init__()
 
         # The ground
-        ground = self.world.createBody(
+        ground = self.world.createStaticBody(
             shapes=edgeShape(vertices=[(-40, 0), (40, 0)])
         )
         fixture = fixtureDef(shape=polygonShape(box=(0.5, 0.5)),

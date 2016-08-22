@@ -104,24 +104,31 @@ class Framework(object):
         if self.mouseJoint is not None:
             return
 
+        print "aabb"
         # Create a mouse joint on the selected body (assuming it's dynamic)
         # Make a small box.
         box =  b2d.aabb(lowerBound=p - b2d.vec2(0.001, 0.001),
                       upperBound=p + b2d.vec2(0.001, 0.001))
+
 
         # Query the world for overlapping shapes.
         query = AABBCallback(p)
         self.world.queryAABB(query, box)
 
         if query.fixture is not None:
-            body = query.fixture.GetBody()
+            fixture = query.fixture
+
+
+            body = query.fixture.body
+        
             # A body was selected, create the mouse joint
             self.mouseJoint = self.world.createMouseJoint(
                 bodyA=self.groundbody,
                 bodyB=body,
                 target=p,
-                maxForce=10000.0 * body.mass).AsMouseJoint()
+                maxForce=10000.0 * body.mass)
             body.awake = True
+        print "and here"
 
     def MouseUp(self, p):
         """

@@ -20,20 +20,19 @@ class DamnBreak(Framework):
             b2Vec2(4, 8),
             b2Vec2(-2, 8)
         ]
-        groundbody = self.world.createBody(
+        groundbody = self.world.createStaticBody(
             shapes=chainShape(vertices=verts)
         )
 
 
+        if False:
 
-
-        fixture = fixtureDef(shape=circleShape(0.5),density=2.2, friction=0.2)
-        body = self.world.createDynamicBody(
-            #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
-            position=(1,2.5),
-            fixtures=fixture
-        ) 
-
+            fixtureA = fixtureDef(shape=circleShape(0.5),density=2.2, friction=0.2)
+            body = self.world.createDynamicBody(
+                #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
+                position=(1,2.5),
+                fixtures=fixtureA
+            ) 
         fixture = fixtureDef(shape=polygonShape(box=(1,1)),density=2.2, friction=0.2)
         body = self.world.createDynamicBody(
             #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
@@ -42,37 +41,37 @@ class DamnBreak(Framework):
         ) 
 
 
-
-        pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
-        psystem = self.world.createParticleSystem(pdef)
-        psystem.radius = 0.045
-        psystem.damping = 0.2
-
-
-        shape = polygonShape(box=(2.0,2.0),center=vec2(0,2.01),angle=0)
-        pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
-                                 groupFlags=ParticleGroupFlag.solidParticleGroup,
-                                 shape=shape,strength=0.0
-                                 )
-
-        group = psystem.createParticleGroup(pgDef)
+        if False:
+            pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
+            psystem = self.world.createParticleSystem(pdef)
+            psystem.radius = 0.045
+            psystem.damping = 0.2
 
 
+            shape = polygonShape(box=(2.0,2.0),center=vec2(0,2.01),angle=0)
+            pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
+                                     groupFlags=ParticleGroupFlag.solidParticleGroup,
+                                     shape=shape,strength=0.0
+                                     )
+
+            group = psystem.createParticleGroup(pgDef)
 
 
-        pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
-        psystem = self.world.createParticleSystem(pdef)
-        psystem.radius = 0.045
-        psystem.damping = 0.2
 
 
-        shape = polygonShape(box=(1.0,1.0),center=vec2(1,3.01),angle=0)
-        pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
-                                 groupFlags=ParticleGroupFlag.solidParticleGroup,
-                                 shape=shape,strength=0.0
-                                 )
+        # pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
+        # psystem = self.world.createParticleSystem(pdef)
+        # psystem.radius = 0.045
+        # psystem.damping = 0.2
 
-        group = psystem.createParticleGroup(pgDef)
+
+        # shape = polygonShape(box=(1.0,1.0),center=vec2(1,3.01),angle=0)
+        # pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
+        #                          groupFlags=ParticleGroupFlag.solidParticleGroup,
+        #                          shape=shape,strength=0.0
+        #                          )
+
+        # group = psystem.createParticleGroup(pgDef)
 
 
 
