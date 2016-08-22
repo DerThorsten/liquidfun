@@ -26,8 +26,8 @@ PYBIND11_PLUGIN(pybox2d) {
     exportB2World(pybox2dModule);
     exportB2Body(pybox2dModule);
     exportB2Math(pybox2dModule);
-    exportB2Fixture(pybox2dModule);
     exportB2Shape(pybox2dModule);
+    exportB2Fixture(pybox2dModule);
     exportb2Joint(pybox2dModule);
     exportb2JointDef(pybox2dModule);
     exportB2WorldCallbacks(pybox2dModule);

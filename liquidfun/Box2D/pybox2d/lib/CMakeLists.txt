@@ -20,7 +20,7 @@ endif()
 
 
 #FIND_PACKAGE(PYBIND_ELEVEN REQUIRED)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pybind11/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/pybind11-master/include)
 # Add a CMake parameter for choosing a desired Python version
 set(PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the example library")
 

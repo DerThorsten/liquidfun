@@ -33,7 +33,7 @@ public:
         auto npVertices = py::array(py::buffer_info(
             nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
             sizeof(float32),     /* Size of one item */
-            py::format_descriptor<float32>::value(), /* Buffer format */
+            py::format_descriptor<float32>::value, /* Buffer format */
             2,          /* How many dimensions? */
             { size_t(vertexCount), size_t(2) },  /* Number of elements for each dimension */
             { 2*sizeof(float32),sizeof(float32)}  /* Strides for each dimension */
@@ -53,7 +53,7 @@ public:
         auto npVertices = py::array(py::buffer_info(
             nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
             sizeof(float32),     /* Size of one item */
-            py::format_descriptor<float32>::value(), /* Buffer format */
+            py::format_descriptor<float32>::value, /* Buffer format */
             2,          /* How many dimensions? */
             { size_t(vertexCount), size_t(2) },  /* Number of elements for each dimension */
             { 2*sizeof(float32),sizeof(float32)}  /* Strides for each dimension */
@@ -87,7 +87,7 @@ public:
         auto npCenters = py::array(py::buffer_info(
             nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
             sizeof(float32),     /* Size of one item */
-            py::format_descriptor<float32>::value(), /* Buffer format */
+            py::format_descriptor<float32>::value, /* Buffer format */
             2,          /* How many dimensions? */
             { size_t(count), size_t(2) },  /* Number of elements for each dimension */
             { 2*sizeof(float32),sizeof(float32)}  /* Strides for each dimension */
@@ -100,7 +100,7 @@ public:
             auto npColors = py::array(py::buffer_info(
                 nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
                 sizeof(uint8),     /* Size of one item */
-                py::format_descriptor<uint8>::value(), /* Buffer format */
+                py::format_descriptor<uint8>::value, /* Buffer format */
                 2,          /* How many dimensions? */
                 { size_t(count), size_t(4) },  /* Number of elements for each dimension */
                 { 4*sizeof(uint8),sizeof(uint8)}  /* Strides for each dimension */

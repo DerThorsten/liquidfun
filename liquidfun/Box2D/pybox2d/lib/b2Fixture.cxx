@@ -5,9 +5,19 @@
 namespace py = pybind11;
 
 
+    inline void setShape(b2FixtureDef & f, b2Shape * s){
+                f.shape = s;
+    }
+
+
+    inline void fooFunc(const b2Shape * s){
+        std::cout<<"FOOO\n";
+    }
 
 void exportB2Fixture(py::module & pybox2dModule){
 
+
+    pybox2dModule.def("fooFunc",&fooFunc);
 
     py::class_<b2Filter>(pybox2dModule,"b2Filter")
         .def(py::init<>())
@@ -17,12 +27,14 @@ void exportB2Fixture(py::module & pybox2dModule){
     ;
 
 
+
+
     py::class_<b2FixtureDef>(pybox2dModule,"b2FixtureDef")
         .def(py::init<>())
-        .def("_setShape",
-            [](b2FixtureDef & f, const b2Shape * s){
-                f.shape = s;
-            }, py::keep_alive<1,2>()
+        .def("_setShape",  //[](b2FixtureDef & f, b2Shape * s){f.shape = s;}, 
+                &setShape,
+
+            py::keep_alive<1,2>()
         )
         .def_readonly("_shape", &b2FixtureDef::shape)
         //.def_readwrite("userData", &b2FixtureDef::userData)

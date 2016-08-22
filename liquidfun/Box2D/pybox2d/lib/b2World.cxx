@@ -15,7 +15,7 @@ void exportB2World(py::module & pybox2dModule){
 
     py::class_<b2World>(pybox2dModule,"b2World")
         .def(py::init<const b2Vec2 & >(),py::arg("gravity"))
-        .def("__init__",[](b2World & instance,  std::pair<float,float> & arg){
+        .def("__init__",[](b2World & instance,  std::pair<float,float>  arg){
             new(&instance) b2World(b2Vec2(arg.first,arg.second));
         }, py::arg("gravity") = std::pair<float,float>(0,-9.81))
         .def("setContactListener", [](b2World & w, PyB2ContactListenerCaller * listener){
