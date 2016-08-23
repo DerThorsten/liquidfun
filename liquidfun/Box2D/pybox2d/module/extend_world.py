@@ -90,7 +90,7 @@ class _World(b2World):
                                 angle=angle, shape=shape,shapes=shapes,fixtures=fixtures,  shapeFixture=shapeFixture, density=density,fixedRotation=fixedRotation)
     
 
-    def createBody(self,bodyDef=None,btype=b2BodyType.b2_dynamicBody, position=None,angle=None, shape=None, shapes=None,fixtures=None, shapeFixture=None, density = 1.0, fixedRotation=None):
+    def createBody(self,bodyDef=None,btype=b2BodyType.b2_staticBody, position=None,angle=None, shape=None, shapes=None,fixtures=None, shapeFixture=None, density = 1.0, fixedRotation=None):
         return self._createBody(btype= btype ,bodyDef=bodyDef,position=position,
                                 angle=angle, shape=shape,shapes=shapes,fixtures=fixtures,  shapeFixture=shapeFixture, density=density,fixedRotation=fixedRotation)
   

@@ -135,7 +135,6 @@ class KivyTestbedDrawWidget(BoxLayout):
 
         # setup debug draw
         self.debugDraw = DrawKivy(scale=self.ppm,offset=self.offset,flipY=False)
-
         self.debugDraw.appendFlags(['shape','joint','aabb','pair','centerOfMass','particle'])
         self.world.setDebugDraw(self.debugDraw)
 
