@@ -3,6 +3,9 @@ from _pybox2d import *
 import _pybox2d
 import numpy 
 
+
+print _pybox2d.__dict__
+
 Vec2  = _pybox2d.b2Vec2
 Vec3  = _pybox2d.b2Vec3
 Vec4  = _pybox2d.b2Vec4
