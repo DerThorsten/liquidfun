@@ -63,7 +63,7 @@ function(pybind11_add_module target_name)
   # The prefix and extension are provided by FindPythonLibsNew.cmake
   set_target_properties(${target_name} PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}")
   #set_target_properties(${target_name} PROPERTIES SUFFIX "${PYTHON_MODULE_EXTENSION}")
-  set_target_properties(${target_name} PROPERTIES SUFFIX "so")
+  set_target_properties(${target_name} PROPERTIES SUFFIX ".so")
 
   if(WIN32 OR CYGWIN)
     # Link against the Python shared library on Windows
