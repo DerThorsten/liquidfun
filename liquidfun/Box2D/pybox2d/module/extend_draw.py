@@ -1,4 +1,4 @@
-from pybox2d import b2DrawCaller
+from _pybox2d import b2DrawCaller
 from tools import _classExtender, GenericB2dIter
 
 class DrawFlags(object):

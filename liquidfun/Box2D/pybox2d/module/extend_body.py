@@ -1,4 +1,4 @@
-from pybox2d import *
+from _pybox2d import *
 from tools import _classExtender, GenericB2dIter
 from extend_math import vec2
 from extend_shapes import *

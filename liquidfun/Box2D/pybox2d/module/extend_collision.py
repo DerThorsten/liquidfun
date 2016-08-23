@@ -1,5 +1,5 @@
 
-from pybox2d import b2AABB
+from _pybox2d import b2AABB
 from extend_math import vec2
 
 

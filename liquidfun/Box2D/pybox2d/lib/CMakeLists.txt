@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(example)
 
 add_subdirectory(pybind11-master)
-pybind11_add_module(pybox2d 
+pybind11_add_module(_pybox2d 
   pybox2d.cxx
   b2Math.cxx
   b2World.cxx
@@ -33,14 +33,14 @@ pybind11_add_module(pybox2d
 
 
 
-add_dependencies(pybox2d Box2D_shared)
+add_dependencies(_pybox2d Box2D_shared)
 #target_link_libraries(pybox2d ${Box2D})
 # message(Box2D_shared)
 # message(${Box2D})
 # message("f")
-target_link_libraries(pybox2d Box2D_shared)
+target_link_libraries(_pybox2d Box2D_shared)
 # Don't add a 'lib' prefix to the shared library
-set_target_properties(pybox2d PROPERTIES PREFIX "")
+set_target_properties(_pybox2d PROPERTIES PREFIX "")
 
 
 
@@ -48,9 +48,9 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/python/pybox2d)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test_python/)
 
 ADD_CUSTOM_COMMAND(
-        TARGET pybox2d
+        TARGET _pybox2d
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different $<TARGET_FILE:pybox2d> ${CMAKE_BINARY_DIR}/python/pybox2d/
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different $<TARGET_FILE:_pybox2d> ${CMAKE_BINARY_DIR}/python/pybox2d/
         COMMENT "Copying target _graph to temporary module directory")
 
 
