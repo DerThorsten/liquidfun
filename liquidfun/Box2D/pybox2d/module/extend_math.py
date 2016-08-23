@@ -1,12 +1,13 @@
 
 from pybox2d import *
+import pybox2d
 import numpy 
 
-Vec2  = b2Vec2
-Vec3  = b2Vec3
-Vec4  = b2Vec4
-Mat22 = b2Mat22
-Mat33 = b2Mat33
+Vec2  = pybox2d.b2Vec2
+Vec3  = pybox2d.b2Vec3
+Vec4  = pybox2d.b2Vec4
+Mat22 = pybox2d.b2Mat22
+Mat33 = pybox2d.b2Mat33
 
 
 
