@@ -48,7 +48,9 @@ class _World(b2World):
         if fixedRotation is not None:
             bodyDef.fixedRotation = fixedRotation
 
-        body =  self._createBodyCpp(bodyDef)
+        body = self._createBodyCpp(bodyDef)
+
+    
 
         _shapes = []
         if shape is not None:

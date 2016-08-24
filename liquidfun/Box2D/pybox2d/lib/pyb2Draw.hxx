@@ -46,7 +46,7 @@ public:
             ptr[i*2 +1] = v.y;
         }
         py::object f = object_.attr("DrawPolygon");
-        f.call(npVertices,C(color.r,color.g,color.b));
+        f(npVertices,C(color.r,color.g,color.b));
     }
 
     virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
@@ -66,19 +66,19 @@ public:
             ptr[i*2 +1] = v.y;
         }
         py::object f = object_.attr("DrawSolidPolygon");
-        f.call(npVertices,C(color.r,color.g,color.b));
+        f(npVertices,C(color.r,color.g,color.b));
     }
 
     virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color) {
         py::object f = object_.attr("DrawCircle");
         auto c =center;
-        f.call(P(c.x,c.y),radius,C(color.r,color.g,color.b));
+        f(P(c.x,c.y),radius,C(color.r,color.g,color.b));
     }
 
     virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color) {
         py::object f = object_.attr("DrawSolidCircle");
         auto c = center;
-        f.call(P(c.x,c.y),radius,P(axis.x,axis.y), C(color.r,color.g,color.b));
+        f(P(c.x,c.y),radius,P(axis.x,axis.y), C(color.r,color.g,color.b));
     }
 
     virtual void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, const int32 count) {
@@ -117,7 +117,7 @@ public:
                 ptrColors[i*4 +2] = c.b;
                 ptrColors[i*4 +3] = c.a;
             }
-            f.call(npCenters,radius,npColors);
+            f(npCenters,radius,npColors);
         }
         else{
             for(size_t i=0;  i<size_t(count); ++i){
@@ -125,7 +125,7 @@ public:
                 ptrCenters[i*2 ]   = ce.x ;
                 ptrCenters[i*2 +1] = ce.y ; 
             }
-            f.call(npCenters,radius);
+            f(npCenters,radius);
         }
     }
 
@@ -133,13 +133,13 @@ public:
         py::object f = object_.attr("DrawSegment");
         auto pp1 =  p1;
         auto pp2 =  p2;
-        f.call(P(pp1.x,pp1.y),P(pp2.x,pp2.y),C(color.r,color.g,color.b));
+        f(P(pp1.x,pp1.y),P(pp2.x,pp2.y),C(color.r,color.g,color.b));
     }
 
     virtual void DrawTransform(const b2Transform& xf) {
        transform_ = xf;
        //py::object f = object_.attr("DrawTransform");
-       //f.call(xf);
+       //f(xf);
     }
 
     b2Transform transform_;

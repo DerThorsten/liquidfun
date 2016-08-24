@@ -18,13 +18,18 @@ void exportB2World(py::module & pybox2dModule){
         .def("__init__",[](b2World & instance,  std::pair<float,float>  arg){
             new(&instance) b2World(b2Vec2(arg.first,arg.second));
         }, py::arg("gravity") = std::pair<float,float>(0,-9.81))
+
         .def("setContactListener", [](b2World & w, PyB2ContactListenerCaller * listener){
             w.SetContactListener(listener);
         },py::arg("listener")) 
+
         .def("setDestructionListener", [](b2World & w, PyB2DestructionListenerCaller * listener){
             w.SetDestructionListener(listener);
         },py::arg("listener"))
-        .def("setContactFilter", &b2World::SetContactFilter , py::arg("filter"))
+
+        .def("setContactFilter", [](b2World & w, PyB2ContactFilterCaller * listener){
+            w.SetContactFilter(listener);
+        },py::arg("listener")) 
         .def("setDebugDraw", [](b2World & w, PyB2Draw * d){w.SetDebugDraw(d);},py::arg("debugDraw"))
         .def("_createBodyCpp", &b2World::CreateBody, py::return_value_policy::reference_internal)
         .def("destroyBody", 

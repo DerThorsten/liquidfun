@@ -20,20 +20,20 @@ public:
     }
     virtual void SayGoodbye(b2Joint * joint)  {
         py::object f = object_.attr("sayGoodbyeJoint");
-        f.call(joint);
+        f(joint);
     }
     virtual void SayGoodbye(b2Fixture * fixture)  {
         py::object f = object_.attr("sayGoodbyeFixture");
-        f.call(fixture);
+        f(fixture);
     }
     virtual void SayGoodbye(b2ParticleGroup* group){
         py::object f = object_.attr("sayGoodbyeParticleGroup");
-        f.call(group);
+        f(group);
     }
 
     virtual void SayGoodbye(b2ParticleSystem* particleSystem, int32 index){
         py::object f = object_.attr("sayGoodbyeParticleSystem");
-        f.call(particleSystem, index);
+        f(particleSystem, index);
     }
 private:
     py::object object_;
@@ -51,20 +51,20 @@ public:
     }
 
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB) {
-        py::object f = object_.attr("ShouldCollideFixtureFixture");
-        bool ret = f.call(fixtureA, fixtureB);
+        py::object f = object_.attr("shouldCollideFixtureFixture");
+        bool ret = f(fixtureA, fixtureB);
         return ret;
     }
 
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2ParticleSystem* particleSystem, int32 particleIndex) {
-        py::object f = object_.attr("ShouldCollideFixtureParticle");
-        bool ret = f.call(fixtureA, particleSystem, particleIndex);
+        py::object f = object_.attr("shouldCollideFixtureParticle");
+        bool ret = f(fixtureA, particleSystem, particleIndex);
         return ret;
     }
 
     virtual bool ShouldCollide(b2ParticleSystem* particleSystem, int32 particleIndexA, int32 particleIndexB) {
-        py::object f = object_.attr("ShouldCollideParticleParticle");
-        bool ret = f.call(particleSystem, particleIndexA, particleIndexB);
+        py::object f = object_.attr("shouldCollideParticleParticle");
+        bool ret = f(particleSystem, particleIndexA, particleIndexB);
         return ret;
     }
 private:
@@ -83,54 +83,47 @@ public:
 
     virtual void BeginContact(b2Contact* contact) { 
         py::object f = object_.attr("beginContact");
-        //std::cout<<"CALL BEGIN CONTACT\n";
-
-        //typedef py::detail::type_caster<typename py::detail::intrinsic_type<b2Contact*>::type > Caster;
-
-        //py::object o1 = py::object(Caster::cast(src.first, policy, parent), false);
-        //b2Contact c(*contact);
-        
-        f.call(b2ContactProxy(contact));
+        f(b2ContactProxy(contact));
     }
 
     virtual void EndContact(b2Contact* contact) { 
         py::object f = object_.attr("endContact");
-        f.call(b2ContactProxy(contact));
+        f(b2ContactProxy(contact));
     }
 
 
     virtual void BeginContact(b2ParticleSystem* particleSystem,
                               b2ParticleBodyContact* particleBodyContact){
         py::object f = object_.attr("beginContactParticleBody");
-        f.call(particleSystem, particleBodyContact);
+        f(particleSystem, particleBodyContact);
     }
 
     virtual void EndContact(b2Fixture* fixture,
                             b2ParticleSystem* particleSystem, int32 index){
         py::object f = object_.attr("endContactFixtureParticle");
-        f.call(fixture, particleSystem, index);  
+        f(fixture, particleSystem, index);  
     }
 
     virtual void BeginContact(b2ParticleSystem* particleSystem,
                               b2ParticleContact* particleContact){
         py::object f = object_.attr("beginContactParticle");
-        f.call(particleSystem,  particleContact);  
+        f(particleSystem,  particleContact);  
     }
 
     virtual void EndContact(b2ParticleSystem* particleSystem,
                             int32 indexA, int32 indexB){
         py::object f = object_.attr("endContactParticle");
-        f.call(particleSystem,  indexA, indexB);  
+        f(particleSystem,  indexA, indexB);  
     }
 
     virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold){
         py::object f = object_.attr("preSolve");
-        f.call(b2ContactProxy(contact),  oldManifold);  
+        f(b2ContactProxy(contact),  b2ManifoldProxy(oldManifold)); 
     }
 
     virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse){
         py::object f = object_.attr("postSolve");
-        f.call(b2ContactProxy(contact),  impulse);  
+        f(b2ContactProxy(contact),  b2ContactImpulseProxy(impulse));  
     }
 private:
     py::object object_;
@@ -147,7 +140,7 @@ public:
 
     virtual bool ReportFixture(b2Fixture* fixture){
         py::object f = object_.attr("ReportFixture");
-        bool ret = f.call(fixture);
+        bool ret = f(fixture);
         return ret;
     }
 
@@ -158,7 +151,7 @@ public:
     {
 
         py::object f = object_.attr("ReportParticle");
-        bool ret = f.call(particleSystem, index);
+        bool ret = f(particleSystem, index);
         return ret;
     }
 
@@ -171,7 +164,7 @@ public:
     {
         
         py::object f = object_.attr("ShouldQueryParticleSystem");
-        bool ret = f.call(particleSystem);
+        bool ret = f(particleSystem);
         return ret;
     }
 private:
@@ -188,7 +181,7 @@ public:
     /// Called for each fixture found in the query. You control how the ray cast
     /// proceeds by returning a float:
     /// return -1: ignore this fixture and continue
-    /// return 0: terminate the ray cast
+    /// return 0: terminate the  cast
     /// return fraction: clip the ray to this point
     /// return 1: don't clip the ray and continue
     /// @param fixture the fixture hit by the ray
@@ -200,7 +193,7 @@ public:
                                     const b2Vec2& normal, float32 fraction){
 
         py::object f = object_.attr("ReportFixture");
-        float ret = f.call(fixture, point, normal, fraction);
+        float ret = f(fixture, point, normal, fraction);
         return ret;
     }
 

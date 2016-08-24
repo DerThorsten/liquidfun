@@ -40,7 +40,10 @@ void exportB2WorldCallbacks(py::module & pybox2dModule){
         )
     ;
    
-
+    py::class_<PyB2ContactFilterCaller>(pybox2dModule,"b2ContactFilterCaller")
+        .def(py::init<const py::object &>(),py::arg("contactFilter")
+        )
+    ;
  
 
 

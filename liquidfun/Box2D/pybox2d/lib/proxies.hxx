@@ -19,3 +19,23 @@ struct b2ContactProxy{
         contact_->GetWorldManifold(worldManifold);
     }
 };
+
+
+struct b2ManifoldProxy{
+    b2ManifoldProxy(const b2Manifold * manifold)
+    : manifold_(manifold){
+
+    }
+
+    const b2Manifold * manifold_;
+};
+
+
+struct b2ContactImpulseProxy{
+    b2ContactImpulseProxy(const b2ContactImpulse * impulse)
+    : impulse_(impulse){
+
+    }
+
+    const b2ContactImpulse * impulse_;
+};

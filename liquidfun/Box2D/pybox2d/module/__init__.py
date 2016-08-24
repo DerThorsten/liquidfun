@@ -71,7 +71,7 @@ class ContactListener(b2ContactListenerCaller):
     def preSolve(self, contact, oldManifold):
         pass
 
-    def preSolve(self, contact, impulse):
+    def postSolve(self, contact, impulse):
         pass
 
 class QueryCallback(b2QueryCallbackCaller):
@@ -109,3 +109,19 @@ class DebugDraw(b2DrawCaller):
     def DrawParticles(self, centers, radius,  c=None):
         raise NotImplementedError 
 
+
+
+class ContactFilter(b2ContactFilterCaller):
+
+    def __init__(self):
+        super(ContactFilter,self).__init__(self)
+
+
+    def shouldCollideFixtureFixture(self, fixtureA, fixtureB):
+        pass
+
+    def shouldCollideFixtureParticle(self, fixture, particleSystem, particleIndex):
+        pass
+
+    def shouldCollideParticleParticle(self, particleSystem, particleIndexA, particleIndexB):
+        pass   
