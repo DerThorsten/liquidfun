@@ -1,6 +1,6 @@
-from _pybox2d import *
-from extend_math import vec2
-from tools import _classExtender, GenericB2dIter
+from ._pybox2d import *
+from .extend_math import vec2
+from .tools import _classExtender, GenericB2dIter
 
 
 

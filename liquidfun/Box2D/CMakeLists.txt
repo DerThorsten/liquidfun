@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 project(Box2D)
@@ -202,11 +202,21 @@ endif()
 set(LIB_OUTPUT_DIR "${OUTPUT_SUBDIR}")
 set(EXE_OUTPUT_DIR "${OUTPUT_SUBDIR}")
 foreach(target ${ALL_TARGETS})
+
+  get_target_property(TARGET_PROP_TYPE ${target} TYPE)
+
+  if(${TARGET_PROP_TYPE} STREQUAL "INTERFACE_LIBRARY")
+
+
+  else()
   set_target_properties(
     ${target} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${LIB_OUTPUT_DIR}"
     LIBRARY_OUTPUT_DIRECTORY "${LIB_OUTPUT_DIR}"
     RUNTIME_OUTPUT_DIRECTORY "${EXE_OUTPUT_DIR}")
+
+  endif()
+
 endforeach(target)
 
 # The Box2D library.

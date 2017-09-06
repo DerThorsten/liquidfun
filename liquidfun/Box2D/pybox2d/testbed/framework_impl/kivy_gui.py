@@ -35,7 +35,7 @@ class DrawKivy(DebugDraw):
         size = numpy.array([radius*2,radius*2])
         #print "color",color
         #with self.canvas:
-        print "axis",axis
+        print("axis",axis)
         a = numpy.array(axis)
         a /= numpy.linalg.norm(a)
         a *= radius
@@ -44,7 +44,7 @@ class DrawKivy(DebugDraw):
         p0 = _center - a + radius
         p1 = _center + a + radius
 
-        print p0,p1,_center+radius
+        print(p0,p1,_center+radius)
         e = Ellipse(pos=_center,size=size ,color=Color(c[0],c[1],c[2],1.0))
 
         Line(points=[tuple(p0),tuple(p1)], width=1,color=Color(0.75*c[0],0.75*c[1],0.75*c[2],1))
@@ -58,12 +58,14 @@ class DrawKivy(DebugDraw):
 
     def DrawSegment(self,v1, v2, c):
         Line(points=[v1,v2], width=1,color=Color(c[0],c[1],c[2],1.0))
+
+
     def DrawPolygon(self,vertices, c):
         vertices = numpy.array(vertices)
         line = []
         for i in range(vertices.shape[0]):
             line.extend([vertices[i,0],vertices[i,1]])
-        Line(points=line,width=1,color=Color(c[0],c[1],c[2],1))
+        Line(points=line,width=1,color=Color(c[0],c[1],c[2],1), close=True)
         
 
 
@@ -81,7 +83,7 @@ class DrawKivy(DebugDraw):
             indices.append(i)
             line.extend([vertices[i,0],vertices[i,1]])
         Mesh(vertices=v,indices=indices,mode='triangle_fan',color=Color(c[0],c[1],c[2],1.0))
-        Line(points=line,color=Color(0.75*c[0],0.75*c[1],0.75*c[2],1))
+        Line(points=line,color=Color(0.75*c[0],0.75*c[1],0.75*c[2],1), close=True)
         
     def DrawParticles(self, centers, radius, colors=None):
         #nparticles = centers.shape[0]
@@ -176,7 +178,7 @@ class KivyTestbedDrawWidget(BoxLayout):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print keycode,text,modifiers
+        print(keycode,text,modifiers)
 
         if 'ctrl' in modifiers:
             n = keycode[1]
@@ -222,7 +224,7 @@ class KivyTestbedDrawWidget(BoxLayout):
     def on_touch_down(self, touch):
         # will receive all motion events.
         if touch.is_mouse_scrolling:
-            print touch.button
+            print(touch.button)
             if touch.button == 'scrolldown':
                 self.zoomIn()
             else:
@@ -412,7 +414,7 @@ class KivyTestbedWidget(BoxLayout):
         self.drawWidget.changeFps(val)
     
     def changeDrawBit(self, name, value):
-        print name,value
+        print(name,value)
         if value == 'down':
             self.drawWidget.debugDraw.appendFlags(name)
         else:

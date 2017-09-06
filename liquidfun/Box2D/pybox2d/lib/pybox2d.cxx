@@ -19,8 +19,9 @@ void exportb2Collision(py::module & );
 
 void exportb2Vectorization(py::module &);
 
-PYBIND11_PLUGIN(_pybox2d) {
-    py::module pybox2dModule("_pybox2d", "pybox2d python bindings");
+PYBIND11_MODULE(_pybox2d, pybox2dModule) {
+
+    pybox2dModule.doc() = "pybox2d python bindings";
 
     exportContact(pybox2dModule);
     exportB2World(pybox2dModule);
@@ -39,5 +40,4 @@ PYBIND11_PLUGIN(_pybox2d) {
     
     exportb2Vectorization(pybox2dModule);
     
-    return pybox2dModule.ptr();
 }

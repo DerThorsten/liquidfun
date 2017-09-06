@@ -1,18 +1,18 @@
 
 
-from _pybox2d import *
+from . _pybox2d import *
 
-from tools import GenericB2dIter
-from extend_math import *
-from extend_draw import *
-from extend_world import *
-from extend_body import *
-from extend_fixture import *
-from extend_shapes import *
-from extend_joints import *
-from extend_particles import *
-from extend_collision import *
-from extend_contact import *
+from .tools import GenericB2dIter
+from .extend_math import *
+from .extend_draw import *
+from .extend_world import *
+from .extend_body import *
+from .extend_fixture import *
+from .extend_shapes import *
+from .extend_joints import *
+from .extend_particles import *
+from .extend_collision import *
+from .extend_contact import *
 
 
 

@@ -1,5 +1,5 @@
 
-from _pybox2d import *
+from ._pybox2d import *
 import numpy 
 
 

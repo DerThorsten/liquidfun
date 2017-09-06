@@ -176,7 +176,7 @@ set(BOX2D_General_HDRS
 
 
 
-add_subdirectory(pybind11-master)
+add_subdirectory(pybind11-2.2.0)
 pybind11_add_module(_pybox2d 
 
   ${BOX2D_General_HDRS}

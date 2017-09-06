@@ -10,14 +10,10 @@ namespace py = pybind11;
     }
 
 
-    inline void fooFunc(const b2Shape * s){
-        std::cout<<"FOOO\n";
-    }
 
 void exportB2Fixture(py::module & pybox2dModule){
 
 
-    pybox2dModule.def("fooFunc",&fooFunc);
 
     py::class_<b2Filter>(pybox2dModule,"b2Filter")
         .def(py::init<>())

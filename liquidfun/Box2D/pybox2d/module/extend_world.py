@@ -1,9 +1,8 @@
-from _pybox2d import *
-from tools import _classExtender, GenericB2dIter
-
-from extend_fixture import fixtureDef
-from extend_math import vec2
-from extend_joints import *
+from ._pybox2d import *
+from .tools import _classExtender, GenericB2dIter
+from .extend_fixture import fixtureDef
+from .extend_math import vec2
+from .extend_joints import *
 
 def world(gravity = (0,-9.81)):
     return b2World(vec2(gravity))

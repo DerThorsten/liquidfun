@@ -1,5 +1,5 @@
-from _pybox2d import b2DrawCaller
-from tools import _classExtender, GenericB2dIter
+from ._pybox2d import b2DrawCaller
+from .tools import _classExtender, GenericB2dIter
 
 class DrawFlags(object):
     shapeBit              = 0x0001

@@ -1,5 +1,16 @@
+import sys
+
+
 import pybox2d as b2d
 from pybox2d import vec2
+
+
+
+
+
+
+
+
 
 
 class fwSettings(object):
@@ -60,11 +71,19 @@ class AABBCallback(b2d.QueryCallback):
 class Framework(object):
 
     def __init__(self,gravity=vec2(0,-9.81)):
+
         self.__reset()
         self.canvas = None
         self.world = b2d.b2World(gravity)
         self.groundbody = self.world.createBody()
-        print self.groundbody
+
+        pdef = b2d.particleSystemDef(viscousStrength=5.0,springStrength=0.0)
+        self.particle_system  = self.world.createParticleSystem(pdef)
+
+        self.particle_system.gravity_scale=0.4
+        self.particle_system.density=1.2
+
+        print(self.groundbody)
     def __reset(self):
         """ Reset all of the variables to their starting values.
         Not to be called except at initialization."""
@@ -100,11 +119,11 @@ class Framework(object):
         """
         Indicates that there was a left click at point p (world coordinates)
         """
-        print "mouse down",p
+        print("mouse down",p)
         if self.mouseJoint is not None:
             return
 
-        print "aabb"
+        print("aabb")
         # Create a mouse joint on the selected body (assuming it's dynamic)
         # Make a small box.
         box =  b2d.aabb(lowerBound=p - b2d.vec2(0.001, 0.001),
@@ -128,13 +147,13 @@ class Framework(object):
                 target=p,
                 maxForce=10000.0 * body.mass)
             body.awake = True
-        print "and here"
+        print("and here")
 
     def MouseUp(self, p):
         """
         Left mouse button up.
         """
-        print "mouse up",p
+        print("mouse up",p)
         if self.mouseJoint is not None:
             self.world.destroyJoint(self.mouseJoint)
             self.mouseJoint = None

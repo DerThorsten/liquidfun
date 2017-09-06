@@ -1,5 +1,5 @@
-from _pybox2d import *
-from tools import _classExtender
+from ._pybox2d import *
+from .tools import _classExtender
 
 FixtureDef = b2FixtureDef
 

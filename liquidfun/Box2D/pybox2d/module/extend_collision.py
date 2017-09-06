@@ -1,6 +1,6 @@
 
-from _pybox2d import b2AABB
-from extend_math import vec2
+from ._pybox2d import b2AABB
+from .extend_math import vec2
 
 
 Aabb = b2AABB

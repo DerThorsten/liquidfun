@@ -52,19 +52,19 @@ public:
 
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB) {
         py::object f = object_.attr("shouldCollideFixtureFixture");
-        bool ret = f(fixtureA, fixtureB);
+        bool ret = f(fixtureA, fixtureB).cast<bool>();
         return ret;
     }
 
     virtual bool ShouldCollide(b2Fixture* fixtureA, b2ParticleSystem* particleSystem, int32 particleIndex) {
         py::object f = object_.attr("shouldCollideFixtureParticle");
-        bool ret = f(fixtureA, particleSystem, particleIndex);
+        bool ret = f(fixtureA, particleSystem, particleIndex).cast<bool>();
         return ret;
     }
 
     virtual bool ShouldCollide(b2ParticleSystem* particleSystem, int32 particleIndexA, int32 particleIndexB) {
         py::object f = object_.attr("shouldCollideParticleParticle");
-        bool ret = f(particleSystem, particleIndexA, particleIndexB);
+        bool ret = f(particleSystem, particleIndexA, particleIndexB).cast<bool>();
         return ret;
     }
 private:
@@ -140,7 +140,7 @@ public:
 
     virtual bool ReportFixture(b2Fixture* fixture){
         py::object f = object_.attr("ReportFixture");
-        bool ret = f(fixture);
+        bool ret = f(fixture).cast<bool>();
         return ret;
     }
 
@@ -151,7 +151,7 @@ public:
     {
 
         py::object f = object_.attr("ReportParticle");
-        bool ret = f(particleSystem, index);
+        bool ret = f(particleSystem, index).cast<bool>();
         return ret;
     }
 
@@ -164,7 +164,7 @@ public:
     {
         
         py::object f = object_.attr("ShouldQueryParticleSystem");
-        bool ret = f(particleSystem);
+        bool ret = f(particleSystem).cast<bool>();
         return ret;
     }
 private:
@@ -193,7 +193,7 @@ public:
                                     const b2Vec2& normal, float32 fraction){
 
         py::object f = object_.attr("ReportFixture");
-        float ret = f(fixture, point, normal, fraction);
+        float ret = f(fixture, point, normal, fraction).cast<float>();
         return ret;
     }
 

@@ -1,6 +1,6 @@
 import inspect
 import sys
-
+sys.path.append("/home/tbeier/bld/liquidfun/liquidfun/Box2D/python")
 from framework import Framework,Testbed
 
 from examples import * 
@@ -21,7 +21,7 @@ for name, obj in inspect.getmembers(examples):
             if inspect.isclass(objCls):
                 if issubclass(objCls, Framework):
                     try:
-                        print objCls.name
+                        print(objCls.name)
                     except:
                         pass
                     exampleClassList.append(objCls)
