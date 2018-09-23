@@ -2,6 +2,9 @@
 var b2Body_ApplyAngularImpulse = Module.cwrap('b2Body_ApplyAngularImpulse', 'null',
   ['number', 'number', 'number']);
 
+var b2Body_ApplyLinearImpulse = Module.cwrap('b2Body_ApplyLinearImpulse', 'null',
+  ['number', 'number', 'number', 'number', 'number', 'number']);
+
 var b2Body_ApplyForce = Module.cwrap('b2Body_ApplyForce', 'number',
   ['number', 'number', 'number', 'number', 'number', 'number']);
 
@@ -54,6 +57,9 @@ var b2Body_SetAngularVelocity = Module.cwrap('b2Body_SetAngularVelocity', 'null'
 var b2Body_SetAwake =
   Module.cwrap('b2Body_SetAwake', 'number',['number', 'number']);
 
+var b2Body_SetFixedRotation =
+  Module.cwrap('b2Body_SetFixedRotation', 'number',['number', 'number']);
+
 var b2Body_SetLinearVelocity = Module.cwrap('b2Body_SetLinearVelocity', 'null',
   ['number', 'number', 'number']);
 
@@ -67,6 +73,8 @@ var b2Body_SetTransform =
 var b2Body_SetType =
   Module.cwrap('b2Body_SetType', 'null', ['number', 'number']);
 
+var b2Body_SetGravityScale = Module.cwrap('b2Body_SetGravityScale', 'null', ['number', 'number']);
+var b2Body_GetGravityScale = Module.cwrap('b2Body_GetGravityScale', 'number', ['number']);
 
 // memory offsets
 var b2Body_xf_offset = Offsets.b2Body.xf;
@@ -78,8 +86,12 @@ function b2Body(ptr) {
   this.fixtures = [];
 }
 
-b2Body.prototype.ApplyAngularImpulse = function(force, wake) {
-  b2Body_ApplyAngularImpulse(this.ptr, force, wake);
+b2Body.prototype.ApplyAngularImpulse = function(impulse, wake) {
+  b2Body_ApplyAngularImpulse(this.ptr, impulse, wake);
+};
+
+b2Body.prototype.ApplyLinearImpulse = function(impulse, point, wake) {
+  b2Body_ApplyLinearImpulse(this.ptr, impulse.x, impulse.y, point.x, point.y, wake);
 };
 
 b2Body.prototype.ApplyForce = function(force, point, wake) {
@@ -101,6 +113,7 @@ b2Body.prototype.CreateFixtureFromDef = function(fixtureDef) {
   fixture.body = this;
   b2World._Push(fixture, this.fixtures);
   world.fixturesLookup[fixture.ptr] = fixture;
+  fixture.SetFilterData(fixtureDef.filter);
   return fixture;
 };
 
@@ -200,6 +213,10 @@ b2Body.prototype.SetAwake = function(flag) {
   b2Body_SetAwake(this.ptr, flag);
 };
 
+b2Body.prototype.SetFixedRotation = function(flag) {
+  b2Body_SetFixedRotation(this.ptr, flag);
+};
+
 b2Body.prototype.SetLinearVelocity = function(v) {
   b2Body_SetLinearVelocity(this.ptr, v.x, v.y);
 };
@@ -215,6 +232,16 @@ b2Body.prototype.SetTransform = function(v, angle) {
 b2Body.prototype.SetType = function(type) {
   b2Body_SetType(this.ptr, type);
 };
+
+b2Body.prototype.SetGravityScale = function(scale) {
+  b2Body_SetGravityScale(this.ptr, scale);
+};
+
+b2Body.prototype.GetGravityScale = function() {
+  return b2Body_GetGravityScale(this.ptr);
+};
+
+
 
 // General body globals
 var b2_staticBody = 0;
