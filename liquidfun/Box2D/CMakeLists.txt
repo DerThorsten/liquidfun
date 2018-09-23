@@ -68,6 +68,7 @@ if (WIN32)
 endif()
 
 
+
 add_definitions( -DLIQUIDFUN_EXTERNAL_LANGUAGE_API=1 )
 
 # Enable / disable debug code depending upon the build configuration.
