@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef, b2PolygonShape)
+from pybox2d import (circle_shape, edge_shape, fixture_def, polygon_shape)
 
 
 class VerticalStack (Framework):
@@ -34,19 +34,19 @@ class VerticalStack (Framework):
         columns = 5
         rows = 16
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             shapes=[
-                b2EdgeShape(vertices=[(-40, 0), (40, 0)]),
-                b2EdgeShape(vertices=[(20, 0), (20, 20)]),
+                edge_shape(vertices=[(-40, 0), (40, 0)]),
+                edge_shape(vertices=[(20, 0), (20, 20)]),
             ]
         )
 
-        box = b2FixtureDef(
-            shape=b2PolygonShape(box=(0.5, 0.5)),
+        box = fixture_def(
+            shape=polygon_shape(box=(0.5, 0.5)),
             density=1,
             friction=0.3)
-        circle = b2FixtureDef(
-            shape=b2CircleShape(radius=0.5),
+        circle = fixture_def(
+            shape=circle_shape(radius=0.5),
             density=1,
             friction=0.3)
 
@@ -56,11 +56,11 @@ class VerticalStack (Framework):
         circle_space = 2.5
         for j in range(columns):
             for i in range(rows):
-                self.world.CreateDynamicBody(
+                self.world.create_dynamic_body(
                     fixtures=box,
                     position=(box_start + box_space * j, 0.752 + 1.54 * i)
                 )
-                self.world.CreateDynamicBody(
+                self.world.create_dynamic_body(
                     fixtures=circle,
                     position=(circle_start + circle_space *
                               j, 0.752 + 1.54 * i)
@@ -72,13 +72,13 @@ class VerticalStack (Framework):
     def Keyboard(self, key):
         if key == Keys.K_b:
             if self.bullet:
-                self.world.DestroyBody(self.bullet)
+                self.world.destroy_body(self.bullet)
                 self.bullet = None
-            circle = b2FixtureDef(
-                shape=b2CircleShape(radius=0.25),
+            circle = fixture_def(
+                shape=circle_shape(radius=0.25),
                 density=20,
                 restitution=0.05)
-            self.bullet = self.world.CreateDynamicBody(
+            self.bullet = self.world.create_dynamic_body(
                 position=(-31, 5),
                 bullet=True,
                 fixtures=circle,

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 project(Box2D)
@@ -12,6 +12,10 @@ option(WITH_BOOST_COMPUTE OFF)
 option(BUILD_NIFTY_PYTHON OFF)
 
 
+add_definitions( -DLIQUIDFUN_EXTERNAL_LANGUAGE_API=1 )
+
+include_directories(.)
+add_subdirectory(pybox2d)
 #-------------------------------------------------------------------------------------------------------------------
 # check for c++ 11 support
 #-------------------------------------------------------------------------------------------------------------------
@@ -68,9 +72,6 @@ if (WIN32)
 endif()
 
 
-
-add_definitions( -DLIQUIDFUN_EXTERNAL_LANGUAGE_API=1 )
-
 # Enable / disable debug code depending upon the build configuration.
 set(DEBUG_FLAGS "-DDEBUG=1")
 set(RELEASE_FLAGS "-DDEBUG=0")
@@ -109,7 +110,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
     endif()
 endif()
 
-include_directories(.)
+
+add_subdirectory(Box2D)
+
 
 
 set(C_FLAGS_WARNINGS "")
@@ -163,9 +166,6 @@ function(add_executable name)
   set(ALL_TARGETS "${ALL_TARGETS}" "${name}" CACHE INTERNAL "")
 endfunction(add_executable)
 
-# The Box2D library.
-add_subdirectory(Box2D)
-add_subdirectory(pybox2d)
 
 if(BOX2D_BUILD_EXAMPLES)
   # HelloWorld console example.

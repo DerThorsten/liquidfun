@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape, b2_dynamicBody,
+from pybox2d import (edge_shape, fixture_def, polygon_shape, b2_dynamicBody,
                    b2_kinematicBody, b2_staticBody)
 
 
@@ -32,54 +32,54 @@ class BodyTypes(Framework):
         super(BodyTypes, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-20, 0), (20, 0)])
+        ground = self.world.create_body(
+            shapes=edge_shape(vertices=[(-20, 0), (20, 0)])
         )
 
         # The attachment
-        self.attachment = self.world.CreateDynamicBody(
+        self.attachment = self.world.create_dynamic_body(
             position=(0, 3),
-            fixtures=b2FixtureDef(
-                shape=b2PolygonShape(box=(0.5, 2)), density=2.0),
+            fixtures=fixture_def(
+                shape=polygon_shape(box=(0.5, 2)), density=2.0),
         )
 
         # The platform
-        fixture = b2FixtureDef(
-            shape=b2PolygonShape(box=(4, 0.5)),
+        fixture = fixture_def(
+            shape=polygon_shape(box=(4, 0.5)),
             density=2,
             friction=0.6,
         )
 
-        self.platform = self.world.CreateDynamicBody(
+        self.platform = self.world.create_dynamic_body(
             position=(0, 5),
             fixtures=fixture,
         )
 
         # The joints joining the attachment/platform and ground/platform
-        self.world.CreateRevoluteJoint(
-            bodyA=self.attachment,
-            bodyB=self.platform,
+        self.world.create_revolute_joint(
+            body_a=self.attachment,
+            body_b=self.platform,
             anchor=(0, 5),
-            maxMotorTorque=50,
-            enableMotor=True
+            max_motor_torque=50,
+            enable_motor=True
         )
 
-        self.world.CreatePrismaticJoint(
-            bodyA=ground,
-            bodyB=self.platform,
+        self.world.create_prismatic_joint(
+            body_a=ground,
+            body_b=self.platform,
             anchor=(0, 5),
             axis=(1, 0),
-            maxMotorForce=1000,
-            enableMotor=True,
+            max_motor_force=1000,
+            enable_motor=True,
             lowerTranslation=-10,
             upperTranslation=10,
-            enableLimit=True
+            enable_limit=True
         )
 
         # And the payload that initially sits upon the platform
         # Reusing the fixture we previously defined above
         fixture.shape.box = (0.75, 0.75)
-        self.payload = self.world.CreateDynamicBody(
+        self.payload = self.world.create_dynamic_body(
             position=(0, 8),
             fixtures=fixture,
         )

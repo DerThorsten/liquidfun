@@ -1,5 +1,4 @@
 import sys, os
-sys.path.append('../')
 from framework import Framework,Testbed
 from pybox2d import *
 
@@ -11,8 +10,8 @@ class DamnBreak(Framework):
     bodies = []
     joints = []
 
-    def __init__(self):
-        super(DamnBreak, self).__init__()
+    def __init__(self, gui):
+        super(DamnBreak, self).__init__(gui=gui)
 
         verts=[
             b2Vec2(-2, 0),
@@ -20,58 +19,33 @@ class DamnBreak(Framework):
             b2Vec2(4, 8),
             b2Vec2(-2, 8)
         ]
-        groundbody = self.world.createStaticBody(
-            shapes=chainShape(vertices=verts)
+        groundbody = self.world.create_static_body(
+            shapes=chain_shape(vertices=verts, loop=True)
         )
 
 
-        if False:
 
-            fixtureA = fixtureDef(shape=circleShape(0.5),density=2.2, friction=0.2)
-            body = self.world.createDynamicBody(
-                #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
-                position=(1,2.5),
-                fixtures=fixtureA
-            ) 
-        fixture = fixtureDef(shape=polygonShape(box=(1,1)),density=2.2, friction=0.2)
-        body = self.world.createDynamicBody(
+        fixtureA = fixture_def(shape=circle_shape(0.5),density=2.2, friction=0.2)
+        body = self.world.create_dynamic_body(
             #bodyDef = bodyDef(linearDamping=2.0,angularDamping=2.0),                                              
-            position=(1,7.5),
-            fixtures=fixture
+            position=(1,2.5),
+            fixtures=fixtureA
         ) 
 
 
-        if False:
-            pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
-            psystem = self.world.createParticleSystem(pdef)
-            psystem.radius = 0.045
-            psystem.damping = 0.2
+        pdef = particle_system_def(viscous_strength=5.0,spring_strength=0.0)
+        psystem = self.world.create_particle_system(pdef)
+        psystem.radius = 0.045
+        psystem.damping = 0.2
 
 
-            shape = polygonShape(box=(2.0,2.0),center=vec2(0,2.01),angle=0)
-            pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
-                                     groupFlags=ParticleGroupFlag.solidParticleGroup,
-                                     shape=shape,strength=0.0
-                                     )
+        shape = polygon_shape(box=(2.0,2.0),center=vec2(0,2.01),angle=0)
+        pgDef = particle_group_def(flags=ParticleFlag.waterParticle, 
+                                 group_flags=ParticleGroupFlag.solidParticleGroup,
+                                 shape=shape,strength=0.0
+                                 )
 
-            group = psystem.createParticleGroup(pgDef)
-
-
-
-
-        # pdef = particleSystemDef(viscousStrength=5.0,springStrength=0.0)
-        # psystem = self.world.createParticleSystem(pdef)
-        # psystem.radius = 0.045
-        # psystem.damping = 0.2
-
-
-        # shape = polygonShape(box=(1.0,1.0),center=vec2(1,3.01),angle=0)
-        # pgDef = particleGroupDef(flags=ParticleFlag.waterParticle, 
-        #                          groupFlags=ParticleGroupFlag.solidParticleGroup,
-        #                          shape=shape,strength=0.0
-        #                          )
-
-        # group = psystem.createParticleGroup(pgDef)
+        group = psystem.create_particle_group(pgDef)
 
 
 
@@ -79,7 +53,7 @@ class DamnBreak(Framework):
 
 if __name__ == "__main__":
 
-    testbed = Testbed(guiType='kivy')
+    testbed = Testbed(guiType='pg')
     testbed.setExample(DamnBreak)
     testbed.run()
 

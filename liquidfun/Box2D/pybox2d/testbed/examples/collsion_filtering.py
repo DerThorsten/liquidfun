@@ -1,5 +1,6 @@
 import sys, os
-sys.path.append('../')
+
+
 from framework import Framework,Testbed
 import pybox2d as b2
 
@@ -11,13 +12,13 @@ class CollisionFiltering(Framework):
     bodies = []
     joints = []
 
-    def __init__(self):
-        super(CollisionFiltering, self).__init__()
+    def __init__(self, gui):
+        super(CollisionFiltering, self).__init__(gui=gui)
 
         # Ground body
         world = self.world
-        ground = world.createBody(
-            shapes=b2.edgeShape(vertices=[(-40, 0), (40, 0)])
+        ground = world.create_body(
+            shapes=b2.edge_shape(vertices=[(-40, 0), (40, 0)])
         )
 
         # Define the groups that fixtures can fall into
@@ -48,10 +49,10 @@ class CollisionFiltering(Framework):
         # collide is defined in the C++ source code, but it can be overridden
         # in Python (with b2ContactFilter).
         # The default behavior goes like this:
-        #   if (filterA.groupIndex == filterB.groupIndex and filterA.groupIndex != 0):
-        #       collide if filterA.groupIndex is greater than zero (negative groups never collide)
+        #   if (filterA.group_index == filterB.group_index and filterA.group_index != 0):
+        #       collide if filterA.group_index is greater than zero (negative groups never collide)
         #   else:
-        #       collide if (filterA.maskBits & filterB.categoryBits) != 0 and (filterA.categoryBits & filterB.maskBits) != 0
+        #       collide if (filterA.mask_bits & filterB.category_bits) != 0 and (filterA.category_bits & filterB.mask_bits) != 0
         #
         # So, if they have the same group index (and that index isn't the
         # default 0), then they collide if the group index is > 0 (since
@@ -65,76 +66,79 @@ class CollisionFiltering(Framework):
         # -> http://en.wikipedia.org/wiki/Mask_%28computing%29
 
         # Small triangle
-        triangle = b2.fixtureDef(
-            shape=b2.polygonShape(vertices=[(-1, 0), (1, 0), (0, 2)]),
+        triangle = b2.fixture_def(
+            shape=b2.polygon_shape(vertices=[(-1, 0), (1, 0), (0, 2)]),
             density=1,
-            shapeFilter=b2.shapeFilter(
-                groupIndex=smallGroup,
-                categoryBits=triangleCategory,
-                maskBits=triangleMask,
+            shape_filter=b2.shape_filter(
+                group_index=smallGroup,
+                category_bits=triangleCategory,
+                mask_bits=triangleMask,
             )
         )
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(-5, 2),
             fixtures=triangle,
         )
 
-        triangle.shape.vertices = [
-            b2.vec2(v) *2.0 for v in triangle.shape.vertices]
-        triangle.filter.groupIndex = largeGroup
 
-        trianglebody = world.createDynamicBody(
+        # ?!?!?!?!
+        # triangle.shape.vertices = [
+        #     b2.vec2(v) *2.0 for v in triangle.shape.vertices]
+        
+        triangle.filter.group_index = largeGroup
+
+        trianglebody = world.create_dynamic_body(
             position=(-5, 6),
             fixtures=triangle,
-            fixedRotation=True,  # <--
+            fixed_rotation=True,  # <--
         )
         # note that the large triangle will not rotate
         
         # Small box
-        box = b2.fixtureDef(
-            shape=b2.polygonShape(box=(1, 0.5)),
+        box = b2.fixture_def(
+            shape=b2.polygon_shape(box=(1, 0.5)),
             density=1,
             restitution=0.1,
-            shapeFilter = b2.shapeFilter(
-                groupIndex=smallGroup,
-                categoryBits=boxCategory,
-                maskBits=boxMask,
+            shape_filter = b2.shape_filter(
+                group_index=smallGroup,
+                category_bits=boxCategory,
+                mask_bits=boxMask,
             )
         )
 
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(0, 2),
             fixtures=box,
         )
 
         # Large box
-        box.shape  = b2.polygonShape(box=(1, 0.5))
-        box.filter.groupIndex = largeGroup
-        world.createDynamicBody(
+        box.shape  = b2.polygon_shape(box=(1, 0.5))
+        box.filter.group_index = largeGroup
+        world.create_dynamic_body(
             position=(0, 6),
             fixtures=box,
         )
 
         # Small circle
-        circle = b2.fixtureDef(
-            shape=b2.circleShape(radius=1),
+        circle = b2.fixture_def(
+            shape=b2.circle_shape(radius=1),
             density=1,
-            shapeFilter=b2.shapeFilter(
-                groupIndex=smallGroup,
-                categoryBits=circleCategory,
-                maskBits=circleMask,
+            shape_filter=b2.shape_filter(
+                group_index=smallGroup,
+                category_bits=circleCategory,
+                mask_bits=circleMask,
             )
         )
 
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(5, 2),
             fixtures=circle,
         )
 
         # Large circle
         circle.shape.radius *= 2
-        circle.filter.groupIndex = largeGroup
-        world.createDynamicBody(
+        circle.filter.group_index = largeGroup
+        world.create_dynamic_body(
             position=(5, 6),
             fixtures=circle,
         )
@@ -142,25 +146,27 @@ class CollisionFiltering(Framework):
         # Create a joint for fun on the big triangle
         # Note that it does not inherit or have anything to do with the
         # filter settings of the attached triangle.
-        box = b2.fixtureDef(shape=b2.polygonShape(box=(0.5, 1)), density=1)
+        box = b2.fixture_def(shape=b2.polygon_shape(box=(0.5, 1)), density=1)
 
-        testbody = world.createDynamicBody(
+        testbody = world.create_dynamic_body(
             position=(-5, 10),
             fixtures=box,
         )
-        world.createPrismaticJoint(
-            bodyA=trianglebody,
-            bodyB=testbody,
-            enableLimit=True,
-            localAnchorA=(0, 4),
-            localAnchorB=(0, 0),
-            localAxisA=(0, 1),
-            lowerTranslation=-1,
-            upperTranslation=1,
+        world.create_distance_joint(
+            body_a=trianglebody,
+            body_b=testbody,
+            frequency_hz=1.0,
+            damping_ratio=2.1,
+            #enable_limit=True,
+            #local_anchor_a=(0, 4),
+            local_anchor_b=(0, 0),
+            #local_axis_a=(0, 1),
+            #lower_translation=-1,
+           # upper_translation=1,
         )
 
 if __name__ == "__main__":
 
-    testbed = Testbed(guiType='kivy')
+    testbed = Testbed(guiType='pg')
     testbed.setExample(CollisionFiltering)
     testbed.run()

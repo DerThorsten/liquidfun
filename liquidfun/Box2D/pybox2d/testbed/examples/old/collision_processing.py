@@ -19,8 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef, b2PolygonShape,
-                   b2Random, b2Vec2, b2_dynamicBody)
+from pybox2d import (circle_shape, edge_shape, fixture_def, polygon_shape,
+                   b2Random, vec2, b2_dynamicBody)
 
 
 class CollisionProcessing (Framework):
@@ -35,22 +35,22 @@ class CollisionProcessing (Framework):
 
         # Ground body
         world = self.world
-        ground = world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-50, 0), (50, 0)],)
+        ground = world.create_body(
+            shapes=edge_shape(vertices=[(-50, 0), (50, 0)],)
         )
 
         xlow, xhi = -5, 5
         ylow, yhi = 2, 35
-        random_vector = lambda: b2Vec2(
+        random_vector = lambda: vec2(
             b2Random(xlow, xhi), b2Random(ylow, yhi))
 
         # Small triangle
-        triangle = b2FixtureDef(
-            shape=b2PolygonShape(vertices=[(-1, 0), (1, 0), (0, 2)]),
+        triangle = fixture_def(
+            shape=polygon_shape(vertices=[(-1, 0), (1, 0), (0, 2)]),
             density=1,
         )
 
-        world.CreateBody(
+        world.create_body(
             type=b2_dynamicBody,
             position=random_vector(),
             fixtures=triangle,
@@ -58,9 +58,9 @@ class CollisionProcessing (Framework):
 
         # Large triangle (recycle definitions)
         triangle.shape.vertices = [
-            2.0 * b2Vec2(v) for v in triangle.shape.vertices]
+            2.0 * vec2(v) for v in triangle.shape.vertices]
 
-        tri_body = world.CreateBody(type=b2_dynamicBody,
+        tri_body = world.create_body(type=b2_dynamicBody,
                                     position=random_vector(),
                                     fixtures=triangle,
                                     fixedRotation=True,  # <--
@@ -68,13 +68,13 @@ class CollisionProcessing (Framework):
         # note that the large triangle will not rotate
 
         # Small box
-        box = b2FixtureDef(
-            shape=b2PolygonShape(box=(1, 0.5)),
+        box = fixture_def(
+            shape=polygon_shape(box=(1, 0.5)),
             density=1,
             restitution=0.1,
         )
 
-        world.CreateBody(
+        world.create_body(
             type=b2_dynamicBody,
             position=random_vector(),
             fixtures=box,
@@ -82,19 +82,19 @@ class CollisionProcessing (Framework):
 
         # Large box
         box.shape.box = (2, 1)
-        world.CreateBody(
+        world.create_body(
             type=b2_dynamicBody,
             position=random_vector(),
             fixtures=box,
         )
 
         # Small circle
-        circle = b2FixtureDef(
-            shape=b2CircleShape(radius=1),
+        circle = fixture_def(
+            shape=circle_shape(radius=1),
             density=1,
         )
 
-        world.CreateBody(
+        world.create_body(
             type=b2_dynamicBody,
             position=random_vector(),
             fixtures=circle,
@@ -102,7 +102,7 @@ class CollisionProcessing (Framework):
 
         # Large circle
         circle.shape.radius *= 2
-        world.CreateBody(
+        world.create_body(
             type=b2_dynamicBody,
             position=random_vector(),
             fixtures=circle,
@@ -134,7 +134,7 @@ class CollisionProcessing (Framework):
         # Destroy the bodies, skipping duplicates.
         for b in nuke:
             print("Nuking:", b)
-            self.world.DestroyBody(b)
+            self.world.destroy_body(b)
 
         nuke = None
 

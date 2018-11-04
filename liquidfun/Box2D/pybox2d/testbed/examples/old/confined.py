@@ -21,7 +21,7 @@
 from random import random
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef)
+from pybox2d import (circle_shape, edge_shape, fixture_def)
 
 
 class Confined (Framework):
@@ -32,11 +32,11 @@ class Confined (Framework):
         super(Confined, self).__init__()
 
         # The ground
-        ground = self.world.CreateStaticBody(
-            shapes=[b2EdgeShape(vertices=[(-10, 0), (10, 0)]),
-                    b2EdgeShape(vertices=[(-10, 0), (-10, 20)]),
-                    b2EdgeShape(vertices=[(10, 0), (10, 20)]),
-                    b2EdgeShape(vertices=[(-10, 20), (10, 20)]),
+        ground = self.world.create_static_body(
+            shapes=[edge_shape(vertices=[(-10, 0), (10, 0)]),
+                    edge_shape(vertices=[(-10, 0), (-10, 20)]),
+                    edge_shape(vertices=[(10, 0), (10, 20)]),
+                    edge_shape(vertices=[(-10, 20), (10, 20)]),
                     ])
 
         # The bodies
@@ -52,11 +52,11 @@ class Confined (Framework):
         self.world.gravity = (0, 0)
 
     def CreateCircle(self, pos):
-        fixture = b2FixtureDef(shape=b2CircleShape(radius=self.radius,
+        fixture = fixture_def(shape=circle_shape(radius=self.radius,
                                                    pos=(0, 0)),
                                density=1, friction=0.1)
 
-        self.world.CreateDynamicBody(
+        self.world.create_dynamic_body(
             position=pos,
             fixtures=fixture
         )

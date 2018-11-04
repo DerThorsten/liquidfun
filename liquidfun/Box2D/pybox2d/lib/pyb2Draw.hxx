@@ -4,7 +4,11 @@
 #include <Box2D/Box2D.h>
 #include <iostream>
 
+#include <array>
+
 namespace py = pybind11;
+
+
 
 
 class PyB2Draw : public b2Draw {
@@ -13,20 +17,47 @@ public:
     typedef std::pair<float32,float32> P;
     typedef std::tuple<float32,float32,float32> C;
 
+    typedef std::tuple<float32,float32,float32> FloatColor;
+    typedef std::tuple<uint8_t,uint8_t,uint8_t> UInt8Color;
+
+
     /* Inherit the constructors */
     //using b2Draw::b2Draw;
 
     virtual ~PyB2Draw() {}
 
     PyB2Draw(
-        const py::object object
+        const py::object object,
+        const bool float_colors = true
     )
-    :   object_(object){
-
+    :   m_object(object),
+        m_float_colors(float_colors)
+    {
+        this->resetBoundingBox();
     }
 
 
-    virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
+
+    inline static UInt8Color make_uint8_color(const b2Color& color )
+    {
+        return UInt8Color(
+            (color.r * 255.0f) + 0.5f,
+            (color.g * 255.0f) + 0.5f,
+            (color.b * 255.0f) + 0.5f
+        );
+    }
+
+    inline static FloatColor make_float_color(const b2Color& color )
+    {
+        return FloatColor(
+            color.r,
+            color.g,
+            color.b
+        );
+    }
+
+    virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+    {
         
         //typedef long unsigned int ShapeType;
 
@@ -42,14 +73,23 @@ public:
         float32 * ptr  = static_cast<float32* >(npVertices.request().ptr);        
         for(size_t i=0;  i<size_t(vertexCount); ++i){
             auto v = vertices[i];
+            this->updateBoundingBox(v);
             ptr[i*2 ]   = v.x;
             ptr[i*2 +1] = v.y;
         }
-        py::object f = object_.attr("DrawPolygon");
-        f(npVertices,C(color.r,color.g,color.b));
+        py::object f = m_object.attr("draw_polygon");
+        if(m_float_colors)
+        {
+            f(npVertices, make_float_color(color));
+        }
+        else
+        {
+            f(npVertices, make_uint8_color(color));
+        }
     }
 
-    virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
+    virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+    {
         auto npVertices = py::array(py::buffer_info(
             nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
             sizeof(float32),     /* Size of one item */
@@ -62,27 +102,55 @@ public:
         float32 * ptr  = static_cast<float32* >(npVertices.request().ptr);        
         for(size_t i=0;  i<size_t(vertexCount); ++i){
             auto v = vertices[i];
+            this->updateBoundingBox(v);
             ptr[i*2 ]   = v.x;
             ptr[i*2 +1] = v.y;
         }
-        py::object f = object_.attr("DrawSolidPolygon");
-        f(npVertices,C(color.r,color.g,color.b));
+        py::object f = m_object.attr("draw_solid_polygon");
+        if(m_float_colors)
+        {
+            f(npVertices, make_float_color(color));
+        }
+        else
+        {
+            f(npVertices, make_uint8_color(color));
+        }
     }
 
     virtual void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color) {
-        py::object f = object_.attr("DrawCircle");
+        py::object f = m_object.attr("draw_circle");
         auto c =center;
-        f(P(c.x,c.y),radius,C(color.r,color.g,color.b));
+        this->updateBoundingBox(center+radius);
+        this->updateBoundingBox(center-radius);
+        if(m_float_colors)
+        {
+            f(P(c.x,c.y), radius, make_float_color(color));
+        }
+        else
+        {
+            f(P(c.x,c.y), radius, make_uint8_color(color));
+        }
     }
 
     virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color) {
-        py::object f = object_.attr("DrawSolidCircle");
+        this->updateBoundingBox(center+radius);
+        this->updateBoundingBox(center-radius);
+        py::object f = m_object.attr("draw_solid_circle");
         auto c = center;
         f(P(c.x,c.y),radius,P(axis.x,axis.y), C(color.r,color.g,color.b));
+
+        if(m_float_colors)
+        {
+            f(P(c.x,c.y),radius,P(axis.x,axis.y), make_float_color(color));
+        }
+        else
+        {
+            f(P(c.x,c.y),radius,P(axis.x,axis.y), make_uint8_color(color));
+        }
     }
 
     virtual void DrawParticles(const b2Vec2 *centers, float32 radius, const b2ParticleColor *colors, const int32 count) {
-        py::object f = object_.attr("DrawParticles");
+        py::object f = m_object.attr("draw_particles");
 
         auto npCenters = py::array(py::buffer_info(
             nullptr,            /* Pointer to data (nullptr -> ask NumPy to allocate!) */
@@ -109,6 +177,8 @@ public:
 
             for(size_t i=0;  i<size_t(count); ++i){
                 auto ce = centers[i];
+                this->updateBoundingBox(ce+radius);
+                this->updateBoundingBox(ce-radius);
                 ptrCenters[i*2 ]   = ce.x ;
                 ptrCenters[i*2 +1] = ce.y ; 
                 const b2ParticleColor c = colors[i];
@@ -122,6 +192,9 @@ public:
         else{
             for(size_t i=0;  i<size_t(count); ++i){
                 auto ce = centers[i];
+                this->updateBoundingBox(ce+radius);
+                this->updateBoundingBox(ce-radius);
+
                 ptrCenters[i*2 ]   = ce.x ;
                 ptrCenters[i*2 +1] = ce.y ; 
             }
@@ -130,19 +203,54 @@ public:
     }
 
     virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
-        py::object f = object_.attr("DrawSegment");
+        py::object f = m_object.attr("draw_segment");
         auto pp1 =  p1;
         auto pp2 =  p2;
-        f(P(pp1.x,pp1.y),P(pp2.x,pp2.y),C(color.r,color.g,color.b));
+        this->updateBoundingBox(p1);
+        this->updateBoundingBox(p2);
+        if(m_float_colors)
+        {
+            f(P(pp1.x,pp1.y),P(pp2.x,pp2.y),make_float_color(color));
+        }
+        else
+        {
+            f(P(pp1.x,pp1.y),P(pp2.x,pp2.y),make_uint8_color(color));
+        }
     }
 
     virtual void DrawTransform(const b2Transform& xf) {
        transform_ = xf;
-       //py::object f = object_.attr("DrawTransform");
+       //py::object f = m_object.attr("DrawTransform");
        //f(xf);
     }
 
-    b2Transform transform_;
+    void updateBoundingBox(const b2Vec2& p)
+    {
+        m_min_coord[0] = std::min(m_min_coord[0],p.x);
+        m_min_coord[1] = std::min(m_min_coord[1],p.y);
+        m_max_coord[0] = std::max(m_max_coord[0],p.x);
+        m_max_coord[1] = std::max(m_max_coord[1],p.y);
+    }
+    void resetBoundingBox()
+    {
+        m_min_coord[0] = std::numeric_limits<float>::infinity();
+        m_min_coord[1] = std::numeric_limits<float>::infinity();
 
-    py::object object_;
+        m_max_coord[0] = -1.0 * std::numeric_limits<float>::infinity();
+        m_max_coord[1] = -1.0 * std::numeric_limits<float>::infinity();
+    }
+    b2AABB getBoundingBox()
+    {
+        b2AABB bb;
+        bb.lowerBound = b2Vec2(m_min_coord[0],m_min_coord[1]);
+        bb.upperBound = b2Vec2(m_max_coord[0],m_max_coord[1]);
+        return bb;
+    }
+
+    b2Transform transform_;
+    py::object m_object;
+    bool m_float_colors;
+
+    std::array<float, 2> m_min_coord;
+    std::array<float, 2> m_max_coord;
 };

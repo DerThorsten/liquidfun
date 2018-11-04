@@ -2,6 +2,9 @@
 
 #include <Box2D/Box2D.h>
 
+#include "holder.hxx"
+
+
 namespace py = pybind11;
 
 
@@ -11,7 +14,7 @@ namespace py = pybind11;
 
 
     inline void fooFunc(const b2Shape * s){
-        std::cout<<"FOOO\n";
+        //std::cout<<"FOOO\n";
     }
 
 void exportB2Fixture(py::module & pybox2dModule){
@@ -21,9 +24,9 @@ void exportB2Fixture(py::module & pybox2dModule){
 
     py::class_<b2Filter>(pybox2dModule,"b2Filter")
         .def(py::init<>())
-        .def_readwrite("categoryBits", &b2Filter::categoryBits)
-        .def_readwrite("maskBits", &b2Filter::maskBits)
-        .def_readwrite("groupIndex", &b2Filter::groupIndex)
+        .def_readwrite("category_bits", &b2Filter::categoryBits)
+        .def_readwrite("mask_bits", &b2Filter::maskBits)
+        .def_readwrite("group_index", &b2Filter::groupIndex)
     ;
 
 
@@ -31,9 +34,8 @@ void exportB2Fixture(py::module & pybox2dModule){
 
     py::class_<b2FixtureDef>(pybox2dModule,"b2FixtureDef")
         .def(py::init<>())
-        .def("_setShape",  //[](b2FixtureDef & f, b2Shape * s){f.shape = s;}, 
+        .def("_set_shape",  //[](b2FixtureDef & f, b2Shape * s){f.shape = s;}, 
                 &setShape,
-
             py::keep_alive<1,2>()
         )
         .def_readonly("_shape", &b2FixtureDef::shape)
@@ -41,19 +43,19 @@ void exportB2Fixture(py::module & pybox2dModule){
         .def_readwrite("friction", &b2FixtureDef::friction)
         .def_readwrite("restitution", &b2FixtureDef::restitution)
         .def_readwrite("density", &b2FixtureDef::density)
-        .def_readwrite("isSensor", &b2FixtureDef::isSensor)
+        .def_readwrite("is_sensor", &b2FixtureDef::isSensor)
         .def_readwrite("filter", &b2FixtureDef::filter)
-        .def("_setUserData",[](b2FixtureDef & b, const py::object & ud){
+        .def("_set_user_data",[](b2FixtureDef & b, const py::object & ud){
             auto ptr = new py::object(ud);
             b.userData = ptr;
         })
-        .def("_getUserData",[](const b2FixtureDef & b){
+        .def("_get_user_data",[](const b2FixtureDef & b){
             auto vuserData = b.userData;
             auto ud = static_cast<py::object *>(vuserData);
             auto ret = py::object(*ud);
             return ret;
         })
-        .def("_deleteUserData",[](b2FixtureDef & b){
+        .def("_delete_U_serData",[](b2FixtureDef & b){
             auto vuserData = b.userData;
             auto ud = static_cast<py::object *>(vuserData);
             delete ud;
@@ -61,9 +63,9 @@ void exportB2Fixture(py::module & pybox2dModule){
         })
     ;
 
-    py::class_<b2Fixture>(pybox2dModule,"b2Fixture")
+    py::class_<b2Fixture, FixtureHolder>(pybox2dModule,"b2Fixture")
         .def_property_readonly("type", &b2Fixture::GetType)
-        .def("_getShape", [](b2Fixture & f) {return f.GetShape();}, py::return_value_policy::reference_internal)
+        .def("_getShape", [](b2Fixture & f) {return ShapeHolder(f.GetShape());})
         .def("SetSensor", &b2Fixture::SetSensor,py::arg("sensor`"))
         .def_property_readonly("isSensor", &b2Fixture::IsSensor)
 
@@ -81,24 +83,24 @@ void exportB2Fixture(py::module & pybox2dModule){
             return next;
         }, py::return_value_policy::reference_internal)
 
-        .def("_hasUserData",[](const b2Fixture & b){return b.GetUserData()!=nullptr;})
-        .def("_setUserData",[](b2Fixture & b, const py::object & ud){
+        .def("_has_user_data",[](const b2Fixture & b){return b.GetUserData()!=nullptr;})
+        .def("_set_user_data",[](b2Fixture & b, const py::object & ud){
             auto ptr = new py::object(ud);
             b.SetUserData(ptr);
         })
-        .def("_getUserData",[](const b2Fixture & b){
+        .def("_get_user_data",[](const b2Fixture & b){
             auto vuserData = b.GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             auto ret = py::object(*ud);
             return ret;
         })
-        .def("_deleteUserData",[](b2Fixture & b){
+        .def("_delete_U_serData",[](b2Fixture & b){
             auto vuserData = b.GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             delete ud;
             b.SetUserData(nullptr);
         })
-        .def("testPoint",&b2Fixture::TestPoint)
+        .def("test_point",&b2Fixture::TestPoint)
 
         .def_property_readonly("type",&b2Fixture::GetType)
     ;

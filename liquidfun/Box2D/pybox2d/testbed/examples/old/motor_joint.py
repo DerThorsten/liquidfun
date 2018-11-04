@@ -21,7 +21,7 @@
 from math import sin
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2Color, b2EdgeShape, b2FixtureDef, b2PolygonShape)
+from pybox2d import (b2Color, edge_shape, fixture_def, polygon_shape)
 
 
 class MotorJoint (Framework):
@@ -32,19 +32,19 @@ class MotorJoint (Framework):
     def __init__(self):
         Framework.__init__(self)
 
-        ground = self.world.CreateStaticBody(
-            shapes=[b2EdgeShape(vertices=[(-20, 0), (20, 0)])],
+        ground = self.world.create_static_body(
+            shapes=[edge_shape(vertices=[(-20, 0), (20, 0)])],
         )
 
         # Define motorized body
-        body = self.world.CreateDynamicBody(
+        body = self.world.create_dynamic_body(
             position=(0, 8),
-            allowSleep=False,
-            fixtures=b2FixtureDef(density=2.0, friction=0.6,
-                                  shape=b2PolygonShape(box=(2.0, 0.5)),),
+            allow_sleep=False,
+            fixtures=fixture_def(density=2.0, friction=0.6,
+                                  shape=polygon_shape(box=(2.0, 0.5)),),
         )
 
-        self.joint = self.world.CreateMotorJoint(bodyA=ground, bodyB=body,
+        self.joint = self.world.CreateMotorJoint(body_a=ground, body_b=body,
                                                  maxForce=1000, maxTorque=1000)
 
         self.go = False

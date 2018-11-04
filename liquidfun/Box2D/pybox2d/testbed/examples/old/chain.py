@@ -34,7 +34,7 @@ class Chain (Framework):
         super(Chain, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
+        ground = self.world.create_body(
             shapes=edgeShape(vertices=[(-40, 0), (40, 0)])
         )
 
@@ -49,16 +49,16 @@ class Chain (Framework):
         y = 25
         numPlanks = 30
         for i in range(numPlanks):
-            body = self.world.CreateDynamicBody(
+            body = self.world.create_dynamic_body(
                 position=(0.5 + i, y),
                 fixtures=plank,
             )
 
             # You can try a WeldJoint for a slightly different effect.
             # self.world.CreateWeldJoint(
-            self.world.CreateRevoluteJoint(
-                bodyA=prevBody,
-                bodyB=body,
+            self.world.create_revolute_joint(
+                body_a=prevBody,
+                body_b=body,
                 anchor=(i, y),
             )
 

@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape)
+from pybox2d import (edge_shape, fixture_def, polygon_shape)
 
 
 class Mobile (Framework):
@@ -29,17 +29,17 @@ class Mobile (Framework):
     def __init__(self):
         Framework.__init__(self)
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             position=(0, 20),
-            shapes=[b2EdgeShape(vertices=[(-20, 0), (20, 0)])],
+            shapes=[edge_shape(vertices=[(-20, 0), (20, 0)])],
         )
 
         a = 0.5
         depth = 0
         self.root = self.add_node(ground, (0, 0), depth, 3.0, a)
 
-        self.world.CreateRevoluteJoint(bodyA=ground, bodyB=self.root,
-                                       localAnchorA=(0, 0), localAnchorB=(0, a))
+        self.world.create_revolute_joint(body_a=ground, body_b=self.root,
+                                       local_anchor_a=(0, 0), local_anchor_b=(0, a))
 
     def add_node(self, parent, local_anchor, depth, offset, a):
         density = 20.0
@@ -47,9 +47,9 @@ class Mobile (Framework):
 
         p = parent.position + local_anchor - h
 
-        fixture = b2FixtureDef(shape=b2PolygonShape(box=(0.25 * a, a)),
+        fixture = fixture_def(shape=polygon_shape(box=(0.25 * a, a)),
                                density=density)
-        body = self.world.CreateDynamicBody(position=p, fixtures=fixture)
+        body = self.world.create_dynamic_body(position=p, fixtures=fixture)
 
         if depth == self.max_depth:
             return body
@@ -59,10 +59,10 @@ class Mobile (Framework):
         body1 = self.add_node(body, a1, depth + 1, 0.5 * offset, a)
         body2 = self.add_node(body, a2, depth + 1, 0.5 * offset, a)
 
-        self.world.CreateRevoluteJoint(bodyA=body, bodyB=body1,
-                                       localAnchorA=a1, localAnchorB=h)
-        self.world.CreateRevoluteJoint(bodyA=body, bodyB=body2,
-                                       localAnchorA=a2, localAnchorB=h)
+        self.world.create_revolute_joint(body_a=body, body_b=body1,
+                                       local_anchor_a=a1, local_anchor_b=h)
+        self.world.create_revolute_joint(body_a=body, body_b=body2,
+                                       local_anchor_a=a2, local_anchor_b=h)
 
         return body
 

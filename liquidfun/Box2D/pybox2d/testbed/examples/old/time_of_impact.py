@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2Color, b2Globals, b2PolygonShape, b2Sweep, b2TimeOfImpact)
+from pybox2d import (b2Color, b2Globals, polygon_shape, b2Sweep, b2TimeOfImpact)
 
 
 class TimeOfImpact (Framework):
@@ -31,8 +31,8 @@ class TimeOfImpact (Framework):
         super(TimeOfImpact, self).__init__()
 
         # The two shapes to check for time of impact
-        self.shapeA = b2PolygonShape(box=(0.2, 1, (0.5, 1), 0))
-        self.shapeB = b2PolygonShape(box=(2, 0.1))
+        self.shapeA = polygon_shape(box=(0.2, 1, (0.5, 1), 0))
+        self.shapeB = polygon_shape(box=(2, 0.1))
 
     def Step(self, settings):
         super(TimeOfImpact, self).Step(settings)

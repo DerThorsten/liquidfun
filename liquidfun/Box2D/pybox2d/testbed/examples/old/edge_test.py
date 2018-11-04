@@ -19,12 +19,12 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2EdgeShape, b2PolygonShape)
+from pybox2d import (edge_shape, polygon_shape)
 
 
 class EdgeTest (Framework):
     name = "EdgeTest"
-    description = "Utilizes b2EdgeShape"
+    description = "Utilizes edge_shape"
 
     def __init__(self):
         super(EdgeTest, self).__init__()
@@ -37,19 +37,19 @@ class EdgeTest (Framework):
         v6 = (7.0, 1.0)
         v7 = (10.0, 0.0)
 
-        shapes = [b2EdgeShape(vertices=[None, v1, v2, v3]),
-                  b2EdgeShape(vertices=[v1, v2, v3, v4]),
-                  b2EdgeShape(vertices=[v2, v3, v4, v5]),
-                  b2EdgeShape(vertices=[v3, v4, v5, v6]),
-                  b2EdgeShape(vertices=[v4, v5, v6, v7]),
-                  b2EdgeShape(vertices=[v5, v6, v7])
+        shapes = [edge_shape(vertices=[None, v1, v2, v3]),
+                  edge_shape(vertices=[v1, v2, v3, v4]),
+                  edge_shape(vertices=[v2, v3, v4, v5]),
+                  edge_shape(vertices=[v3, v4, v5, v6]),
+                  edge_shape(vertices=[v4, v5, v6, v7]),
+                  edge_shape(vertices=[v5, v6, v7])
                   ]
-        ground = self.world.CreateStaticBody(shapes=shapes)
+        ground = self.world.create_static_body(shapes=shapes)
 
-        box = self.world.CreateDynamicBody(
+        box = self.world.create_dynamic_body(
             position=(0.5, 0.6),
-            allowSleep=False,
-            shapes=b2PolygonShape(box=(0.5, 0.5))
+            allow_sleep=False,
+            shapes=polygon_shape(box=(0.5, 0.5))
         )
 
 if __name__ == "__main__":

@@ -22,9 +22,9 @@ from .framework import (Framework, Keys, main)
 from random import random
 from math import sqrt, sin, cos
 
-from Box2D import (b2BodyDef, b2CircleShape, b2Color, b2EdgeShape,
-                   b2FixtureDef, b2PolygonShape, b2RayCastCallback, b2Vec2,
-                   b2_dynamicBody, b2_pi)
+from pybox2d import (b2BodyDef, circle_shape, b2Color, edge_shape,
+                   fixture_def, polygon_shape, b2RayCastCallback, vec2,
+                   b2_dynamicBody)
 
 
 class RayCastClosestCallback(b2RayCastCallback):
@@ -49,8 +49,8 @@ class RayCastClosestCallback(b2RayCastCallback):
         '''
         self.hit = True
         self.fixture = fixture
-        self.point = b2Vec2(point)
-        self.normal = b2Vec2(normal)
+        self.point = vec2(point)
+        self.normal = vec2(normal)
         # NOTE: You will get this error:
         #   "TypeError: Swig director type mismatch in output value of
         #    type 'float32'"
@@ -72,8 +72,8 @@ class RayCastAnyCallback(b2RayCastCallback):
     def ReportFixture(self, fixture, point, normal, fraction):
         self.hit = True
         self.fixture = fixture
-        self.point = b2Vec2(point)
-        self.normal = b2Vec2(normal)
+        self.point = vec2(point)
+        self.normal = vec2(normal)
         return 0.0
 
 
@@ -93,8 +93,8 @@ class RayCastMultipleCallback(b2RayCastCallback):
     def ReportFixture(self, fixture, point, normal, fraction):
         self.hit = True
         self.fixture = fixture
-        self.points.append(b2Vec2(point))
-        self.normals.append(b2Vec2(normal))
+        self.points.append(vec2(point))
+        self.normals.append(vec2(normal))
         return 1.0
 
 
@@ -110,8 +110,8 @@ class Raycast (Framework):
 
         self.world.gravity = (0, 0)
         # The ground
-        ground = self.world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)])
+        ground = self.world.create_body(
+            shapes=edge_shape(vertices=[(-40, 0), (40, 0)])
         )
 
         # The various shapes
@@ -120,15 +120,15 @@ class Raycast (Framework):
         s = sqrt(2.0) * b
 
         self.shapes = [
-            b2PolygonShape(vertices=[(-0.5, 0), (0.5, 0), (0, 1.5)]),
-            b2PolygonShape(vertices=[(-0.1, 0), (0.1, 0), (0, 1.5)]),
-            b2PolygonShape(
+            polygon_shape(vertices=[(-0.5, 0), (0.5, 0), (0, 1.5)]),
+            polygon_shape(vertices=[(-0.1, 0), (0.1, 0), (0, 1.5)]),
+            polygon_shape(
                 vertices=[(0.5 * s, 0), (0.5 * w, b), (0.5 * w, b + s),
                           (0.5 * s, w), (-0.5 * s, w), (-0.5 * w, b + s),
                           (-0.5 * w, b), (-0.5 * s, 0.0)]
             ),
-            b2PolygonShape(box=(0.5, 0.5)),
-            b2CircleShape(radius=0.5),
+            polygon_shape(box=(0.5, 0.5)),
+            circle_shape(radius=0.5),
         ]
         self.angle = 0
 
@@ -145,27 +145,27 @@ class Raycast (Framework):
         pos = (10.0 * (2.0 * random() - 1.0), 10.0 * (2.0 * random()))
         defn = b2BodyDef(
             type=b2_dynamicBody,
-            fixtures=b2FixtureDef(shape=shape, friction=0.3),
+            fixtures=fixture_def(shape=shape, friction=0.3),
             position=pos,
-            angle=(b2_pi * (2.0 * random() - 1.0)),
+            angle=(math.pi * (2.0 * random() - 1.0)),
         )
 
-        if isinstance(shape, b2CircleShape):
-            defn.angularDamping = 0.02
+        if isinstance(shape, circle_shape):
+            defn.angular_damping = 0.02
 
-        self.world.CreateBody(defn)
+        self.world.create_body(defn)
 
-    def DestroyBody(self):
+    def destroy_body(self):
         for body in self.world.bodies:
             if not self.world.locked:
-                self.world.DestroyBody(body)
+                self.world.destroy_body(body)
             break
 
     def Keyboard(self, key):
         if key in (Keys.K_1, Keys.K_2, Keys.K_3, Keys.K_4, Keys.K_5):
             self.CreateShape(key - Keys.K_1)
         elif key == Keys.K_d:
-            self.DestroyBody()
+            self.destroy_body()
         elif key == Keys.K_m:
             idx = ((self.callbacks.index(self.callback_class) + 1) %
                    len(self.callbacks))
@@ -176,7 +176,7 @@ class Raycast (Framework):
 
         def draw_hit(cb_point, cb_normal):
             cb_point = self.renderer.to_screen(cb_point)
-            head = b2Vec2(cb_point) + 0.5 * cb_normal
+            head = vec2(cb_point) + 0.5 * cb_normal
 
             cb_normal = self.renderer.to_screen(cb_normal)
             self.renderer.DrawPoint(cb_point, 5.0, self.p1_color)
@@ -185,7 +185,7 @@ class Raycast (Framework):
 
         # Set up the raycast line
         length = 11
-        point1 = b2Vec2(0, 10)
+        point1 = vec2(0, 10)
         d = (length * cos(self.angle), length * sin(self.angle))
         point2 = point1 + d
 
@@ -212,7 +212,7 @@ class Raycast (Framework):
             self.Print("Hit")
 
         if not settings.pause or settings.singleStep:
-            self.angle += 0.25 * b2_pi / 180
+            self.angle += 0.25 * math.pi / 180
 
 if __name__ == "__main__":
     main(Raycast)

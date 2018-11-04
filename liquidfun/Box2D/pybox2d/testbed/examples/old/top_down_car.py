@@ -36,21 +36,21 @@ class TDTire(object):
         self.max_lateral_impulse = max_lateral_impulse
         self.ground_areas = []
 
-        self.body = world.CreateDynamicBody(position=position)
-        self.body.CreatePolygonFixture(box=dimensions, density=density)
+        self.body = world.create_dynamic_body(position=position)
+        self.body.create_polygon_fixture(box=dimensions, density=density)
         self.body.userData = {'obj': self}
 
     @property
     def forward_velocity(self):
         body = self.body
-        current_normal = body.GetWorldVector((0, 1))
+        current_normal = body.get_world_vector((0, 1))
         return current_normal.dot(body.linearVelocity) * current_normal
 
     @property
     def lateral_velocity(self):
         body = self.body
 
-        right_normal = body.GetWorldVector((1, 0))
+        right_normal = body.get_world_vector((1, 0))
         return right_normal.dot(body.linearVelocity) * right_normal
 
     def update_friction(self):
@@ -58,18 +58,18 @@ class TDTire(object):
         if impulse.length > self.max_lateral_impulse:
             impulse *= self.max_lateral_impulse / impulse.length
 
-        self.body.ApplyLinearImpulse(self.current_traction * impulse,
+        self.body.apply_linear_impulse(self.current_traction * impulse,
                                      self.body.worldCenter, True)
 
         aimp = 0.1 * self.current_traction * \
             self.body.inertia * -self.body.angularVelocity
-        self.body.ApplyAngularImpulse(aimp, True)
+        self.body.apply_angular_impulse(aimp, True)
 
         current_forward_normal = self.forward_velocity
-        current_forward_speed = current_forward_normal.Normalize()
+        current_forward_speed = current_forward_normal.normalize()
 
         drag_force_magnitude = -2 * current_forward_speed
-        self.body.ApplyForce(self.current_traction * drag_force_magnitude * current_forward_normal,
+        self.body.apply_force(self.current_traction * drag_force_magnitude * current_forward_normal,
                              self.body.worldCenter, True)
 
     def update_drive(self, keys):
@@ -81,7 +81,7 @@ class TDTire(object):
             return
 
         # find the current speed in the forward direction
-        current_forward_normal = self.body.GetWorldVector((0, 1))
+        current_forward_normal = self.body.get_world_vector((0, 1))
         current_speed = self.forward_velocity.dot(current_forward_normal)
 
         # apply necessary force
@@ -93,7 +93,7 @@ class TDTire(object):
         else:
             return
 
-        self.body.ApplyForce(self.current_traction * force * current_forward_normal,
+        self.body.apply_force(self.current_traction * force * current_forward_normal,
                              self.body.worldCenter, True)
 
     def update_turn(self, keys):
@@ -104,7 +104,7 @@ class TDTire(object):
         else:
             return
 
-        self.body.ApplyTorque(desired_torque, True)
+        self.body.apply_torque(desired_torque, True)
 
     def add_ground_area(self, ud):
         if ud not in self.ground_areas:
@@ -151,8 +151,8 @@ class TDCar(object):
         if vertices is None:
             vertices = TDCar.vertices
 
-        self.body = world.CreateDynamicBody(position=position)
-        self.body.CreatePolygonFixture(vertices=vertices, density=density)
+        self.body = world.create_dynamic_body(position=position)
+        self.body.create_polygon_fixture(vertices=vertices, density=density)
         self.body.userData = {'obj': self}
 
         self.tires = [TDTire(self, **tire_kws) for i in range(4)]
@@ -162,16 +162,16 @@ class TDCar(object):
 
         joints = self.joints = []
         for tire, anchor in zip(self.tires, anchors):
-            j = world.CreateRevoluteJoint(bodyA=self.body,
-                                          bodyB=tire.body,
-                                          localAnchorA=anchor,
+            j = world.create_revolute_joint(body_a=self.body,
+                                          body_b=tire.body,
+                                          local_anchor_a=anchor,
                                           # center of tire
-                                          localAnchorB=(0, 0),
-                                          enableMotor=False,
-                                          maxMotorTorque=1000,
-                                          enableLimit=True,
-                                          lowerAngle=0,
-                                          upperAngle=0,
+                                          local_anchor_b=(0, 0),
+                                          enable_motor=False,
+                                          max_motor_torque=1000,
+                                          enable_limit=True,
+                                          lower_angle=0,
+                                          upper_angle=0,
                                           )
 
             tire.body.position = self.body.worldCenter + anchor
@@ -200,7 +200,7 @@ class TDCar(object):
         angle_now = front_left_joint.angle
         angle_to_turn = desired_angle - angle_now
 
-        # TODO fix b2Clamp for non-b2Vec2 types
+        # TODO fix b2Clamp for non-vec2 types
         if angle_to_turn < -turn_per_timestep:
             angle_to_turn = -turn_per_timestep
         elif angle_to_turn > turn_per_timestep:
@@ -231,7 +231,7 @@ class TopDownCar (Framework):
         self.pressed_keys = set()
 
         # The walls
-        boundary = self.world.CreateStaticBody(position=(0, 20))
+        boundary = self.world.create_static_body(position=(0, 20))
         boundary.CreateEdgeChain([(-30, -30),
                                   (-30, 30),
                                   (30, 30),
@@ -241,14 +241,14 @@ class TopDownCar (Framework):
 
         # A couple regions of differing traction
         self.car = TDCar(self.world)
-        gnd1 = self.world.CreateStaticBody(userData={'obj': TDGroundArea(0.5)})
-        fixture = gnd1.CreatePolygonFixture(
+        gnd1 = self.world.create_static_body(userData={'obj': TDGroundArea(0.5)})
+        fixture = gnd1.create_polygon_fixture(
             box=(9, 7, (-10, 15), math.radians(20)))
         # Set as sensors so that the car doesn't collide
         fixture.sensor = True
 
-        gnd2 = self.world.CreateStaticBody(userData={'obj': TDGroundArea(0.2)})
-        fixture = gnd2.CreatePolygonFixture(
+        gnd2 = self.world.create_static_body(userData={'obj': TDGroundArea(0.2)})
+        fixture = gnd2.create_polygon_fixture(
             box=(9, 5, (5, 20), math.radians(-40)))
         fixture.sensor = True
 

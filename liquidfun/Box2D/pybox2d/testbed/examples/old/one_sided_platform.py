@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef, b2PolygonShape,
+from pybox2d import (circle_shape, edge_shape, fixture_def, polygon_shape,
                    b2_linearSlop)
 
 
@@ -32,24 +32,24 @@ class OneSidedPlatform (Framework):
         super(OneSidedPlatform, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-20, 0), (20, 0)])
+        ground = self.world.create_body(
+            shapes=edge_shape(vertices=[(-20, 0), (20, 0)])
         )
 
         # The platform
         half_height = 0.5
         ypos = 10
-        body = self.world.CreateBody(
+        body = self.world.create_body(
             position=(0, ypos),
-            shapes=b2PolygonShape(box=(3, half_height))
+            shapes=polygon_shape(box=(3, half_height))
         )
         self.platform = body.fixtures[0]
 
         # The circular character
         self.character_radius = 0.5
-        body = self.world.CreateDynamicBody(
+        body = self.world.create_dynamic_body(
             position=(0, 12),
-            fixtures=b2FixtureDef(shape=b2CircleShape(
+            fixtures=fixture_def(shape=circle_shape(
                 radius=self.character_radius), density=1.0),
         )
 

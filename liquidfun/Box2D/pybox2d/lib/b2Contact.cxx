@@ -2,11 +2,12 @@
 #include <pybind11/operators.h>
 #include <Box2D/Box2D.h>
 
-#include "proxies.hxx"
+// #include "proxies.hxx"
 namespace py = pybind11;
 
 
 
+#include "holder.hxx"
 
 
 void exportContact(py::module & pybox2dModule){
@@ -16,24 +17,34 @@ void exportContact(py::module & pybox2dModule){
     py::class_<b2ContactEdge>(pybox2dModule,"b2ContactEdge")
     ;
 
+    py::class_<b2Contact, ContactHolder>(pybox2dModule,"b2Contact")
+        .def_property_readonly("fixture_a",[](const b2Contact & c){return FixtureHolder(c.GetFixtureA());})
+        .def_property_readonly("fixture_a",[](      b2Contact & c){return FixtureHolder(c.GetFixtureA());})
+        .def_property_readonly("fixture_b",[](const b2Contact & c){return FixtureHolder(c.GetFixtureB());})
+        .def_property_readonly("fixture_b",[](      b2Contact & c){return FixtureHolder(c.GetFixtureB());})
+        .def_property_readonly("world_manifold",[](b2Contact * contact){
+            b2WorldManifold * wm;
+            contact->GetWorldManifold(wm);
+            return WorldManifoldHolder(wm);
+        })
+        .def_property_readonly("world_manifold",[](const b2Contact * contact){
+            b2WorldManifold * wm;
+            contact->GetWorldManifold(wm);
+            return WorldManifoldHolder(wm);
+        })
 
-    py::class_<b2ContactImpulseProxy>(pybox2dModule,"b2ContactImpulseProxy")
-    ;
+        .def_property_readonly("manifold",[](b2Contact * contact){
+            return ManifoldHolder(contact->GetManifold());
+        })
+        .def_property_readonly("manifold",[](const b2Contact * contact){
+            return ManifoldHolder(contact->GetManifold());
+        })
 
 
-    py::class_<b2ContactProxy>(pybox2dModule,"b2ContactProxy")
-        .def_property_readonly("fixtureA",[](      b2ContactProxy & c){return c.GetFixtureA();},py::return_value_policy::reference_internal)
-        .def_property_readonly("fixtureB",[](      b2ContactProxy & c){return c.GetFixtureB();},py::return_value_policy::reference_internal)
-        .def_property_readonly("worldManifold",&b2ContactProxy::GetWorldManifold)
-    ;
-
-    py::class_<b2Contact>(pybox2dModule,"b2Contact")
-        .def_property_readonly("fixtureA",[](const b2Contact & c){return c.GetFixtureA();},py::return_value_policy::reference_internal)
-        .def_property_readonly("fixtureA",[](      b2Contact & c){return c.GetFixtureA();},py::return_value_policy::reference_internal)
-        .def_property_readonly("fixtureB",[](const b2Contact & c){return c.GetFixtureB();},py::return_value_policy::reference_internal)
-        .def_property_readonly("fixtureB",[](      b2Contact & c){return c.GetFixtureB();},py::return_value_policy::reference_internal)
-        .def_property_readonly("getWorldManifold",&b2Contact::GetWorldManifold)
-
+        // .def_property_readonly("getWorldManifold",
+        //     &b2Contact::GetWorldManifold)
+        // .def_property_readonly("worldManifold",   
+        //     &b2Contact::GetWorldManifold)
     ;
 
 

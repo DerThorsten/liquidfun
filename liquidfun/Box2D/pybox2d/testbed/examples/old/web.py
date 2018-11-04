@@ -19,8 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2DistanceJointDef, b2EdgeShape, b2FixtureDef,
-                   b2PolygonShape)
+from pybox2d import (distance_joint_def, edge_shape, fixture_def,
+                   polygon_shape)
 
 
 class Web(Framework):
@@ -33,14 +33,14 @@ class Web(Framework):
         super(Web, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)])
+        ground = self.world.create_body(
+            shapes=edge_shape(vertices=[(-40, 0), (40, 0)])
         )
 
-        fixture = b2FixtureDef(shape=b2PolygonShape(box=(0.5, 0.5)),
+        fixture = fixture_def(shape=polygon_shape(box=(0.5, 0.5)),
                                density=5, friction=0.2)
 
-        self.bodies = [self.world.CreateDynamicBody(
+        self.bodies = [self.world.create_dynamic_body(
             position=pos,
             fixtures=fixture
         ) for pos in ((-5, 5), (5, 5), (5, 15), (-5, 15))]
@@ -48,7 +48,7 @@ class Web(Framework):
         bodies = self.bodies
 
         # Create the joints between each of the bodies and also the ground
-        #         bodyA      bodyB   localAnchorA localAnchorB
+        #         body_a      body_b   local_anchor_a local_anchor_b
         sets = [(ground,    bodies[0], (-10, 0), (-0.5, -0.5)),
                 (ground,    bodies[1], (10, 0),  (0.5, -0.5)),
                 (ground,    bodies[2], (10, 20), (0.5, 0.5)),
@@ -60,35 +60,35 @@ class Web(Framework):
                 ]
 
         # We will define the positions in the local body coordinates, the length
-        # will automatically be set by the __init__ of the b2DistanceJointDef
+        # will automatically be set by the __init__ of the distance_joint_def
         self.joints = []
-        for bodyA, bodyB, localAnchorA, localAnchorB in sets:
-            dfn = b2DistanceJointDef(
-                frequencyHz=4.0,
-                dampingRatio=0.5,
-                bodyA=bodyA,
-                bodyB=bodyB,
-                localAnchorA=localAnchorA,
-                localAnchorB=localAnchorB,
+        for body_a, body_b, local_anchor_a, local_anchor_b in sets:
+            dfn = distance_joint_def(
+                frequency_hz=4.0,
+                damping_ratio=0.5,
+                body_a=body_a,
+                body_b=body_b,
+                local_anchor_a=local_anchor_a,
+                local_anchor_b=local_anchor_b,
             )
-            self.joints.append(self.world.CreateJoint(dfn))
+            self.joints.append(self.world.create_joint(dfn))
 
     def Keyboard(self, key):
         if key == Keys.K_b:
             for body in self.bodies:
-                # Gets both FixtureDestroyed and JointDestroyed callbacks.
-                self.world.DestroyBody(body)
+                # Gets both fixture_destroyed and JointDestroyed callbacks.
+                self.world.destroy_body(body)
                 break
 
         elif key == Keys.K_j:
             for joint in self.joints:
                 # Does not get a JointDestroyed callback!
-                self.world.DestroyJoint(joint)
+                self.world.destroy_joint(joint)
                 self.joints.remove(joint)
                 break
 
-    def FixtureDestroyed(self, fixture):
-        super(Web, self).FixtureDestroyed(fixture)
+    def fixture_destroyed(self, fixture):
+        super(Web, self).fixture_destroyed(fixture)
         body = fixture.body
         if body in self.bodies:
             print(body)

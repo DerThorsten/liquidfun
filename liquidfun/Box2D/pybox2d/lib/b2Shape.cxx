@@ -5,6 +5,8 @@
 
 namespace py = pybind11;
 
+#include "holder.hxx"
+
 
 
 class PyB2Shape : public b2Shape {
@@ -70,8 +72,8 @@ public:
 
         PYBIND11_OVERLOAD_PURE(
             bool,     /* Return type */
-            b2Shape,      /* Parent class */
-            RayCast, /* Name of function */
+            b2Shape,  /* Parent class */
+            RayCast,  /* Name of function */
             output,input,transform,childIndex      /* Name of function */
         );
         return false;
@@ -117,19 +119,19 @@ void exportB2Shape(py::module & pybox2dModule){
 
 
     auto shapeCls = py::class_< b2Shape
-    , std::unique_ptr<b2Shape>, PyB2Shape
+    , ShapeHolder, PyB2Shape
     >(pybox2dModule,"b2Shape");
     shapeCls
         //.alias<b2Shape>()
         .def(py::init<>())
-        .def("getType",&b2Shape::GetType)
-        .def("getChildCount",&b2Shape::GetChildCount)
+        .def_property_readonly("type",&b2Shape::GetType)
+        .def_property_readonly("child_count",&b2Shape::GetChildCount)
         .def("testPoint",&b2Shape::TestPoint,py::arg("xf"),py::arg("p"))
-        .def("computeDistance",&b2Shape::ComputeDistance)
-        .def("isCircleShape",&isType<b2CircleShape>)
-        .def("isChainShape",&isType<b2ChainShape>)
-        .def("isEdgeShape",&isType<b2EdgeShape>)
-        .def("isPolygonShape",&isType<b2PolygonShape>)
+        .def("compute_distance",&b2Shape::ComputeDistance)
+        .def_property_readonly("is_circle_shape",&isType<b2CircleShape>)
+        .def_property_readonly("is_chain_shape",&isType<b2ChainShape>)
+        .def_property_readonly("is_edge_shape",&isType<b2EdgeShape>)
+        .def_property_readonly("is_polygon_shape",&isType<b2PolygonShape>)
         .def_readwrite("radius", &b2Shape::m_radius)
             //.def_dynamic_cast<b2Shape,b2CircleShape>("asCircleShape")
             //.def_dynamic_cast<b2Shape,b2ChainShape>("asChainShape")
@@ -143,40 +145,39 @@ void exportB2Shape(py::module & pybox2dModule){
 
 
     py::enum_<b2Shape::Type>(shapeCls, "ShapeType")
-        .value("e_circle", b2Shape::Type::e_circle)
-        .value("e_edge", b2Shape::Type::e_edge)
-        .value("e_chain", b2Shape::Type::e_chain)
-        .value("e_polygon", b2Shape::Type::e_polygon)
-        .value("e_typeCount", b2Shape::Type::e_typeCount)
+        .value("circle", b2Shape::Type::e_circle)
+        .value("edge", b2Shape::Type::e_edge)
+        .value("chain", b2Shape::Type::e_chain)
+        .value("polygon", b2Shape::Type::e_polygon)
+        .value("type_count", b2Shape::Type::e_typeCount)
         //.exportValues()
     ;
     
     
     // derived shapes
-    py::class_<b2CircleShape
-    , std::unique_ptr<b2CircleShape>,PyB2Shape
-    >(pybox2dModule,"b2CircleShape",shapeCls)
+    py::class_<b2CircleShape, Holder<b2CircleShape>, b2Shape
+    >(pybox2dModule,"b2CircleShape")
         .def(py::init<>())
         .def_readwrite("pos", &b2CircleShape::m_p)
     ;
     py::class_<b2EdgeShape
-    , std::unique_ptr<b2EdgeShape>,PyB2Shape
-    >(pybox2dModule,"b2EdgeShape",shapeCls)
+    , Holder<b2EdgeShape>,b2Shape
+    >(pybox2dModule,"b2EdgeShape")
         .def(py::init<>())
         .def("set",[](b2EdgeShape * s,const b2Vec2 & v1,const b2Vec2 & v2)
              {s->Set(v1,v2);},py::arg("v1"),py::arg("v2"))
     ;
     py::class_<b2ChainShape
-        , std::unique_ptr<b2ChainShape>,PyB2Shape 
-    >(pybox2dModule,"b2ChainShape",shapeCls)
+        , Holder<b2ChainShape>,b2Shape 
+    >(pybox2dModule,"b2ChainShape")
         .def(py::init<>())
-        .def("createLoop",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
+        .def("create_loop",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
             s->CreateLoop(verts.data(), verts.size());
         })
-        .def("createChain",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
+        .def("create_chain",[](b2ChainShape *s, const std::vector<b2Vec2> & verts ){
             s->CreateChain(verts.data(), verts.size());
         })
-        .def_readonly("vertexCount", &b2ChainShape::m_count)
+        .def_readonly("vertex_count", &b2ChainShape::m_count)
         .def_property_readonly("vertices",[](const b2ChainShape * shape){
             std::vector<b2Vec2> vec(shape->m_count);
             for(size_t i=0; i<vec.size(); ++i){
@@ -187,10 +188,10 @@ void exportB2Shape(py::module & pybox2dModule){
     ;
 
     py::class_<b2PolygonShape
-    , std::unique_ptr<b2PolygonShape>,PyB2Shape
-    >(pybox2dModule,"b2PolygonShape",shapeCls)
+    , Holder<b2PolygonShape>,b2Shape
+    >(pybox2dModule,"b2PolygonShape")
         .def(py::init<>())
-        .def("setAsBox",
+        .def("set_as_box",
             [&](
                 b2PolygonShape & shape,
                 float32 hx,float32 hy,
@@ -201,15 +202,15 @@ void exportB2Shape(py::module & pybox2dModule){
             },
             py::arg("hx"),
             py::arg("hy"),
-            py::arg("centerX") = 0,
-            py::arg("centerY") = 0,
+            py::arg("center_x") = 0,
+            py::arg("center_y") = 0,
             py::arg("angle") = 0
         )
         .def("set",[](b2PolygonShape *s, const std::vector<b2Vec2> & verts ){
             s->Set(verts.data(), verts.size());
         })
-        .def_property_readonly("vertexCount", &b2PolygonShape::GetVertexCount)
-        .def("getVertex", &b2PolygonShape::GetVertex,py::return_value_policy::reference_internal)
+        .def_property_readonly("vertex_count", &b2PolygonShape::GetVertexCount)
+        .def("get_vertex", &b2PolygonShape::GetVertex,py::return_value_policy::reference_internal)
     ;
 
     //pybox2dModule.def("b2PolygonShapeCast", &asType<b2PolygonShape>,

@@ -9,18 +9,18 @@ we create a large ground box and a small dynamic box.
 There is no graphical output for this simple example, only text.
 """
 
-from Box2D import (b2PolygonShape, b2World)
+from pybox2d import (polygon_shape, b2World)
 
 world = b2World()  # default gravity is (0,-10) and doSleep is True
-groundBody = world.CreateStaticBody(position=(0, -10),
-                                    shapes=b2PolygonShape(box=(50, 10)),
+groundBody = world.create_static_body(position=(0, -10),
+                                    shapes=polygon_shape(box=(50, 10)),
                                     )
 
 # Create a dynamic body at (0, 4)
-body = world.CreateDynamicBody(position=(0, 4))
+body = world.create_dynamic_body(position=(0, 4))
 
 # And add a box fixture onto it (with a nonzero density, so it will move)
-box = body.CreatePolygonFixture(box=(1, 1), density=1, friction=0.3)
+box = body.create_polygon_fixture(box=(1, 1), density=1, friction=0.3)
 
 # Prepare for simulation. Typically we use a time step of 1/60 of a second
 # (60Hz) and 6 velocity/2 position iterations. This provides a high quality
@@ -46,7 +46,7 @@ for i in range(60):
 # supplied by pybox2d. Creating a world and a few bodies becomes much more
 # verbose:
 '''
-    from Box2D import (b2BodyDef, b2FixtureDef)
+    from pybox2d import (b2BodyDef, fixture_def)
     # Construct a world object, which will hold and simulate the rigid bodies.
     world = b2World(gravity=(0, -10), doSleep=True)
 
@@ -55,13 +55,13 @@ for i in range(60):
     groundBodyDef.position = (0, -10)
 
     # Make a body fitting this definition in the world.
-    groundBody = world.CreateBody(groundBodyDef)
+    groundBody = world.create_body(groundBodyDef)
 
     # Create a big static box to represent the ground
-    groundBox = b2PolygonShape(box=(50, 10))
+    groundBox = polygon_shape(box=(50, 10))
 
     # And create a fixture definition to hold the shape
-    groundBoxFixture = b2FixtureDef(shape=groundBox)
+    groundBoxFixture = fixture_def(shape=groundBox)
 
     # Add the ground shape to the ground body.
     groundBody.CreateFixture(groundBoxFixture)

@@ -19,13 +19,17 @@ void exportB2Draw(py::module & pybox2dModule){
     ;
 
 
-
     py::class_<PyB2Draw>(pybox2dModule,"b2DrawCaller")
-        .def(py::init<const py::object &>())
-        .def("SetFlags",[](PyB2Draw * draw,const int flag){draw->SetFlags(flag);})
-        .def("GetFlags",[](PyB2Draw * draw){return draw->GetFlags();})
-        .def("AppendFlags",[](PyB2Draw * draw,const int flag){draw->AppendFlags(flag);})
-        .def("ClearFlags",[](PyB2Draw * draw,const int flag){draw->ClearFlags(flag);})
+        .def(py::init<const py::object &, const bool >())
+
+        .def_property("flags",
+            [](PyB2Draw * draw){return draw->GetFlags();},
+            [](PyB2Draw * draw,const int flag){draw->SetFlags(flag);}
+        )
+        .def("reset_bounding_box",&PyB2Draw::resetBoundingBox)
+        .def_property_readonly("bounding_box", &PyB2Draw::getBoundingBox)
+        .def("_append_flags_int",[](PyB2Draw * draw,const int flag){draw->AppendFlags(flag);})
+        .def("_clear_flags_int",[](PyB2Draw * draw,const int flag){draw->ClearFlags(flag);})
     ;
 }
 

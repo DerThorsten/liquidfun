@@ -19,8 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2Color, b2Distance, b2PolygonShape, b2Transform, b2Vec2,
-                   b2_pi)
+from pybox2d import (b2Color, b2Distance, polygon_shape, b2Transform, vec2,
+                   math.pi)
 
 
 class Distance (Framework):
@@ -40,13 +40,13 @@ class Distance (Framework):
 
         # Transform B -- a translation and a rotation
         self.transformB = b2Transform()
-        self.positionB = b2Vec2(12.017401, 0.13678508)
+        self.positionB = vec2(12.017401, 0.13678508)
         self.angleB = -0.0109265
         self.transformB.Set(self.positionB, self.angleB)
 
         # The two shapes, transformed by the respective transform[A,B]
-        self.polygonA = b2PolygonShape(box=(10, 0.2))
-        self.polygonB = b2PolygonShape(box=(2, 0.1))
+        self.polygonA = polygon_shape(box=(10, 0.2))
+        self.polygonB = polygon_shape(box=(2, 0.1))
 
     def Step(self, settings):
         super(Distance, self).Step(settings)
@@ -83,9 +83,9 @@ class Distance (Framework):
         elif key == Keys.K_s:
             self.positionB -= (0, 0.1)
         elif key == Keys.K_q:
-            self.angleB += 0.1 * b2_pi
+            self.angleB += 0.1 * math.pi
         elif key == Keys.K_e:
-            self.angleB -= 0.1 * b2_pi
+            self.angleB -= 0.1 * math.pi
         self.transformB.Set(self.positionB, self.angleB)
 
 if __name__ == "__main__":

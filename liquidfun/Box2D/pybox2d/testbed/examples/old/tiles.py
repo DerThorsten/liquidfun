@@ -21,7 +21,7 @@
 from math import ceil, log
 
 from .framework import (Framework, main)
-from Box2D import (b2FixtureDef, b2PolygonShape, b2Vec2)
+from pybox2d import (fixture_def, polygon_shape, vec2)
 
 
 class Tiles (Framework):
@@ -38,7 +38,7 @@ class Tiles (Framework):
         def ground_positions():
             N = 200
             M = 10
-            position = b2Vec2(0, 0)
+            position = vec2(0, 0)
             for i in range(M):
                 position.x = -N * a
                 for j in range(N):
@@ -46,16 +46,16 @@ class Tiles (Framework):
                     position.x += 2.0 * a
                 position.y -= 2.0 * a
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             position=(0, -a),
-            shapes=[b2PolygonShape(box=(a, a, position, 0))
+            shapes=[polygon_shape(box=(a, a, position, 0))
                     for position in ground_positions()]
         )
 
         count = 20
 
         def dynamic_positions():
-            x = b2Vec2(-7.0, 0.75)
+            x = vec2(-7.0, 0.75)
             deltaX = (0.5625, 1.25)
             deltaY = (1.125, 0.0)
             for i in range(count):
@@ -66,10 +66,10 @@ class Tiles (Framework):
                 x += deltaX
 
         for pos in dynamic_positions():
-            self.world.CreateDynamicBody(
+            self.world.create_dynamic_body(
                 position=pos,
-                fixtures=b2FixtureDef(
-                    shape=b2PolygonShape(box=(a, a)), density=5)
+                fixtures=fixture_def(
+                    shape=polygon_shape(box=(a, a)), density=5)
             )
 
     def Step(self, settings):

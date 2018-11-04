@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape, b2Vec2)
+from pybox2d import (edge_shape, fixture_def, polygon_shape, vec2)
 
 
 class Pyramid (Framework):
@@ -28,15 +28,15 @@ class Pyramid (Framework):
     def __init__(self):
         super(Pyramid, self).__init__()
         # The ground
-        ground = self.world.CreateStaticBody(
-            shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)])
+        ground = self.world.create_static_body(
+            shapes=edge_shape(vertices=[(-40, 0), (40, 0)])
         )
 
         box_half_size = (0.5, 0.5)
         box_density = 5.0
         box_rows = 20
 
-        x = b2Vec2(-7, 0.75)
+        x = vec2(-7, 0.75)
         deltaX = (0.5625, 1.25)
         deltaY = (1.125, 0)
 
@@ -44,10 +44,10 @@ class Pyramid (Framework):
             y = x.copy()
 
             for j in range(i, box_rows):
-                self.world.CreateDynamicBody(
+                self.world.create_dynamic_body(
                     position=y,
-                    fixtures=b2FixtureDef(
-                        shape=b2PolygonShape(box=box_half_size),
+                    fixtures=fixture_def(
+                        shape=polygon_shape(box=box_half_size),
                         density=box_density)
                 )
 

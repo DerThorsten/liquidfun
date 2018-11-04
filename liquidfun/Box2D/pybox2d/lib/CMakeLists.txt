@@ -1,14 +1,14 @@
-add_definitions(-DLIQUIDFUN_MULTI_GRAVITY=1)
+# add_definitions(-DLIQUIDFUN_MULTI_GRAVITY=1)
 
 
-add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING=1)
-add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING)
+# add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING=1)
+# add_definitions(-DPYBIND11_HAS_NO_STD_TO_STRING)
 
-add_definitions(-DPYBIND11_NO_EXCEPTION_PTR=1)
-add_definitions(-DPYBIND11_NO_EXCEPTION_PTR)
+# add_definitions(-DPYBIND11_NO_EXCEPTION_PTR=1)
+# add_definitions(-DPYBIND11_NO_EXCEPTION_PTR)
 
-cmake_minimum_required(VERSION 2.8.12)
-project(example)
+# cmake_minimum_required(VERSION 2.8.12)
+#project(example)
 
 
 
@@ -175,10 +175,12 @@ set(BOX2D_General_HDRS
 
 
 
+#find_package(pybind11 REQUIRED)
 
-add_subdirectory(pybind11-master)
+add_subdirectory(pybind11)
+
 pybind11_add_module(_pybox2d 
-
+  pybox2d.cxx
   ${BOX2D_General_HDRS}
   ${BOX2D_Joints_SRCS}
   ${BOX2D_Joints_HDRS}
@@ -197,7 +199,7 @@ pybind11_add_module(_pybox2d
   ${BOX2D_Rope_SRCS}
   ${BOX2D_Rope_HDRS}
 
-  pybox2d.cxx
+  
   b2Math.cxx
   b2World.cxx
   b2Body.cxx
@@ -213,19 +215,20 @@ pybind11_add_module(_pybox2d
   b2Collision.cxx
   b2Draw.cxx
   b2Vectorization.cxx
+  export_batch_debug_draw.cxx
 )
 
 
 
 
-#add_dependencies(_pybox2d Box2D_shared)
-#target_link_libraries(pybox2d ${Box2D})
-# message(Box2D_shared)
-# message(${Box2D})
-# message("f")
-#target_link_libraries(_pybox2d Box2D_shared)
-# Don't add a 'lib' prefix to the shared library
-set_target_properties(_pybox2d PROPERTIES PREFIX "")
+add_dependencies(_pybox2d Box2D_shared)
+
+#message(Box2D_shared)
+#message(${Box2D})
+
+target_link_libraries(_pybox2d PUBLIC Box2D_shared)
+
+# set_target_properties(_pybox2d PROPERTIES PREFIX "")
 
 
 
@@ -258,8 +261,8 @@ ENDFOREACH()
 
 
 
-add_custom_target(copy_python_test ALL#POST_BUILD
-    COMMAND cmake -E copy_if_different 
-    ${CMAKE_SOURCE_DIR}/pybox2d/test/test.py 
-    ${CMAKE_BINARY_DIR}/test_python/test.py)
+# add_custom_target(copy_python_test ALL#POST_BUILD
+#     COMMAND cmake -E copy_if_different 
+#     ${CMAKE_SOURCE_DIR}/pybox2d/test/test.py 
+#     ${CMAKE_BINARY_DIR}/test_python/test.py)
 

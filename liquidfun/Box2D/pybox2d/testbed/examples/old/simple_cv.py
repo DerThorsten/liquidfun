@@ -31,19 +31,19 @@ TIME_STEP = 1.0 / TARGET_FPS
 world = world(gravity=(0, -10), doSleep=True)
 
 # And a static body to hold the ground shape
-ground_body = world.CreateStaticBody(
+ground_body = world.create_static_body(
     position=(0, 0),
     shapes=polygonShape(box=(50, 1)),
 )
 
 # Create a couple dynamic bodies
-bodyc = world.CreateDynamicBody(position=(20, 45))
+bodyc = world.create_dynamic_body(position=(20, 45))
 circle = bodyc.CreateCircleFixture(radius=0.5, density=1, friction=0.3)
 
-bodyb = world.CreateDynamicBody(position=(30, 45), angle=15)
-box = bodyb.CreatePolygonFixture(box=(2, 1), density=1, friction=0.3)
+body_b = world.create_dynamic_body(position=(30, 45), angle=15)
+box = body_b.create_polygon_fixture(box=(2, 1), density=1, friction=0.3)
 
-world.CreateWeldJoint(bodyA=bodyc, bodyB=bodyb, anchor=bodyb.worldCenter)
+world.CreateWeldJoint(body_a=bodyc, body_b=body_b, anchor=body_b.worldCenter)
 
 drawer = OpencvDrawFuncs(w=640, h=480, ppm=20)
 drawer.install()

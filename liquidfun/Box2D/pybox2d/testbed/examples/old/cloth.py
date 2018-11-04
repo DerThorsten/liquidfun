@@ -24,7 +24,7 @@
 #   http://www.box2d.org/forum/viewtopic.php?f=6&t=6124
 #
 from .framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2FixtureDef, b2Random, b2Vec2)
+from pybox2d import (circle_shape, fixture_def, b2Random, vec2)
 
 
 def create_cloth(world, segment_count, body_size, position=(0, 30),
@@ -33,15 +33,15 @@ def create_cloth(world, segment_count, body_size, position=(0, 30),
     segment_w, segment_h = segment_count
     body_spacing_w = body_size * 2
     total_w = body_spacing_w * segment_w
-    position = b2Vec2(*position)
+    position = vec2(*position)
 
     # The static bar at the top which holds the cloth
-    bar = world.CreateStaticBody(position=position)
-    bar.CreatePolygonFixture(box=(total_w / 2.0 + body_spacing_w,
+    bar = world.create_static_body(position=position)
+    bar.create_polygon_fixture(box=(total_w / 2.0 + body_spacing_w,
                                   bar_height / 2.0),
                              groupIndex=group_index)
 
-    box_fixture = b2FixtureDef(shape=b2CircleShape(radius=body_size),
+    box_fixture = fixture_def(shape=circle_shape(radius=body_size),
                                groupIndex=group_index, density=density)
 
     weld_joints = []
@@ -51,11 +51,11 @@ def create_cloth(world, segment_count, body_size, position=(0, 30),
         pos = position - (total_w / 2.0, y * body_spacing_w)
         for x in range(segment_w):
             pos += (body_spacing_w, 0.0)
-            body = world.CreateDynamicBody(position=pos, fixtures=box_fixture)
+            body = world.create_dynamic_body(position=pos, fixtures=box_fixture)
             cloth[x][y] = body
 
             if y == 0:
-                joint = world.CreateWeldJoint(bodyA=body, bodyB=bar,
+                joint = world.CreateWeldJoint(body_a=body, body_b=bar,
                                               anchor=body.position)
                 weld_joints.append(joint)
 
@@ -71,14 +71,14 @@ def create_cloth(world, segment_count, body_size, position=(0, 30),
                 right_body = cloth[x][y - 1]
                 connect_bodies.append((left_body, right_body))
 
-    for bodyA, bodyB in connect_bodies:
+    for body_a, body_b in connect_bodies:
         joint = world.CreateDistanceJoint(
-            bodyA=bodyA,
-            bodyB=bodyB,
-            anchorA=bodyA.position,
-            anchorB=bodyB.position,
-            frequencyHz=base_hz + b2Random(0, base_hz / 2.0),
-            dampingRatio=base_damping + b2Random(0.01, base_damping),
+            body_a=body_a,
+            body_b=body_b,
+            anchorA=body_a.position,
+            anchorB=body_b.position,
+            frequency_hz=base_hz + b2Random(0, base_hz / 2.0),
+            damping_ratio=base_damping + b2Random(0.01, base_damping),
         )
         distance_joints.append(joint)
 
@@ -113,9 +113,9 @@ def step_cloth(world, cloth, wind, body_size, segment_count, distance_joints,
             continue
 
         for joint in distance_joints:
-            if ((joint.bodyA == c1 and joint.bodyB == c2) or
-                    (joint.bodyA == c2 and joint.bodyB == c1)):
-                world.DestroyJoint(joint)
+            if ((joint.body_a == c1 and joint.body_b == c2) or
+                    (joint.body_a == c2 and joint.body_b == c1)):
+                world.destroy_joint(joint)
                 distance_joints.remove(joint)
                 break
 

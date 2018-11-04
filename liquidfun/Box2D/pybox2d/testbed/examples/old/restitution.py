@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef)
+from pybox2d import (circle_shape, edge_shape, fixture_def)
 
 
 class Restitution (Framework):
@@ -30,18 +30,18 @@ class Restitution (Framework):
         super(Restitution, self).__init__()
 
         # The ground
-        ground = self.world.CreateStaticBody(
-            shapes=b2EdgeShape(vertices=[(-20, 0), (20, 0)])
+        ground = self.world.create_static_body(
+            shapes=edge_shape(vertices=[(-20, 0), (20, 0)])
         )
 
         radius = 1.0
         density = 1.0
         # The bodies
         for i, restitution in enumerate([0.0, 0.1, 0.3, 0.5, 0.75, 0.9, 1.0]):
-            self.world.CreateDynamicBody(
+            self.world.create_dynamic_body(
                 position=(-10 + 3.0 * i, 20),
-                fixtures=b2FixtureDef(
-                    shape=b2CircleShape(radius=radius),
+                fixtures=fixture_def(
+                    shape=circle_shape(radius=radius),
                     density=density, restitution=restitution)
             )
 
