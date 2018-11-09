@@ -1,6 +1,6 @@
 from ._pybox2d import *
 from .tools import _classExtender
-
+from . extend_math import vec2
 
 class ParticleGroupFlag(object):
     # prevents overlapping or leaking.
@@ -84,7 +84,7 @@ def particle_system_def(
     destroy_by_age = None,
     lifetime_granularity = None,
 ):
-    d = b2ParticleSystemDef()
+    d = ParticleSystemDef()
 
     if strict_contact_check  is not None:
         d.strict_contact_check = strict_contact_check
@@ -147,7 +147,7 @@ def particle_group_def(
     lifetime=None,
     group=None
 ):
-    d = b2ParticleGroupDef()
+    d = ParticleGroupDef()
     if flags is not None:
         d.flags = flags
     if group_flags is not None:
@@ -180,13 +180,36 @@ def particle_group_def(
     return d
 
 
+def particle_def(
+    flags = None,
+    position = None,
+    velocity = None,
+    color = None,
+    lifetime = None,
+    group = None
+):
+    pd = ParticleDef() 
 
+    if flags is not None:
+        pd.flags = flags
+    if position is not None:
+        pd.position = vec2(position)
+    if velocity is not None:
+        pd.velocity = vec2(velocity)
+    if color is not None:
+        pd.color = color
+    if lifetime is not None:
+        pd.lifetime = lifetime
+    if group is not None:
+        pd.group = group
+
+    return pd
 #class _ParticleSystem(b2ParticleSystem):
 #    pass
 #_classExtender(_ParticleSystem,['group','shape'])
 
 
-class _ParticleGroupDef(b2ParticleGroupDef):
+class _ParticleGroupDef(ParticleGroupDef):
 
     @property
     def group(self):

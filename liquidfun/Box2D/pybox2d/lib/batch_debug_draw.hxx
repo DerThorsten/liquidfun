@@ -69,6 +69,7 @@ struct BatchDebugDrawOptions
         draw_aabbs = true;
         draw_joints = true;
         draw_coms = true;
+        draw_particles = true;
         draw_circles_as_polygons = false;
         n_circle_vertices = 40;
     }
@@ -77,11 +78,10 @@ struct BatchDebugDrawOptions
     bool draw_aabbs;
     bool draw_joints;
     bool draw_coms;
+    bool draw_particles;
     bool draw_circles_as_polygons;
     int  n_circle_vertices;
 };
-
-
 
 const static uint8_t INACTIVE_BODY = 0;
 const static uint8_t STATIC_BODY = 1;
@@ -166,6 +166,10 @@ struct BatchDebugDrawCollector
     };
 
 
+    // struct ParticleSystem
+    // {
+
+    // };
 
     void collect(PyWorld * world)
     {
@@ -191,6 +195,10 @@ struct BatchDebugDrawCollector
         {    
         }
 
+        for (b2ParticleSystem* p = world->GetParticleSystemList(); p; p = p->GetNext())
+        {
+            collect_particle_system(p);
+        }
     }
     void collect_aabbs(b2World *world)
     {   
@@ -433,6 +441,17 @@ struct BatchDebugDrawCollector
         }
     }
 
+    void collect_particle_system(const b2ParticleSystem * system)
+    {
+        int32 particleCount = system->GetParticleCount();
+        const b2Vec2* positionBuffer = system->GetPositionBuffer();
+        for(int32 pi=0; pi<particleCount; ++pi)
+        {
+            this->update_bounding_box(positionBuffer[pi]);
+        }
+        m_particle_systems.push_back(system);
+    }
+
     void clear()
     {
         m_joint_segments.clear();
@@ -444,7 +463,8 @@ struct BatchDebugDrawCollector
         m_polygon_shapes.clear();
         m_bounding_boxes.clear();
         m_circles_axis.clear();
-
+        m_particle_systems.clear();
+        
         m_drawing_bounding_box.lowerBound.x = std::numeric_limits<float>::infinity();
         m_drawing_bounding_box.lowerBound.y = std::numeric_limits<float>::infinity();
 
@@ -489,4 +509,7 @@ struct BatchDebugDrawCollector
     // standart circle
     std::vector<b2Vec2> m_standart_circle_verts;
     std::vector<b2Vec2> m_circle_verts;
+
+    // particle systems
+    std::vector<const b2ParticleSystem * > m_particle_systems;
 };

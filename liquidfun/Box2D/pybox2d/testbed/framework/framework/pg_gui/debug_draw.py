@@ -137,7 +137,7 @@ class PgDebugDraw(pybox2d.DebugDraw):
             self.painter.drawConvexPolygon(numpy_to_qpoly(vertices))
 
     def draw_particles(self, centers, radius, colors=None):
-        print("draw")
+        #print("draw")
         painter = self.painter
         if True:#colors is None or not self.framework_settings.draw_colored_particles:
             color = (1,0,0)
@@ -151,7 +151,7 @@ class PgDebugDraw(pybox2d.DebugDraw):
                 #pen.setCapStyle(QtCore.Qt.RoundCap);
                 painter.setBrush(QtGui.QBrush(brush_color))
                 painter.setPen(pen)
-                print(centers)
+                #print(centers)
                 painter.drawPoints(numpy_to_qpoly(centers))
         else:
             with SaveRestore(painter):
@@ -162,7 +162,7 @@ class PgDebugDraw(pybox2d.DebugDraw):
                     painter.setPen(pen)
                     
                     painter.drawPoints(numpy_to_qpoly(centers))
-        print("D0ne")
+
     def draw_joint(self, joint):
         
         anchor_a = joint.anchor_a
@@ -259,11 +259,34 @@ class PgBatchDebugDraw(pybox2d.BatchDebugDraw):
             #painter.setBrush(pen_color)
             painter.drawPath(path)
 
+    def draw_particles(self, centers, radius, colors=None):
+        #print("draw parts")
+        painter = self.painter
+        if True:#colors is None or not self.framework_settings.draw_colored_particles:
+            color = (1,0,0)
+            brush_color = QtGui.QColor(*[255.0 * c for c in color])
+            pen_color = brush_color
+            pen = QtGui.QPen(pen_color, radius, QtCore.Qt.SolidLine)
+            brush = QtGui.QBrush(brush_color)
+
+
+            with SaveRestore(painter):
+                #pen.setCapStyle(QtCore.Qt.RoundCap);
+                painter.setBrush(QtGui.QBrush(brush_color))
+                painter.setPen(pen)
+                #print(centers)
+                painter.drawPoints(numpy_to_qpoly(centers))
+        else:
+            with SaveRestore(painter):
+                for center,color in zip(centers,colors):
+
+                    pen_color = QtGui.QColor(color)
+                    pen = QtGui.QPen(pen_color, radius, QtCore.Qt.SolidLine)
+                    painter.setPen(pen)
+                    
+                    painter.drawPoints(numpy_to_qpoly(centers))
 
     def draw_circles(self, centers, radii, color):
-        pass
-
-    def draw_particles(self, centers, radius, colors):
         pass
 
 class DebugDrawGraphicsObject(pg.GraphicsObject):
@@ -297,7 +320,7 @@ class DebugDrawGraphicsObject(pg.GraphicsObject):
         self.framework_settings = self.framework.framework_settings
 
         self.world.set_batch_debug_draw(self.batch_debug_draw)
-        self.world.set_debug_draw(self.debug_draw)
+        #self.world.set_debug_draw(self.debug_draw)
 
         # init shape bits
         self._supress_events = True
@@ -329,6 +352,7 @@ class DebugDrawGraphicsObject(pg.GraphicsObject):
         batch_draw_debug_data_opts.draw_joints = fms.draw_joints
         batch_draw_debug_data_opts.draw_aabbs = fms.draw_aabbs
         batch_draw_debug_data_opts.draw_coms = fms.draw_coms
+        batch_draw_debug_data_opts.draw_particles = fms.draw_particles
 
     def _build_param(self):
         #fms = self.framework_settings
@@ -383,7 +407,8 @@ class DebugDrawGraphicsObject(pg.GraphicsObject):
             batch_draw_debug_data_opts.draw_joints = fms.draw_joints
             batch_draw_debug_data_opts.draw_aabbs = fms.draw_aabbs
             batch_draw_debug_data_opts.draw_coms = fms.draw_coms
-
+            batch_draw_debug_data_opts.draw_particles = fms.draw_particles
+            print(batch_draw_debug_data_opts.draw_particles)
             #if(draw_bit_param.param('draw shapes').value()):
             #    flags.append('shape')
             #if(draw_bit_param.param('draw joints').value()):
@@ -395,7 +420,6 @@ class DebugDrawGraphicsObject(pg.GraphicsObject):
             #if(draw_bit_param.param('draw center of mass').value()):
             #    flags.append('center_of_mass')
             if(draw_bit_param.param('draw particle').value()):
-                print('wup')
                 flags.append('particle')
 
             self.debug_draw.append_flags(flags)

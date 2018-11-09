@@ -4,7 +4,6 @@
 
 #include <Box2D/Box2D.h>
 #include <iostream>
-#include "proxies.hxx"
 
 #include "holder.hxx"
 #include "user_data.hxx"

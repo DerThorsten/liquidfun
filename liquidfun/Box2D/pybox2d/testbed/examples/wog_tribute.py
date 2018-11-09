@@ -13,7 +13,7 @@ class GooDistanceJointDef():
     def __init__(self):
         self.max_add_dist = 10
     def make_jd(self, body_a, body_b, **kwargs):
-        return b2d.distance_joint_def(body_a, body_b,length=5, frequency_hz=2, **kwargs)
+        return b2d.distance_joint_def(body_a, body_b,length=5, frequency_hz=5, **kwargs)
 
 
 class GooBallDef(object):
@@ -157,13 +157,16 @@ class WogTribute(Framework):
         for j in self.goo_graph.joints:
             rf = j.get_reaction_force(idt).length
             mx = max(rf, mx)
-            self.gui.renderer.draw_segment(j.anchor_a, j.anchor_b, (255,0,0))
-            if rf > 200:
-                to_del_j.append(j)
-        for j in to_del_j:
-            self.goo_graph.destroy_joint(j)
-        if self.step_count % 10 == 0:
-            print(mx)
+            v = math.exp(-0.02*rf)
+            c = (1.0-v)*255.0
+            #print(v,c)
+            self.gui.renderer.draw_segment(j.anchor_a, j.anchor_b, (c,255.0-c,0))
+            #if rf > 200:
+            #    to_del_j.append(j)
+        #for j in to_del_j:
+        #    self.goo_graph.destroy_joint(j)
+        #if self.step_count % 10 == 0:
+        #    print(mx)
     def on_mouse_down(self, p):
 
         goo_ball_def = GooBallDef()

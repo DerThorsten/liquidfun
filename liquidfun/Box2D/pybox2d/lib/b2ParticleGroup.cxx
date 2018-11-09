@@ -13,7 +13,7 @@ void exportB2ParticleGroup(py::module & pybox2dModule){
 
 
 
-    py::class_<b2ParticleGroupDef>(pybox2dModule, "b2ParticleGroupDef")
+    py::class_<b2ParticleGroupDef>(pybox2dModule, "ParticleGroupDef")
     .def(py::init<>())
         //.def("SetRadius",&b2ParticleSystem::SetRadius)
         //.def("SetDamping",&b2ParticleSystem::SetDamping)

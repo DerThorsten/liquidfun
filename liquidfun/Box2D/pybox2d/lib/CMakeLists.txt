@@ -160,14 +160,44 @@ set(BOX2D_General_HDRS
 
 
 
+set(BOX2D_Extensions_SRCS
+  ${CMAKE_SOURCE_DIR}/Box2D/Extensions/b2Emitter.cpp
+)
+set(BOX2D_Extensions_HDRS
+  ${CMAKE_SOURCE_DIR}/Box2D/Extensions/b2Emitter.h
+)
 
 
 
 
+set( BOX2D_HEADERS
+  ${BOX2D_General_HDRS}
+  ${BOX2D_Joints_HDRS}
+  ${BOX2D_Contacts_HDRS}
+  ${BOX2D_Dynamics_HDRS}
+  ${BOX2D_Common_HDRS}
+  ${BOX2D_Shapes_HDRS}
+  ${BOX2D_Collision_HDRS}
+  ${BOX2D_Particle_HDRS}
+  ${BOX2D_Rope_HDRS}
+  ${BOX2D_Extensions_HDRS}
+)
 
 
 
 
+set( BOX2D_SOURCES
+  ${BOX2D_Joints_SRCS}
+  ${BOX2D_Contacts_SRCS}
+  ${BOX2D_Dynamics_SRCS}
+  ${BOX2D_Common_SRCS}
+  ${BOX2D_Shapes_SRCS}
+  ${BOX2D_Collision_SRCS}
+  ${BOX2D_Particle_SRCS}
+  ${BOX2D_Rope_SRCS}
+  ${BOX2D_Extensions_SRCS}
+
+)
 
 
 
@@ -177,28 +207,17 @@ set(BOX2D_General_HDRS
 
 #find_package(pybind11 REQUIRED)
 
+# extensions
+#include_directories(${BOX2D_HEADERS})
+
 add_subdirectory(pybind11)
+
+
 
 pybind11_add_module(_pybox2d 
   pybox2d.cxx
-  ${BOX2D_General_HDRS}
-  ${BOX2D_Joints_SRCS}
-  ${BOX2D_Joints_HDRS}
-  ${BOX2D_Contacts_SRCS}
-  ${BOX2D_Contacts_HDRS}
-  ${BOX2D_Dynamics_SRCS}
-  ${BOX2D_Dynamics_HDRS}
-  ${BOX2D_Common_SRCS}
-  ${BOX2D_Common_HDRS}
-  ${BOX2D_Shapes_SRCS}
-  ${BOX2D_Shapes_HDRS}
-  ${BOX2D_Collision_SRCS}
-  ${BOX2D_Collision_HDRS}
-  ${BOX2D_Particle_SRCS}
-  ${BOX2D_Particle_HDRS}
-  ${BOX2D_Rope_SRCS}
-  ${BOX2D_Rope_HDRS}
 
+  ${BOX2D_SOURCES}
   
   b2Math.cxx
   b2World.cxx
@@ -216,6 +235,7 @@ pybind11_add_module(_pybox2d
   b2Draw.cxx
   b2Vectorization.cxx
   export_batch_debug_draw.cxx
+  pyEmitter.cxx
 )
 
 

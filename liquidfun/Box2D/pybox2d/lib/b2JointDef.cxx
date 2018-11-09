@@ -2,6 +2,7 @@
 
 #include <Box2D/Box2D.h>
 #include "user_data.hxx"
+#include "holder.hxx"
 
 namespace py = pybind11;
 
@@ -17,9 +18,22 @@ void exportb2JointDef(py::module & pybox2dModule){
         .def(py::init<>())
         .def_readwrite("jtype", &PyJointDef::type)
         .def_readwrite("collide_connected", &PyJointDef::collideConnected)
-        .def_readwrite("body_a", &PyJointDef::bodyA)
-        .def_readwrite("body_b", &PyJointDef::bodyB)
-
+        .def_property("body_a", 
+            [](PyJointDef * self){
+                BodyHolder(self->bodyA);
+            }, 
+            [](PyJointDef * self, b2Body * bodyA){
+                self->bodyA = bodyA;
+            }
+        )
+        .def_property("body_b", 
+            [](PyJointDef * self){
+                BodyHolder(self->bodyB);
+            }, 
+            [](PyJointDef * self, b2Body * bodyB){
+                self->bodyB = bodyB;
+            }
+        )
     ;
    
 

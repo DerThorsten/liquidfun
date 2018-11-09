@@ -21,7 +21,7 @@
 from framework import Framework,Testbed
 import pybox2d as b2d
 import math
-
+import random
 
 class Tumbler (Framework):
     name = "Tumbler"
@@ -33,70 +33,85 @@ class Tumbler (Framework):
 
         ground = self.world.create_body()
 
-        body = self.world.create_dynamic_body(
-            position=(0, 10),
+        body = self.world.create_static_body(
+            position=(0, -10),
             allow_sleep=False,
             shape_fixture=b2d.fixture_def(density=5.0),
             shapes=[
-                b2d.polygon_shape((0.5, 10), (10, 0), 0),
-                b2d.polygon_shape((0.5, 10), (-10, 0), 0),
-                b2d.polygon_shape((10, 0.5), (0, 10), 0),
-                b2d.polygon_shape((10, 0.5), (0, -10), 0),
+                b2d.polygon_shape((3, 200), (200, 0), 0),
+                b2d.polygon_shape((3, 200), (-200, 0), 0),
+                b2d.polygon_shape((200, 3), (0, 200), 0),
+                b2d.polygon_shape((200, 3), (0, -200), 0),
             ]
         )
 
-        self.joint = self.world.create_revolute_joint(body_a=ground, body_b=body,
-                                                    local_anchor_a=(0, 10), local_anchor_b=(0, 0),
-                                                    reference_angle=0, motor_speed=0.3 * math.pi,
-                                                    enable_motor=False, max_motor_torque=5000)
+        pdef = b2d.particle_system_def(viscous_strength=10,spring_strength=0.0,
+            density=0.1)
+        self.psystem = self.world.create_particle_system(pdef)
+        self.psystem.radius = 0.2
+        self.psystem.damping = 0.2
 
 
+        empty_group = b2d.particle_group_def(flags=b2d.ParticleFlag.waterParticle, 
+                                      group_flags=b2d.ParticleGroupFlag.solidParticleGroup & b2d.ParticleGroupFlag.particleGroupCanBeEmpty,
+                                    )
 
-        pdef = b2d.particle_system_def(viscous_strength=5.0,spring_strength=0.0)
-        psystem = self.world.create_particle_system(pdef)
-        psystem.radius = 0.1
-        psystem.damping = 0.2
-
-
-        shape = b2d.polygon_shape(box=(5.0,5.0),center=b2d.vec2(0,7.01),angle=0)
-        pgDef = b2d.particle_group_def(flags=b2d.ParticleFlag.waterParticle, 
-                                      group_flags=b2d.ParticleGroupFlag.solidParticleGroup,
-                                 shape=shape,strength=0.0
-                                 )
-
-        group = psystem.create_particle_group(pgDef)
+        self.group = self.psystem.create_particle_group(empty_group)
 
 
 
 
+        self.emitter_body = self.world.create_dynamic_body(
+            position=(0, 0),
+            allow_sleep=False,
+            fixtures=b2d.fixture_def(
+                density=1.0, 
+                shape=b2d.polygon_shape(box=(3, 0.5))
+            ),
+        )
 
 
+        if True:
+            edef  = b2d.LinearEmitterDef()
+            edef.body = self.emitter_body
+            edef.transform = b2d.transform((0,0),0)
+            edef.size = b2d.vec2(6,1)
+            edef.velocity = b2d.vec2(0,1)
+            edef.emite_rate = 2000
+            edef.lifetime = 1.0
+            self.emitter = b2d.LinearEmitter(self.psystem, self.group, edef)
+        else:
+            edef  = b2d.RadialEmitterDef()
+            edef.position = b2d.vec2(3,-3)
+            edef.inner_radius = 3.0
+            edef.outer_radius = 5.0
+            edef.velocity_magnitude = 200.0
+            edef.emite_rate = 10
+            edef.lifetime = 8.0
+            edef.start_angle = 0 + math.pi
+            edef.stop_angle = math.pi /4.0 + math.pi
+            self.emitter = b2d.RadialEmitter(self.psystem, self.group, edef)
+
+    def post_step(self, dt):
+        #Framework.step(self, dt)
+        if True:
+            lc = list(self.emitter_body.local_center)
+            lc[1]  +=1.5
+            pos = self.emitter_body.get_world_point(b2d.vec2(lc))
+            #print(pos)
+            self.emitter.position = b2d.vec2(pos)
+            self.emitter.angle = self.emitter_body.angle
+            self.emitter.step(dt)
 
 
-
-
-    def step(self, settings):
-        Framework.step(self, settings)
-        
-        if self.step_count % 24 == 0:
-            self.count -= 1
-            if self.count <= 0:
-                return
-
-            self.world.create_dynamic_body(
-               position=(0, 10),
-               allow_sleep=False,
-               fixtures=b2d.fixture_def(
-                   density=1.0, shape=b2d.polygon_shape(box=(0.525, 0.125))),
-            )
 
 if __name__ == "__main__":
     testbed = Testbed(guiType='pg')
     testbed.setExample(Tumbler)
-    #testbed.run()
-    import cProfile
-    cProfile.run('testbed.run()','restats')
+    testbed.run()
+    #import cProfile
+    #cProfile.run('testbed.run()','restats')
     # import pstats
-    p = pstats.Stats('restats')
-    p.strip_dirs().sort_stats('cumulative').print_stats(100)
+    #p = pstats.Stats('restats')
+    #p.strip_dirs().sort_stats('cumulative').print_stats(100)
 

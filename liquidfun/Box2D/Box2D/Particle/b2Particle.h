@@ -267,6 +267,7 @@ protected:
 
 extern b2ParticleColor b2ParticleColor_zero;
 
+ 
 /// A particle definition holds all the data needed to construct a particle.
 /// You can safely re-use these definitions.
 struct b2ParticleDef

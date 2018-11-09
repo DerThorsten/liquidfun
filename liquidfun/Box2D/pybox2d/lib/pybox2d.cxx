@@ -18,6 +18,7 @@ void exportb2Collision(py::module & );
 void exportExtendedDebugDraw(py::module & );
 
 void exportb2Vectorization(py::module &);
+void exportEmitter(py::module &);
 
 PYBIND11_PLUGIN(_pybox2d) {
     py::module pybox2dModule("_pybox2d", "pybox2d python bindings");
@@ -38,7 +39,7 @@ PYBIND11_PLUGIN(_pybox2d) {
     exportb2Collision(pybox2dModule);
     exportExtendedDebugDraw(pybox2dModule);
     exportb2Vectorization(pybox2dModule);
-
+    exportEmitter(pybox2dModule);
 
     
     return pybox2dModule.ptr();

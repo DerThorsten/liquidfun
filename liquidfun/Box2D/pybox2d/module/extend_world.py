@@ -67,6 +67,17 @@ class World(b2World):
             aabb = collector.drawing_aabb
             batch_debug_draw.drawing_aabb(aabb)
 
+            #print("draw_particles",opts.draw_particles)
+            if opts.draw_particles:
+
+                ps = collector.particle_systems()
+                for centers, radius in ps:
+                    #print("r",radius)
+                    batch_debug_draw.draw_particles(centers=centers, radius=radius, colors=None)
+
+
+
+
             if opts.draw_shapes:
 
                 for pseudo_body_type in pseudo_body_types:
@@ -280,7 +291,6 @@ class _World(b2World):
         return self._create_body(btype= b2BodyType.b2_kinematicBody, **kwargs)
     def create_body(self, **kwargs):
         return self._create_body(**kwargs)
-
 
     def create_mouse_joint(self, *args,**kwargs):
         

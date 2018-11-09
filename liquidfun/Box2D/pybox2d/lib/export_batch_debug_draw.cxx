@@ -8,6 +8,7 @@
 
 #include "holder.hxx"
 #include "batch_debug_draw.hxx"
+#include "numpy.hxx"
 // PYBIND11_DECLARE_HOLDER_TYPE(T, Holder<T>, true);
 
 //#include "type_caster.hxx"
@@ -136,10 +137,11 @@ void exportExtendedDebugDraw(py::module & pybox2dModule){
 
     py::class_<BatchDebugDrawOptions>(pybox2dModule, "BatchDebugDrawOptions")
         .def(py::init<>())
-        .def_readwrite("draw_shapes", & BatchDebugDrawOptions::draw_shapes)
-        .def_readwrite("draw_aabbs",  & BatchDebugDrawOptions::draw_aabbs)
-        .def_readwrite("draw_joints", & BatchDebugDrawOptions::draw_joints)
-        .def_readwrite("draw_coms",   & BatchDebugDrawOptions::draw_coms)
+        .def_readwrite("draw_shapes",      & BatchDebugDrawOptions::draw_shapes)
+        .def_readwrite("draw_aabbs",       & BatchDebugDrawOptions::draw_aabbs)
+        .def_readwrite("draw_joints",      & BatchDebugDrawOptions::draw_joints)
+        .def_readwrite("draw_coms",        & BatchDebugDrawOptions::draw_coms)
+        .def_readwrite("draw_particles",   & BatchDebugDrawOptions::draw_particles)
     ;
 
     py::class_<BatchDebugDrawCollector>(pybox2dModule, "BatchDebugDrawCollector")
@@ -212,6 +214,33 @@ void exportExtendedDebugDraw(py::module & pybox2dModule){
             }
             return verts_array;
         })
+        .def("particle_systems", [](const BatchDebugDrawCollector & self) -> py::list {
+            py::list ret;
+
+            for(auto system : self.m_particle_systems)
+            {
+                int particleCount = system->GetParticleCount();
+                float32 radius = system->GetRadius();
+                const b2Vec2* positionBuffer = system->GetPositionBuffer();
+                if (false && system->GetColorBuffer())
+                {
+                    //const b2ParticleColor* colorBuffer = system->GetColorBuffer();
+                    //m_debugDraw->DrawParticles(positionBuffer, radius, colorBuffer, particleCount);
+                }
+                else
+                {
+                    auto array = make_numpy_array<float>({particleCount, int(2)});
+                    auto array_2d = array. template mutable_unchecked<2>();
+                    auto array_ptr = array_2d.mutable_data(0,0);
+                    auto buffer_ptr = & positionBuffer[0].x;
+                    std::copy(buffer_ptr, buffer_ptr + 2*particleCount, array_ptr);
+                 
+                    auto tuple = py::make_tuple(array, radius);
+                    ret.append(tuple);
+                }
+            }
+            return ret;
+        });
     ;
 
 

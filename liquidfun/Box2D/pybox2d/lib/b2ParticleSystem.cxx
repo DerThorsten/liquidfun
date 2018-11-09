@@ -4,15 +4,16 @@
 
 namespace py = pybind11;
 
-
 #include "holder.hxx"
+#include "user_data.hxx"
+
 
 
 void exportB2ParticleSystem(py::module & pybox2dModule){
 
 
 
-    py::class_<b2ParticleSystemDef>(pybox2dModule, "b2ParticleSystemDef")
+    py::class_<b2ParticleSystemDef>(pybox2dModule, "ParticleSystemDef")
         .def(py::init<>())
 
         .def_readwrite("strict_contact_check", &b2ParticleSystemDef::strictContactCheck)
@@ -42,6 +43,7 @@ void exportB2ParticleSystem(py::module & pybox2dModule){
     py::class_<b2ParticleSystem, ParticleSystemHolder >(pybox2dModule, "b2ParticleSystem")
         .def_property("radius", &b2ParticleSystem::GetRadius, &b2ParticleSystem::SetRadius)
         .def_property("damping", &b2ParticleSystem::GetDamping, &b2ParticleSystem::SetDamping)
+        .def_property("density", &b2ParticleSystem::GetDensity, &b2ParticleSystem::SetDensity)
         .def("create_particle_group",
             [](b2ParticleSystem * self, const b2ParticleGroupDef & def)
             {
@@ -50,11 +52,19 @@ void exportB2ParticleSystem(py::module & pybox2dModule){
         )
         .def("destroy_oldest_particle", &b2ParticleSystem::DestroyOldestParticle,
             py::arg("index"), py::arg("call_destruction_listener"))
-        .def("destroy_particles_in_shape", [](b2ParticleSystem * self,  const b2Shape& shape, const b2Transform& xf,bool callDestructionListener)
+        .def("destroy_particles_in_shape", 
+        [](b2ParticleSystem * self,  const b2Shape& shape, const b2Transform& xf,bool callDestructionListener)
             {
                 self->DestroyParticlesInShape(shape, xf, callDestructionListener);
             }, 
             py::arg("shape"), py::arg("xf"), py::arg("call_destruction_listener") = false
+        )
+        .def("create_particle",
+        [](b2ParticleSystem * self,  PyDefExtender<b2ParticleDef>  & def)
+            {
+                self->CreateParticle(def);
+            }, 
+            py::arg("def")
         )
     ;
 
