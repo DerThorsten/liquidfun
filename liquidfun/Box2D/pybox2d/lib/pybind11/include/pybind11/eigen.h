@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "numpy.h"
 
 #if defined(__INTEL_COMPILER)

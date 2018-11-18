@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "cast.h"
 
 NAMESPACE_BEGIN(PYBIND11_NAMESPACE)

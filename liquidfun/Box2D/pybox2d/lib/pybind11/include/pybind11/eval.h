@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "pybind11.h"
 
 NAMESPACE_BEGIN(PYBIND11_NAMESPACE)

@@ -12,6 +12,7 @@
 #include "detail/common.h"
 #include "operators.h"
 
+#include "detail/ndk.h"
 #include <algorithm>
 #include <sstream>
 

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "pytypes.h"
 #include "detail/typeid.h"
 #include "detail/descr.h"

@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "pybind11.h"
 
 #if defined(__clang__) && !defined(__INTEL_COMPILER)

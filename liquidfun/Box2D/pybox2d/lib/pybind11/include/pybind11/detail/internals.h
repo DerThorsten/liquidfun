@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "ndk.h"
 #include "../pytypes.h"
 
 NAMESPACE_BEGIN(PYBIND11_NAMESPACE)

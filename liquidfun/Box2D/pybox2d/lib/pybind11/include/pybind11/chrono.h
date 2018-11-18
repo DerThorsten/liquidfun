@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "pybind11.h"
 #include <cmath>
 #include <ctime>

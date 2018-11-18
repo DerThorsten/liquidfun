@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "detail/common.h"
 
 NAMESPACE_BEGIN(PYBIND11_NAMESPACE)

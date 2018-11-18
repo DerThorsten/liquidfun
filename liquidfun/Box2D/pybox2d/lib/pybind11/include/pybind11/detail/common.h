@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "ndk.h"
+
 #if !defined(NAMESPACE_BEGIN)
 #  define NAMESPACE_BEGIN(name) namespace name {
 #endif

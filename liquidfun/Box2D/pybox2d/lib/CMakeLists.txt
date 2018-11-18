@@ -241,12 +241,12 @@ pybind11_add_module(_pybox2d
 
 
 
-add_dependencies(_pybox2d Box2D_shared)
+# add_dependencies(_pybox2d Box2D_shared)
 
-#message(Box2D_shared)
-#message(${Box2D})
+# #message(Box2D_shared)
+# #message(${Box2D})
 
-target_link_libraries(_pybox2d PUBLIC Box2D_shared)
+# target_link_libraries(_pybox2d PUBLIC Box2D_shared)
 
 # set_target_properties(_pybox2d PROPERTIES PREFIX "")
 

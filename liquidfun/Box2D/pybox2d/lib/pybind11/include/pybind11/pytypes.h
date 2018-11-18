@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "detail/ndk.h"
 #include "detail/common.h"
 #include "buffer_info.h"
 #include <utility>

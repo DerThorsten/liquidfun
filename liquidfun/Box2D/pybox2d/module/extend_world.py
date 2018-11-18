@@ -1,6 +1,7 @@
 from . _pybox2d import *
 from . tools import _classExtender, GenericB2dIter
 
+from . extend_shapes import polygon_shape
 from . extend_fixture import fixture_def
 from . extend_math import vec2
 from . extend_collision import aabb
@@ -179,18 +180,7 @@ class World(b2World):
             return sorted_bodies_and_dists[0:n]
         else:
             return sorted_bodies_and_dists
-def world(gravity = (0,-9.81)):
-    return World(vec2(gravity))
 
-
-
-
-
-
-class _World(b2World):
-    def __init__(self, gravity = (0,-9.81)):
-        super(World, self).__init__(vec2(gravity))
-    
     @property
     def bodies(self):
         blist = None
@@ -234,7 +224,7 @@ class _World(b2World):
             ("position",True),
             ("linear_velocity",True),
             ("angular_velocity",True),
-            ("linear_damping ",False),
+            ("linear_damping",False),
             ("angular_damping",False),
             ("allow_sleep",False),
             ("awake",False),
@@ -244,14 +234,21 @@ class _World(b2World):
             ("active",False),
             ("gravity_scale",False),
         ]
+        print(kwargs)
         for attr_name,isVec2 in body_def_attrs:
+            print(attr_name)
             if attr_name in kwargs:
-                val = kwargs[attr_name]
+                print("found",attr_name)
+                #val = kwargs[attr_name]
+                val = kwargs.pop(attr_name)
                 if isVec2:
                     val = vec2(val)
                 setattr(body_def, attr_name, val)
+            else:
+                print("noy found",attr_name)
             
-
+        if len(kwargs) != 0:
+            raise RuntimeError('Invalid Keyword(s) for create_body: %s'%str(list(kwargs.keys())))
 
         body = self._create_body_cpp(body_def)
 
@@ -292,6 +289,13 @@ class _World(b2World):
     def create_body(self, **kwargs):
         return self._create_body(**kwargs)
 
+
+    def create_box_body(self, box, density=None, **kwargs):
+        fixture = fixture_def(density=density, shape=polygon_shape(box=box))
+        return self._create_body(fixtures=fixture, **kwargs)
+
+
+
     def create_mouse_joint(self, *args,**kwargs):
         
         d = mouse_joint_def(*args, **kwargs)
@@ -313,18 +317,10 @@ class _World(b2World):
         return self.create_joint(d)
 
 
-  
 
 
-_classExtender(_World,
-    [
-        'bodies', 'joints',
-        'body_list', 'joint_list',
-        '_create_body', 'create_static_body',
-        'create_dynamic_body','create_kinematic_body',
-        'create_body', 'create_mouse_joint','create_prismatic_joint',
-        'create_distance_joint',
-        'create_revolute_joint',
-        'create_wheel_joint'
-    ]
-)
+
+
+def world(gravity = (0,-9.81)):
+    return World(vec2(gravity))
+

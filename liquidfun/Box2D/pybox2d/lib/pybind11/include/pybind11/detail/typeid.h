@@ -12,6 +12,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "ndk.h"
+
+
 #if defined(__GNUG__)
 #include <cxxabi.h>
 #endif

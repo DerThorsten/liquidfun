@@ -40,6 +40,7 @@
 #  endif
 #endif
 
+#include "detail/ndk.h"
 #include "attr.h"
 #include "options.h"
 #include "detail/class.h"
