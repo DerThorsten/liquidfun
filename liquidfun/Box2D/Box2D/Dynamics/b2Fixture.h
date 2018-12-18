@@ -200,6 +200,9 @@ public:
 	/// Dump this fixture to the log file.
 	void Dump(int32 bodyIndex);
 
+	int32 GetProxyCount() const;
+	const b2FixtureProxy* GetProxies() const;
+
 protected:
 
 	friend class b2Body;

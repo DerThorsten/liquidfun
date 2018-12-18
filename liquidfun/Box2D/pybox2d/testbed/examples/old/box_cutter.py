@@ -24,8 +24,8 @@
 import sys
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2AssertException, b2Color, b2EdgeShape, b2FixtureDef,
-                   b2PolygonShape, b2RayCastCallback, b2Vec2)
+from pybox2d import (b2AssertException, b2Color, edge_shape, fixture_def,
+                   polygon_shape, b2RayCastCallback, vec2)
 
 
 LASER_HALF_WIDTH = 2
@@ -38,8 +38,8 @@ def _polygon_split(fixture, p1, p2, split_size):
     body = fixture.body
     # transform = body.transform
 
-    local_entry = body.GetLocalPoint(p1)
-    local_exit = body.GetLocalPoint(p2)
+    local_entry = body.get_local_point(p1)
+    local_exit = body.get_local_point(p2)
     entry_vector = local_exit - local_entry
     entry_normal = entry_vector.cross(1.0)
     last_verts = None
@@ -47,7 +47,7 @@ def _polygon_split(fixture, p1, p2, split_size):
     cut_added = [-1, -1]
     for vertex in polygon.vertices:
         # Find out if this vertex is on the new or old shape
-        if entry_normal.dot(b2Vec2(vertex) - local_entry) > 0.0:
+        if entry_normal.dot(vec2(vertex) - local_entry) > 0.0:
             verts = new_vertices[0]
         else:
             verts = new_vertices[1]
@@ -58,27 +58,27 @@ def _polygon_split(fixture, p1, p2, split_size):
                 if cut_added[0] != -1:
                     return []
                 cut_added[0] = len(last_verts)
-                last_verts.append(b2Vec2(local_exit))
-                last_verts.append(b2Vec2(local_entry))
+                last_verts.append(vec2(local_exit))
+                last_verts.append(vec2(local_entry))
             elif last_verts == new_vertices[1]:
                 if cut_added[1] != -1:
                     return []
                 cut_added[1] = len(last_verts)
-                last_verts.append(b2Vec2(local_entry))
-                last_verts.append(b2Vec2(local_exit))
+                last_verts.append(vec2(local_entry))
+                last_verts.append(vec2(local_exit))
 
-        verts.append(b2Vec2(vertex))
+        verts.append(vec2(vertex))
         last_verts = verts
 
     # Add the cut if not added yet
     if cut_added[0] < 0:
         cut_added[0] = len(new_vertices[0])
-        new_vertices[0].append(b2Vec2(local_exit))
-        new_vertices[0].append(b2Vec2(local_entry))
+        new_vertices[0].append(vec2(local_exit))
+        new_vertices[0].append(vec2(local_entry))
     if cut_added[1] < 0:
         cut_added[1] = len(new_vertices[1])
-        new_vertices[1].append(b2Vec2(local_entry))
-        new_vertices[1].append(b2Vec2(local_exit))
+        new_vertices[1].append(vec2(local_entry))
+        new_vertices[1].append(vec2(local_exit))
 
     # Cut based on the split size
     for added, verts in zip(cut_added, new_vertices):
@@ -86,14 +86,14 @@ def _polygon_split(fixture, p1, p2, split_size):
             offset = verts[added - 1] - verts[added]
         else:
             offset = verts[-1] - verts[0]
-        offset.Normalize()
+        offset.normalize()
         verts[added] += split_size * offset
 
         if added < len(verts) - 2:
             offset = verts[added + 2] - verts[added + 1]
         else:
             offset = verts[0] - verts[len(verts) - 1]
-        offset.Normalize()
+        offset.normalize()
         verts[added + 1] += split_size * offset
 
     # Ensure the new shapes aren't too small
@@ -105,7 +105,7 @@ def _polygon_split(fixture, p1, p2, split_size):
                     return []
 
     try:
-        return [b2PolygonShape(vertices=verts) for verts in new_vertices]
+        return [polygon_shape(vertices=verts) for verts in new_vertices]
     except b2AssertException:
         return []
     except ValueError:
@@ -156,7 +156,7 @@ def laser_cut(world, laser_body, length=30.0, laser_half_width=2, **kwargs):
         if body in remove_bodies:
             continue
 
-        new_body = world.CreateDynamicBody(
+        new_body = world.create_dynamic_body(
             userData=LASER_SPLIT_TAG,
             position=body.position,
             angle=body.angle,
@@ -183,20 +183,20 @@ def laser_cut(world, laser_body, length=30.0, laser_half_width=2, **kwargs):
                 shape=new_shapes[0],
             )
 
-            body.DestroyFixture(fixture)
+            body.destroy_fixture(fixture)
         except AssertionError:
             print('New fixture/destroy failed: %s' % sys.exc_info()[1])
             remove_bodies.append(body)
 
     for body in remove_bodies:
-        world.DestroyBody(body)
+        world.destroy_body(body)
 
 
 def get_laser_line(laser_body, length, laser_half_width):
     laser_start = (laser_half_width - 0.1, 0.0)
     laser_dir = (length, 0.0)
-    p1 = laser_body.GetWorldPoint(laser_start)
-    p2 = p1 + laser_body.GetWorldVector(laser_dir)
+    p1 = laser_body.get_world_point(laser_start)
+    p2 = p1 + laser_body.get_world_vector(laser_dir)
     return (p1, p2)
 
 
@@ -237,31 +237,31 @@ class BoxCutter(Framework):
     def __init__(self):
         super(BoxCutter, self).__init__()
         # The ground
-        self.ground = self.world.CreateStaticBody(
+        self.ground = self.world.create_static_body(
             userData='ground',
             shapes=[
-                b2EdgeShape(vertices=[(-50, 0), (50, 0)]),
-                b2EdgeShape(vertices=[(-50, 0), (-50, 10)]),
-                b2EdgeShape(vertices=[(50, 0), (50, 10)]),
+                edge_shape(vertices=[(-50, 0), (50, 0)]),
+                edge_shape(vertices=[(-50, 0), (-50, 10)]),
+                edge_shape(vertices=[(50, 0), (50, 10)]),
             ]
         )
 
-        self.laser_body = self.world.CreateDynamicBody(
+        self.laser_body = self.world.create_dynamic_body(
             userData='laser',
             position=(0, 2),
-            fixtures=b2FixtureDef(
+            fixtures=fixture_def(
                 density=4.0,
-                shape=b2PolygonShape(box=(LASER_HALF_WIDTH, 1))
+                shape=polygon_shape(box=(LASER_HALF_WIDTH, 1))
             )
         )
 
         for i in range(2):
-            self.world.CreateDynamicBody(
+            self.world.create_dynamic_body(
                 userData=LASER_SPLIT_TAG,
                 position=(3.0 + i * 6, 8),
-                fixtures=b2FixtureDef(
+                fixtures=fixture_def(
                     density=5.0,
-                    shape=b2PolygonShape(box=(3, 3))
+                    shape=polygon_shape(box=(3, 3))
                 )
             )
 

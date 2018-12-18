@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape)
+from pybox2d import (edge_shape, fixture_def, polygon_shape)
 
 
 class ConveyorBelt (Framework):
@@ -29,26 +29,26 @@ class ConveyorBelt (Framework):
         Framework.__init__(self)
 
         self.using_contacts = True
-        ground = self.world.CreateStaticBody(
-            shapes=[b2EdgeShape(vertices=[(-20, 0), (20, 0)])],
+        ground = self.world.create_static_body(
+            shapes=[edge_shape(vertices=[(-20, 0), (20, 0)])],
         )
 
         # Platform
-        self.platform = self.world.CreateStaticBody(
+        self.platform = self.world.create_static_body(
             position=(-5, 5),
-            allowSleep=False,
-            fixtures=b2FixtureDef(friction=0.8,
-                                  shape=b2PolygonShape(box=(10.0, 5.0)),),
+            allow_sleep=False,
+            fixtures=fixture_def(friction=0.8,
+                                  shape=polygon_shape(box=(10.0, 5.0)),),
         )
 
         self.platform_fixture = self.platform.fixtures[0]
 
         # Boxes
         for i in range(5):
-            self.platform = self.world.CreateDynamicBody(
+            self.platform = self.world.create_dynamic_body(
                 position=(-10.0 + 2.0 * i, 7.0),
-                fixtures=b2FixtureDef(density=20.0,
-                                      shape=b2PolygonShape(box=(0.5, 0.5)),),
+                fixtures=fixture_def(density=20.0,
+                                      shape=polygon_shape(box=(0.5, 0.5)),),
             )
 
     def PreSolve(self, contact, old_manifold):

@@ -27,14 +27,14 @@ details.
 
 For applications on Google Play that integrate this tool, usage is tracked.
 This tracking is done automatically using the embedded version string
-(b2_liquidFunVersionString), and helps us continue to optimize it. Aside from
+(`b2_liquidFunVersionString`), and helps us continue to optimize it. Aside from
 consuming a few extra bytes in your application binary, it shouldn't affect
 your application at all. We use this information to let us know if LiquidFun
 is useful and if we should continue to invest in it. Since this is open
 source, you are free to remove the version string but we would appreciate if
 you would leave it in.
 
-  [LiquidFun Google Group]: http://group.google.com/group/liquidfun
+  [LiquidFun Google Group]: https://groups.google.com/forum/#!forum/liquidfun
   [LiquidFun Issues Tracker]: http://github.com/google/liquidfun/issues
   [stackoverflow.com]: http://www.stackoverflow.com
   [landing page]: http://google.github.io/liquidfun

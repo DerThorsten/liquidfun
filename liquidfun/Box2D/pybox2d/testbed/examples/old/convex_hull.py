@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2Clamp, b2Color, b2PolygonShape, b2Random,
+from pybox2d import (b2Clamp, b2Color, polygon_shape, b2Random,
                    b2_maxPolygonVertices)
 
 
@@ -60,9 +60,9 @@ class ConvexHull (Framework):
         renderer = self.renderer
 
         try:
-            poly = b2PolygonShape(vertices=self.verts)
+            poly = polygon_shape(vertices=self.verts)
         except AssertionError as ex:
-            self.Print('b2PolygonShape failed: %s' % ex)
+            self.Print('polygon_shape failed: %s' % ex)
         else:
             self.Print('Valid: %s' % poly.valid)
 

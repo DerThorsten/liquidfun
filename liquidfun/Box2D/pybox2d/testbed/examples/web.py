@@ -1,8 +1,9 @@
 import sys, os
-sys.path.append('../')
+
 from framework import Framework,Testbed
 from pybox2d import *
 
+print("AAAA")
 
 class Web(Framework):
     name = "Web"
@@ -13,17 +14,23 @@ class Web(Framework):
     def __init__(self):
         super(Web, self).__init__()
 
+        print('acc')
         # The ground
         ground = self.world.createStaticBody(
             shapes=edgeShape(vertices=[(-40, 0), (40, 0)])
         )
+        print('b')
         fixture = fixtureDef(shape=polygonShape(box=(0.5, 0.5)),
                                density=5, friction=0.2)
-        self.bodies = [self.world.createDynamicBody(                                              
-            position=pos,
-            fixtures=fixture
-        ) for pos in ((20+-5, 5), (10+5, 5), (10+5, 15), (10+-5, 15))]
+        print('cc')
 
+        self.bodies =[]
+        for pos in ((20+-5, 5), (10+5, 5), (10+5, 15), (10+-5, 15)):
+            print('acc')
+            b = self.world.createDynamicBody(position=pos,fixtures=fixture)
+            print('abb')
+            self.bodies.append(b)
+        print('c')
         bodies = self.bodies
 
 
@@ -38,7 +45,7 @@ class Web(Framework):
                 (bodies[2], bodies[3], (-0.5, 0),  (0.5, 0)),
                 (bodies[3], bodies[0], (0, -0.5),  (0, 0.5)),
                 ]
-
+        print('d')
         #for b in self.bodies:
         #    print b.GetUserData()
 

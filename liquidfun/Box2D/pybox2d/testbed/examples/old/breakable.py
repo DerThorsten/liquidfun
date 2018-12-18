@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2Cross, b2EdgeShape, b2FixtureDef, b2PolygonShape, b2_pi)
+from pybox2d import (b2Cross, edge_shape, fixture_def, polygon_shape, math.pi)
 
 
 class Breakable (Framework):
@@ -32,22 +32,22 @@ class Breakable (Framework):
         super(Breakable, self).__init__()
 
         # The ground
-        self.world.CreateBody(shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)]))
+        self.world.create_body(shapes=edge_shape(vertices=[(-40, 0), (40, 0)]))
 
         # The breakable body
-        self.shapes = (b2PolygonShape(box=(0.5, 0.5, (-0.5, 0), 0)),
-                       b2PolygonShape(box=(0.5, 0.5, (0.5, 0), 0))
+        self.shapes = (polygon_shape(box=(0.5, 0.5, (-0.5, 0), 0)),
+                       polygon_shape(box=(0.5, 0.5, (0.5, 0), 0))
                        )
-        self.body = self.world.CreateDynamicBody(
+        self.body = self.world.create_dynamic_body(
             position=(0, 40),
-            angle=0.25 * b2_pi,
+            angle=0.25 * math.pi,
             shapes=self.shapes,
-            shapeFixture=b2FixtureDef(density=1),
+            shape_fixture=fixture_def(density=1),
         )
 
         self.fixtures = self.body.fixtures
 
-    def PostSolve(self, contact, impulse):
+    def post_solve(self, contact, impulse):
         # Already broken?
         if self.broke:
             return
@@ -61,14 +61,14 @@ class Breakable (Framework):
         body = self.body
         center = body.worldCenter
 
-        body.DestroyFixture(self.fixtures[1])
+        body.destroy_fixture(self.fixtures[1])
         self.fixture2 = None
 
-        body2 = self.world.CreateDynamicBody(
+        body2 = self.world.create_dynamic_body(
             position=body.position,
             angle=body.angle,
             shapes=self.shapes[1],
-            shapeFixture=b2FixtureDef(density=1),
+            shape_fixture=fixture_def(density=1),
         )
         # Compute consistent velocities for new bodies based on cached
         # velocity.

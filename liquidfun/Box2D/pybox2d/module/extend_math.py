@@ -1,5 +1,5 @@
 
-from _pybox2d import *
+from ._pybox2d import *
 import numpy 
 
 
@@ -24,8 +24,9 @@ def vec2(*args):
     elif l == 2:
         return Vec2(float(args[0]),float(args[1]))
 
-
-
+def transform(position = (0,0), rotation = 0.0):
+    rot = b2Rot(float(rotation))
+    return b2Transform(vec2(position), rot)
 
 class Vec2Iter(object):
     def __init__(self,vector, currentIndex=0):
@@ -79,9 +80,9 @@ def extendB2Vec2():
     b2Vec2.__iter__ = __iter__
 
   
-    def asTuple(self):
+    def as_tuple(self):
         return (self.x,self.y)
-    b2Vec2.asTuple = asTuple
+    b2Vec2.as_tuple = as_tuple
 
     def __repr__(self):
         return "(%f,%f)"%(self.x,self.y)

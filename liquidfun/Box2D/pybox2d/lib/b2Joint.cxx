@@ -4,17 +4,13 @@
 
 namespace py = pybind11;
 
-
+#include "holder.hxx"
+#include "user_data.hxx"
 
 class PyB2Joint : public b2Joint {
 public:
-
     using b2Joint::b2Joint;
-
     virtual ~PyB2Joint() {}
-
-
-
 
     /// Get the anchor point on bodyA in world coordinates.
     virtual b2Vec2 GetAnchorA() const {
@@ -58,8 +54,6 @@ public:
         return float32();
     }
 
-
-
     // They are protected
     virtual void InitVelocityConstraints(const b2SolverData& data){
         PYBIND11_OVERLOAD_PURE(
@@ -86,8 +80,6 @@ public:
         );
         return false;
     }
-
-
 };
 
 
@@ -114,25 +106,25 @@ void exportb2Joint(py::module & pybox2dModule){
 
 
     py::enum_<b2JointType>(pybox2dModule, "b2JointType")
-        .value("e_unknownJoint", b2JointType::e_unknownJoint)
-        .value("e_revoluteJoint", b2JointType::e_revoluteJoint)
-        .value("e_prismaticJoint", b2JointType::e_prismaticJoint)
-        .value("e_distanceJoint", b2JointType::e_distanceJoint)
-        .value("e_pulleyJoint", b2JointType::e_pulleyJoint)
-        .value("e_mouseJoint", b2JointType::e_mouseJoint)
-        .value("e_gearJoint", b2JointType::e_gearJoint)
-        .value("e_wheelJoint", b2JointType::e_wheelJoint)
-        .value("e_weldJoint", b2JointType::e_weldJoint)
-        .value("e_frictionJoint", b2JointType::e_frictionJoint)
-        .value("e_ropeJoint", b2JointType::e_ropeJoint)
-        .value("e_motorJoint", b2JointType::e_motorJoint)
+        .value("unknown_joint", b2JointType::e_unknownJoint)
+        .value("revolute_joint", b2JointType::e_revoluteJoint)
+        .value("prismatic_joint", b2JointType::e_prismaticJoint)
+        .value("distance_joint", b2JointType::e_distanceJoint)
+        .value("pulley_joint", b2JointType::e_pulleyJoint)
+        .value("mouse_joint", b2JointType::e_mouseJoint)
+        .value("gear_joint", b2JointType::e_gearJoint)
+        .value("wheel_joint", b2JointType::e_wheelJoint)
+        .value("weld_joint", b2JointType::e_weldJoint)
+        .value("friction_joint", b2JointType::e_frictionJoint)
+        .value("rope_joint", b2JointType::e_ropeJoint)
+        .value("motor_joint", b2JointType::e_motorJoint)
     ;
 
     py::enum_<b2LimitState>(pybox2dModule, "b2LimitState")
-        .value("e_inactiveLimit", b2LimitState::e_inactiveLimit)
-        .value("e_atLowerLimit", b2LimitState::e_atLowerLimit)
-        .value("e_atUpperLimit", b2LimitState::e_atUpperLimit)
-        .value("e_equalLimits", b2LimitState::e_equalLimits)
+        .value("inactive_limit", b2LimitState::e_inactiveLimit)
+        .value("at_lower_limit", b2LimitState::e_atLowerLimit)
+        .value("at_upper_limit", b2LimitState::e_atUpperLimit)
+        .value("equal_limits", b2LimitState::e_equalLimits)
     ;
 
 
@@ -141,36 +133,40 @@ void exportb2Joint(py::module & pybox2dModule){
         // A lot to do
     ;
 
-    auto jointCls = py::class_<b2Joint, std::unique_ptr<b2Joint>, PyB2Joint>(pybox2dModule,"b2Joint");
+    auto jointCls = py::class_<b2Joint,JointHolder,  PyB2Joint>(pybox2dModule,"Joint");
 
-    
+    add_user_data_api<b2Joint>(jointCls);
     jointCls
         //.alias<b2Joint>()
         .def(py::init<const b2JointDef* >())
         //
         .def_property_readonly("type",&b2Joint::GetType) 
-        .def_property_readonly("bodyA",&b2Joint::GetBodyA)
-        .def_property_readonly("bodyB",&b2Joint::GetBodyB)  
-        .def_property_readonly("anchorA",&b2Joint::GetAnchorA)
-        .def_property_readonly("anchorB",&b2Joint::GetAnchorB)     
-        .def("getReactionForce",&b2Joint::GetReactionForce, py::arg("iv_dt"))
-        .def("getReactionTorque",&b2Joint::GetReactionTorque, py::arg("iv_dt"))
-        .def("_hasNext", [](b2Joint * j){ return j->GetNext()!=nullptr;})
-        .def("_getNext", [](b2Joint * j){return j->GetNext();}, py::return_value_policy::reference_internal)
+        .def_property_readonly("body_a", [](b2Joint * self){
+            return self->GetBodyA();
+        })
+        .def_property_readonly("body_b", [](b2Joint * self){
+            return self->GetBodyB();
+        })  
+        .def_property_readonly("anchor_a",&b2Joint::GetAnchorA)
+        .def_property_readonly("anchor_b",&b2Joint::GetAnchorB)     
+        .def("get_reaction_force",&b2Joint::GetReactionForce, py::arg("iv_dt"))
+        .def("get_reaction_torque",&b2Joint::GetReactionTorque, py::arg("iv_dt"))
+        .def("_has_next", [](b2Joint * j){ return j->GetNext()!=nullptr;})
+        .def("_get_next", [](b2Joint * j){return j->GetNext();}, py::return_value_policy::reference_internal)
 
 
-        .def("_hasUserData",[](const b2Joint * j){return j->GetUserData()!=nullptr;})
-        .def("_setUserData",[](b2Joint * j, const py::object & ud){
+        .def("_has_user_data",[](const b2Joint * j){return j->GetUserData()!=nullptr;})
+        .def("_set_user_data",[](b2Joint * j, const py::object & ud){
             auto ptr = new py::object(ud);
             j->SetUserData(ptr);
         })
-        .def("_getUserData",[](const b2Joint * j){
+        .def("_get_user_data",[](const b2Joint * j){
             auto vuserData = j->GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             auto ret = py::object(*ud);
             return ret;
         })
-        .def("_deleteUserData",[](b2Joint * j){
+        .def("_delete_user_data",[](b2Joint * j){
             auto vuserData = j->GetUserData();
             auto ud = static_cast<py::object *>(vuserData);
             delete ud;
@@ -191,47 +187,51 @@ void exportb2Joint(py::module & pybox2dModule){
     ;
    
    
-    py::class_<b2DistanceJoint,std::unique_ptr<b2DistanceJoint>,PyB2Joint>(pybox2dModule,"b2DistanceJoint",jointCls)
+    py::class_<b2DistanceJoint,DistanceJointHolder, b2Joint>(pybox2dModule,"DistanceJoint")
         .def_property("length",&b2DistanceJoint::GetLength, &b2DistanceJoint::SetLength)
         .def_property("frequency",&b2DistanceJoint::GetFrequency, &b2DistanceJoint::SetFrequency)
-        .def_property("dampingRatio",&b2DistanceJoint::GetDampingRatio, &b2DistanceJoint::SetDampingRatio)
+        .def_property("damping_ratio",&b2DistanceJoint::GetDampingRatio, &b2DistanceJoint::SetDampingRatio)
     ;  
-    py::class_<b2FrictionJoint
-        , std::unique_ptr<b2FrictionJoint>, PyB2Joint 
-    >(pybox2dModule,"b2FrictionJoint",jointCls)
+    py::class_<b2FrictionJoint,Holder<b2FrictionJoint>, b2Joint>(pybox2dModule,"FrictionJoint");
     ;
     py::class_<b2GearJoint
-        , std::unique_ptr<b2GearJoint>, PyB2Joint 
-    >(pybox2dModule,"b2GearJoint",jointCls)
+        , Holder<b2GearJoint>, b2Joint 
+    >(pybox2dModule,"GearJoint")
     ;
     py::class_<b2PrismaticJoint
-        , std::unique_ptr<b2PrismaticJoint>, PyB2Joint 
-    >(pybox2dModule,"b2PrismaticJoint",jointCls)
+        , Holder<b2PrismaticJoint>, b2Joint 
+    >(pybox2dModule,"PrismaticJoint")
     ;
     py::class_<b2PulleyJoint
-        , std::unique_ptr<b2PulleyJoint>, PyB2Joint 
-    >(pybox2dModule,"b2PulleyJoint",jointCls)
+        , Holder<b2PulleyJoint>, b2Joint 
+    >(pybox2dModule,"PulleyJoint")
     ;
     py::class_<b2RevoluteJoint
-        , std::unique_ptr<b2RevoluteJoint>, PyB2Joint 
-    >(pybox2dModule,"b2RevoluteJoint",jointCls)
+        , Holder<b2RevoluteJoint>, b2Joint 
+    >(pybox2dModule,"RevoluteJoint")
     ;
     py::class_<b2RopeJoint
-        , std::unique_ptr<b2RopeJoint>, PyB2Joint 
-    >(pybox2dModule,"b2RopeJoint",jointCls)
+        , Holder<b2RopeJoint>, b2Joint 
+    >(pybox2dModule,"RopeJoint")
     ;
     py::class_<b2WeldJoint
-        , std::unique_ptr<b2WeldJoint>, PyB2Joint 
-    >(pybox2dModule,"b2WeldJoint",jointCls)
+        , Holder<b2WeldJoint>, b2Joint 
+    >(pybox2dModule,"WeldJoint")
     ;
     py::class_<b2WheelJoint
-        , std::unique_ptr<b2WheelJoint>, PyB2Joint 
-    >(pybox2dModule,"b2WheelJoint",jointCls)
+        , Holder<b2WheelJoint>, b2Joint 
+    >(pybox2dModule,"WheelJoint")
+        .def_property_readonly("joint_translation", &b2WheelJoint::GetJointTranslation)
+        .def_property("motor_speed",&b2WheelJoint::GetMotorSpeed, &b2WheelJoint::SetMotorSpeed)
+        .def_property("enable_motor",&b2WheelJoint::IsMotorEnabled, &b2WheelJoint::EnableMotor)
+        .def_property("max_motor_torque",&b2WheelJoint::GetMaxMotorTorque, &b2WheelJoint::SetMaxMotorTorque)
+        .def_property("frequency_hz",&b2WheelJoint::GetSpringFrequencyHz, &b2WheelJoint::SetSpringFrequencyHz)
+        .def_property("damping_ratio",&b2WheelJoint::GetSpringDampingRatio, &b2WheelJoint::SetSpringDampingRatio)
     ;
     py::class_<b2MouseJoint
-        , std::unique_ptr<b2MouseJoint>, PyB2Joint 
-    >(pybox2dModule,"b2MouseJoint",jointCls)
-        .def("SetTarget",&b2MouseJoint::SetTarget)
+        , Holder<b2MouseJoint>, b2Joint 
+    >(pybox2dModule,"MouseJoint")
+        .def_property("target", &b2MouseJoint::GetTarget, &b2MouseJoint::SetTarget)
     ;
    
 

@@ -19,8 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2Filter, b2FixtureDef,
-                   b2PolygonShape, b2Vec2)
+from pybox2d import (circle_shape, edge_shape, b2Filter, fixture_def,
+                   polygon_shape, vec2)
 
 
 class CollisionFiltering (Framework):
@@ -39,8 +39,8 @@ class CollisionFiltering (Framework):
         super(CollisionFiltering, self).__init__()
         # Ground body
         world = self.world
-        ground = world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)])
+        ground = world.create_body(
+            shapes=edge_shape(vertices=[(-40, 0), (40, 0)])
         )
 
         # Define the groups that fixtures can fall into
@@ -74,7 +74,7 @@ class CollisionFiltering (Framework):
         #   if (filterA.groupIndex == filterB.groupIndex and filterA.groupIndex != 0):
         #       collide if filterA.groupIndex is greater than zero (negative groups never collide)
         #   else:
-        #       collide if (filterA.maskBits & filterB.categoryBits) != 0 and (filterA.categoryBits & filterB.maskBits) != 0
+        #       collide if (filterA.maskBits & filterB.category_bits) != 0 and (filterA.category_bits & filterB.maskBits) != 0
         #
         # So, if they have the same group index (and that index isn't the
         # default 0), then they collide if the group index is > 0 (since
@@ -88,17 +88,17 @@ class CollisionFiltering (Framework):
         # -> http://en.wikipedia.org/wiki/Mask_%28computing%29
 
         # Small triangle
-        triangle = b2FixtureDef(
-            shape=b2PolygonShape(vertices=[(-1, 0), (1, 0), (0, 2)]),
+        triangle = fixture_def(
+            shape=polygon_shape(vertices=[(-1, 0), (1, 0), (0, 2)]),
             density=1,
             filter=b2Filter(
                 groupIndex=smallGroup,
-                categoryBits=triangleCategory,
+                category_bits=triangleCategory,
                 maskBits=triangleMask,
             )
         )
 
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(-5, 2),
             fixtures=triangle,
         )
@@ -108,7 +108,7 @@ class CollisionFiltering (Framework):
             2.0 * v for v in triangle.shape.vertices]
         triangle.filter.groupIndex = largeGroup
 
-        trianglebody = world.createDynamicBody(
+        trianglebody = world.create_dynamic_body(
             position=(-5, 6),
             fixtures=triangle,
             fixedRotation=True,  # <--
@@ -116,18 +116,18 @@ class CollisionFiltering (Framework):
         # note that the large triangle will not rotate
 
         # Small box
-        box = b2FixtureDef(
-            shape=b2PolygonShape(box=(1, 0.5)),
+        box = fixture_def(
+            shape=polygon_shape(box=(1, 0.5)),
             density=1,
             restitution=0.1,
             filter = b2Filter(
                 groupIndex=smallGroup,
-                categoryBits=boxCategory,
+                category_bits=boxCategory,
                 maskBits=boxMask,
             )
         )
 
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(0, 2),
             fixtures=box,
         )
@@ -135,23 +135,23 @@ class CollisionFiltering (Framework):
         # Large box
         box.shape.box = (2, 1)
         box.filter.groupIndex = largeGroup
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(0, 6),
             fixtures=box,
         )
 
         # Small circle
-        circle = b2FixtureDef(
-            shape=b2CircleShape(radius=1),
+        circle = fixture_def(
+            shape=circle_shape(radius=1),
             density=1,
             filter=b2Filter(
                 groupIndex=smallGroup,
-                categoryBits=circleCategory,
+                category_bits=circleCategory,
                 maskBits=circleMask,
             )
         )
 
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(5, 2),
             fixtures=circle,
         )
@@ -159,7 +159,7 @@ class CollisionFiltering (Framework):
         # Large circle
         circle.shape.radius *= 2
         circle.filter.groupIndex = largeGroup
-        world.createDynamicBody(
+        world.create_dynamic_body(
             position=(5, 6),
             fixtures=circle,
         )
@@ -167,18 +167,18 @@ class CollisionFiltering (Framework):
         # Create a joint for fun on the big triangle
         # Note that it does not inherit or have anything to do with the
         # filter settings of the attached triangle.
-        box = b2FixtureDef(shape=b2PolygonShape(box=(0.5, 1)), density=1)
+        box = fixture_def(shape=polygon_shape(box=(0.5, 1)), density=1)
 
-        testbody = world.createDynamicBody(
+        testbody = world.create_dynamic_body(
             position=(-5, 10),
             fixtures=box,
         )
-        world.CreatePrismaticJoint(
-            bodyA=trianglebody,
-            bodyB=testbody,
-            enableLimit=True,
-            localAnchorA=(0, 4),
-            localAnchorB=(0, 0),
+        world.create_prismatic_joint(
+            body_a=trianglebody,
+            body_b=testbody,
+            enable_limit=True,
+            local_anchor_a=(0, 4),
+            local_anchor_b=(0, 0),
             localAxisA=(0, 1),
             lowerTranslation=-1,
             upperTranslation=1,

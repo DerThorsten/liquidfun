@@ -29,24 +29,24 @@ class Pulley (Framework):
         super(Pulley, self).__init__()
         y, L, a, b = 16.0, 12.0, 1.0, 2.0
         # The ground
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             shapes=[edgeShape(vertices=[(-40, 0), (40, 0)]),
                     circleShape(radius=2, pos=(-10.0, y + b + L)),
                     circleShape(radius=2, pos=(10.0, y + b + L))]
         )
 
-        bodyA = self.world.CreateDynamicBody(
+        body_a = self.world.create_dynamic_body(
             position=(-10, y),
             fixtures=fixtureDef(shape=polygonShape(box=(a, b)), density=5.0),
         )
-        bodyB = self.world.CreateDynamicBody(
+        body_b = self.world.create_dynamic_body(
             position=(10, y),
             fixtures=fixtureDef(shape=polygonShape(box=(a, b)), density=5.0),
         )
 
         self.pulley = self.world.CreatePulleyJoint(
-            bodyA=bodyA,
-            bodyB=bodyB,
+            body_a=body_a,
+            body_b=body_b,
             anchorA=(-10.0, y + b),
             anchorB=(10.0, y + b),
             groundAnchorA=(-10.0, y + b + L),

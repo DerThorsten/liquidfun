@@ -21,8 +21,8 @@
 from math import cos, sin
 
 from .framework import (Framework, main)
-from Box2D import (b2CircleShape, b2EdgeShape, b2FixtureDef, b2PolygonShape,
-                   b2_pi)
+from pybox2d import (circle_shape, edge_shape, fixture_def, polygon_shape,
+                   math.pi)
 
 
 class CharacterCollision(Framework):
@@ -35,33 +35,33 @@ class CharacterCollision(Framework):
     def __init__(self):
         super(CharacterCollision, self).__init__()
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             position=(0, 0),
-            shapes=b2EdgeShape(vertices=[(-20, 0), (20, 0)])
+            shapes=edge_shape(vertices=[(-20, 0), (20, 0)])
         )
 
         # Collinear edges
-        self.world.CreateStaticBody(
-            shapes=[b2EdgeShape(vertices=[(-8, 1), (-6, 1)]),
-                    b2EdgeShape(vertices=[(-6, 1), (-4, 1)]),
-                    b2EdgeShape(vertices=[(-4, 1), (-2, 1)]),
+        self.world.create_static_body(
+            shapes=[edge_shape(vertices=[(-8, 1), (-6, 1)]),
+                    edge_shape(vertices=[(-6, 1), (-4, 1)]),
+                    edge_shape(vertices=[(-4, 1), (-2, 1)]),
                     ]
         )
 
         # Square tiles
-        self.world.CreateStaticBody(
-            shapes=[b2PolygonShape(box=[1, 1, (4, 3), 0]),
-                    b2PolygonShape(box=[1, 1, (6, 3), 0]),
-                    b2PolygonShape(box=[1, 1, (8, 3), 0]),
+        self.world.create_static_body(
+            shapes=[polygon_shape(box=[1, 1, (4, 3), 0]),
+                    polygon_shape(box=[1, 1, (6, 3), 0]),
+                    polygon_shape(box=[1, 1, (8, 3), 0]),
                     ]
         )
 
         # Square made from an edge loop. Collision should be smooth.
-        body = self.world.CreateStaticBody()
+        body = self.world.create_static_body()
         body.CreateLoopFixture(vertices=[(-1, 3), (1, 3), (1, 5), (-1, 5)])
 
         # Edge loop.
-        body = self.world.CreateStaticBody(position=(-10, 4))
+        body = self.world.create_static_body(position=(-10, 4))
         body.CreateLoopFixture(vertices=[
             (0.0, 0.0), (6.0, 0.0),
             (6.0, 2.0), (4.0, 1.0),
@@ -71,31 +71,31 @@ class CharacterCollision(Framework):
         )
 
         # Square character 1
-        self.world.CreateDynamicBody(
+        self.world.create_dynamic_body(
             position=(-3, 8),
             fixedRotation=True,
-            allowSleep=False,
-            fixtures=b2FixtureDef(shape=b2PolygonShape(
+            allow_sleep=False,
+            fixtures=fixture_def(shape=polygon_shape(
                 box=(0.5, 0.5)), density=20.0),
         )
 
         # Square character 2
-        body = self.world.CreateDynamicBody(
+        body = self.world.create_dynamic_body(
             position=(-5, 5),
             fixedRotation=True,
-            allowSleep=False,
+            allow_sleep=False,
         )
 
-        body.CreatePolygonFixture(box=(0.25, 0.25), density=20.0)
+        body.create_polygon_fixture(box=(0.25, 0.25), density=20.0)
 
         # Hexagon character
-        a = b2_pi / 3.0
-        self.world.CreateDynamicBody(
+        a = math.pi / 3.0
+        self.world.create_dynamic_body(
             position=(-5, 8),
             fixedRotation=True,
-            allowSleep=False,
-            fixtures=b2FixtureDef(
-                shape=b2PolygonShape(
+            allow_sleep=False,
+            fixtures=fixture_def(
+                shape=polygon_shape(
                     vertices=[(0.5 * cos(i * a), 0.5 * sin(i * a))
                               for i in range(6)]),
                 density=20.0
@@ -103,12 +103,12 @@ class CharacterCollision(Framework):
         )
 
         # Circle character
-        self.world.CreateDynamicBody(
+        self.world.create_dynamic_body(
             position=(3, 5),
             fixedRotation=True,
-            allowSleep=False,
-            fixtures=b2FixtureDef(
-                shape=b2CircleShape(radius=0.5),
+            allow_sleep=False,
+            fixtures=fixture_def(
+                shape=circle_shape(radius=0.5),
                 density=20.0
             ),
         )

@@ -21,8 +21,8 @@
 from math import sqrt
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2FixtureDef, b2PolygonShape, b2Random,
-                   b2Vec2, b2_epsilon)
+from pybox2d import (circle_shape, fixture_def, polygon_shape, b2Random,
+                   vec2, b2_epsilon)
 
 # ***** NOTE *****
 # ***** NOTE *****
@@ -56,15 +56,15 @@ class Liquid (Framework):
 
         self.per_particle_mass = self.total_mass / self.num_particles
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             shapes=[
-                b2PolygonShape(box=[5.0, 0.5]),
-                b2PolygonShape(box=[1.0, 0.2, (0, 4), -0.2]),
-                b2PolygonShape(box=[1.5, 0.2, (-1.2, 5.2), -1.5]),
-                b2PolygonShape(box=[0.5, 50.0, (5, 0), 0.0]),
-                b2PolygonShape(box=[0.5, 3.0, (-8, 0), 0.0]),
-                b2PolygonShape(box=[2.0, 0.1, (-6, -2.8), 0.1]),
-                b2CircleShape(radius=0.5, pos=(-.5, -4)),
+                polygon_shape(box=[5.0, 0.5]),
+                polygon_shape(box=[1.0, 0.2, (0, 4), -0.2]),
+                polygon_shape(box=[1.5, 0.2, (-1.2, 5.2), -1.5]),
+                polygon_shape(box=[0.5, 50.0, (5, 0), 0.0]),
+                polygon_shape(box=[0.5, 3.0, (-8, 0), 0.0]),
+                polygon_shape(box=[2.0, 0.1, (-6, -2.8), 0.1]),
+                circle_shape(radius=0.5, pos=(-.5, -4)),
             ]
         )
 
@@ -85,17 +85,17 @@ class Liquid (Framework):
             self.settings.enableSubStepping = False
 
     def createBoxSurfer(self):
-        self.surfer = self.world.CreateDynamicBody(position=(0, 25))
-        self.surfer.CreatePolygonFixture(
+        self.surfer = self.world.create_dynamic_body(position=(0, 25))
+        self.surfer.create_polygon_fixture(
             density=1,
             box=(b2Random(0.3, 0.7), b2Random(0.3, 0.7)),
         )
 
     def createDroplet(self, position):
-        body = self.world.CreateDynamicBody(
+        body = self.world.create_dynamic_body(
             position=position,
             fixedRotation=True,
-            allowSleep=False,
+            allow_sleep=False,
         )
         body.CreateCircleFixture(
             groupIndex=-10,
@@ -118,7 +118,7 @@ class Liquid (Framework):
         info = dict([(drop, (drop.position, multiplier * drop.position,
                              multiplier * drop.linearVelocity))
                      for drop in self.liquid])
-        change = dict([(drop, b2Vec2(0, 0)) for drop in self.liquid])
+        change = dict([(drop, vec2(0, 0)) for drop in self.liquid])
         dx = self.fluid_maxx - self.fluid_minx
         dy = self.fluid_maxy - self.fluid_miny
         range_ = (-1, 0, 1)
@@ -233,13 +233,13 @@ class Liquid (Framework):
             drop for drop in self.liquid if drop.position.y < self.fluid_miny]
         for drop in to_remove:
             self.liquid.remove(drop)
-            self.world.DestroyBody(drop)
+            self.world.destroy_body(drop)
 
             self.createDroplet(
                 (0.0 + b2Random(-0.6, 0.6), 15.0 + b2Random(-2.3, 2.0)))
 
         if self.surfer.position.y < -15:
-            self.world.DestroyBody(self.surfer)
+            self.world.destroy_body(self.surfer)
             self.createBoxSurfer()
 
     def Step(self, settings):
@@ -254,13 +254,13 @@ class Liquid (Framework):
     def Keyboard(self, key):
         if key == Keys.K_b:
             if self.bullet:
-                self.world.DestroyBody(self.bullet)
+                self.world.destroy_body(self.bullet)
                 self.bullet = None
-            circle = b2FixtureDef(
-                shape=b2CircleShape(radius=0.25),
+            circle = fixture_def(
+                shape=circle_shape(radius=0.25),
                 density=20,
                 restitution=0.05)
-            self.bullet = self.world.CreateDynamicBody(
+            self.bullet = self.world.create_dynamic_body(
                 position=(-31, 5),
                 bullet=True,
                 fixtures=circle,

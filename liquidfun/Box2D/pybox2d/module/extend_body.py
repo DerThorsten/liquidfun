@@ -1,8 +1,10 @@
-from _pybox2d import *
-from tools import _classExtender, GenericB2dIter
-from extend_math import vec2
-from extend_shapes import *
+from types import MethodType
 
+from . _pybox2d import *
+from . tools import _classExtender, GenericB2dIter
+from . extend_math import vec2
+from . extend_shapes import *
+from . extend_user_data import add_user_data_api
 
 BodyDef = b2BodyDef
 Body = b2Body
@@ -16,10 +18,10 @@ class BodyTypes(object):
     kinematicBody = b2_kinematicBody
     dynamicBody = b2_dynamicBody
 
-def bodyDef(btype=None,position=None,angle=None,linearVelocity=None,
-            angularVelocity=None,linearDamping=None,angularDamping=None,
-            allowSleep=None, awake=None, fixedRotation=None, bullet=None,
-            userData=None):
+def body_def(btype=None,position=None,angle=None,linear_velocity=None,
+            angular_velocity=None,linear_damping=None,angular_damping=None,
+            allow_sleep=None, awake=None, fixed_rotation=None, bullet=None,
+            user_data=None, int_user_data=None):
     d = b2BodyDef()
     if btype is not None:
         d.btype = btype
@@ -27,24 +29,26 @@ def bodyDef(btype=None,position=None,angle=None,linearVelocity=None,
         d.position = vec2(position)
     if angle is not None:
         d.angle = angle
-    if linearVelocity is not None:
-        d.linearVelocity = vec2(linearVelocity)
-    if angularVelocity is not None:
-        d.angularVelocity = float(angularVelocity)
-    if linearDamping is not None:
-        d.linearDamping = linearDamping
-    if angularDamping is not None:
-        d.angularDamping = angularDamping
-    if allowSleep is not None:
-        d.allowSleep = allowSleep
+    if linear_velocity is not None:
+        d.linear_velocity = vec2(linear_velocity)
+    if angular_velocity is not None:
+        d.angular_velocity = float(angular_velocity)
+    if linear_damping is not None:
+        d.linear_damping = linear_damping
+    if angular_damping is not None:
+        d.angular_damping = angular_damping
+    if allow_sleep is not None:
+        d.allow_sleep = allow_sleep
     if awake is not None:
         d.awake = awake
-    if fixedRotation is not None:
-        d.fixedRotation = fixedRotation
+    if fixed_rotation is not None:
+        d.fixed_rotation = fixed_rotation
     if bullet is not None:
         d.bullet = bullet
-    if userData is not None:
-        d.userData = userData
+    if user_data is not None:
+        d.user_data = user_data
+    if int_user_data is not None:
+        d.int_user_data = int_user_data
     return d
 
 
@@ -59,42 +63,43 @@ class _BodyDef(b2BodyDef):
 
 
     @property
-    def userData(self):
-        if self._hasUserData():
-            return self._getUserData()
+    def user_data(self):
+        if self._has_object_user_data():
+            return self._get_object_user_data()
         else:
             return None
-    @userData.setter
-    def userData(self, ud):
-        if self._hasUserData():
-            return self._deleteUserData()
-        self._setUserData(ud)
+
+    @user_data.setter
+    def user_data(self, ud):
+        self._set_object_user_data(ud)
 
 
 
-_classExtender(_BodyDef,['userData','position'])
+_classExtender(_BodyDef,['user_data','position'])
 
 
 
 
-class _Body(b2Body):
 
-    @property
-    def userData(self):
-        if self._hasUserData():
-            return self._getUserData()
-        else:
-            return None
-    @userData.setter
-    def userData(self, ud):
-        if self._hasUserData():
-            return self._deleteUserData()
-        self._setUserData(ud)
+
+
+
+add_user_data_api(b2Body)
+add_user_data_api(b2BodyDef)
+
+
+class _Body( b2Body):
+
+
+
+
+
+
     @property
     def world(self):
-        return self._getWorld()
+        return self._get_world()
 
-    def createPolygonFixture(self, box=None,**kwargs):
+    def create_polygon_fixture(self, box=None,**kwargs):
 
         fixtureDef = b2FixtureDef()
 
@@ -107,9 +112,9 @@ class _Body(b2Body):
         for kw in kwargs:
             setattr(fixtureDef,kw, kwargs[kw])
 
-        return self.createFixture(fixtureDef)
+        return self.create_fixture(fixtureDef)
 
-    def createCircleFixture(self, radius, density=1, friction=0.2):
+    def create_circle_fixture(self, radius, density=1, friction=0.2):
         fixtureDef = b2FixtureDef()
 
         shape = b2CircleShape()
@@ -117,17 +122,17 @@ class _Body(b2Body):
         fixtureDef.friction = friction
         fixtureDef.density = density
         fixtureDef.shape = shape 
-        return self.createFixture(fixtureDef)
+        return self.create_fixture(fixtureDef)
 
-    def createEdgeChainFixture(self, vertices, density=1, friction=0.2):
+    def create_edge_chain_fixture(self, vertices, density=1, friction=0.2):
         fixtureDef = b2FixtureDef()
-        shape = chainShape(vertices=vertices,loop=False)
+        shape = chain_shape(vertices=vertices,loop=False)
         fixtureDef.shape = shape 
-        return self.createFixture(fixtureDef)
+        return self.create_fixture(fixtureDef)
 
 
 
-    def createFixturesFromShapes(self, shapes, density=1.0):
+    def create_fixtures_from_shapes(self, shapes, density=1.0):
         if isinstance(shapes, b2Shape):
             shapes = [shapes]
         fixtures = []
@@ -135,7 +140,7 @@ class _Body(b2Body):
             fixtureDef = b2FixtureDef()
             fixtureDef.density = density
             fixtureDef.shape = shape 
-            fixtures.append( self.createFixture(fixtureDef))
+            fixtures.append( self.create_fixture(fixtureDef))
         return fixtures
 
     @property
@@ -144,16 +149,16 @@ class _Body(b2Body):
 
     @property
     def next(self):
-        if self._hasNext():
-            return self._getNext()
+        if self._has_next():
+            return self._get_next()
         else:
             return None
 
     @property
     def fixtures(self):
         flist = None
-        if self._hasFixtureList():
-            flist = self._getFixtureList()
+        if self._has_fixture_list():
+            flist = self._get_fixture_list()
         return GenericB2dIter(flist)
 
     @property
@@ -164,17 +169,20 @@ class _Body(b2Body):
         return GenericB2dIter(jlist)
 
     @property
-    def jointList(self):
+    def joint_list(self):
         return list(self.joints)
         
     @property
-    def jointList(self):
+    def joint_list(self):
         return list(self.joints)
 
 
-_classExtender(_Body,['userData','type','world','createPolygonFixture','createCircleFixture',
-                      'createEdgeChainFixture',
-                    'createFixturesFromShapes',
-                     'next','fixtures','joints'])
+
+
+
+_classExtender(_Body,[ 'type','world','create_polygon_fixture','create_circle_fixture',
+                      'create_edge_chain_fixture',
+                    'create_fixtures_from_shapes',
+                     'next','fixtures','joints'], baseCls=b2Body)
 
 

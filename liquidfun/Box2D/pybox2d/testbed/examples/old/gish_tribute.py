@@ -24,33 +24,33 @@
 from math import sin, cos, pi
 
 from framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2FixtureDef)
+from pybox2d import (circle_shape, fixture_def)
 
 
 def create_blob(world, center, radius, circle_radius=0.5, shape_num=24,
-                angularDamping=0.5, linearDamping=0.5, friction=0.5,
+                angular_damping=0.5, linearDamping=0.5, friction=0.5,
                 density=5.0, **kwargs):
 
     def get_pos(angle):
         return (cos(angle * pi / 180.0) * radius + center[0],
                 sin(angle * pi / 180.0) * radius + center[1])
 
-    circle = b2CircleShape(radius=circle_radius)
-    fixture = b2FixtureDef(shape=circle, friction=friction, density=density,
+    circle = circle_shape(radius=circle_radius)
+    fixture = fixture_def(shape=circle, friction=friction, density=density,
                            restitution=0.0)
 
-    bodies = [world.CreateDynamicBody(position=get_pos(
+    bodies = [world.create_dynamic_body(position=get_pos(
         i), fixtures=fixture) for i in range(0, 360, int(360 / shape_num))]
     joints = []
 
     prev_body = bodies[-1]
     for body in bodies:
         joint = world.CreateDistanceJoint(
-            bodyA=prev_body,
-            bodyB=body,
+            body_a=prev_body,
+            body_b=body,
             anchorA=prev_body.position,
             anchorB=body.position,
-            dampingRatio=10.0)
+            damping_ratio=10.0)
 
         joints.append(joint)
         prev_body = body
@@ -58,25 +58,25 @@ def create_blob(world, center, radius, circle_radius=0.5, shape_num=24,
     return bodies, joints
 
 
-def add_spring_force(bodyA, localA, bodyB, localB, force_k, friction,
+def add_spring_force(body_a, localA, body_b, localB, force_k, friction,
                      desiredDist):
-    worldA = bodyA.GetWorldPoint(localA)
-    worldB = bodyB.GetWorldPoint(localB)
+    worldA = body_a.get_world_point(localA)
+    worldB = body_b.get_world_point(localB)
     diff = worldB - worldA
 
     # Find velocities of attach points
-    velA = bodyA.linearVelocity - \
-        bodyA.GetWorldVector(localA).cross(bodyA.angularVelocity)
-    velB = bodyB.linearVelocity - \
-        bodyB.GetWorldVector(localB).cross(bodyB.angularVelocity)
+    velA = body_a.linearVelocity - \
+        body_a.get_world_vector(localA).cross(body_a.angularVelocity)
+    velB = body_b.linearVelocity - \
+        body_b.get_world_vector(localB).cross(body_b.angularVelocity)
 
     vdiff = velB - velA
-    dx = diff.Normalize()  # Normalizes diff and puts length into dx
+    dx = diff.normalize()  # normalizes diff and puts length into dx
     vrel = vdiff.x * diff.x + vdiff.y * diff.y
     forceMag = -force_k * (dx - desiredDist) - friction * vrel
 
-    bodyB.ApplyForce(diff * forceMag, bodyA.GetWorldPoint(localA), True)
-    bodyA.ApplyForce(diff * -forceMag, bodyB.GetWorldPoint(localB), True)
+    body_b.aplly_force(diff * forceMag, body_a.get_world_point(localA), True)
+    body_a.aplly_force(diff * -forceMag, body_b.get_world_point(localB), True)
 
 
 def blob_step(world, blob_bodies, radius, upward_force, move=0,
@@ -91,7 +91,7 @@ def blob_step(world, blob_bodies, radius, upward_force, move=0,
         top_body = [(body.position.y, body) for body in blob_bodies]
         top_body.sort(key=lambda val: val[0])
         top_body = top_body[-1][1]
-        top_body.ApplyForce((move, 0), top_body.position, True)
+        top_body.aplly_force((move, 0), top_body.position, True)
 
 
 class GishTribute (Framework):
@@ -104,14 +104,14 @@ class GishTribute (Framework):
         super(GishTribute, self).__init__()
 
         # The ground
-        ground = self.world.CreateStaticBody()
-        ground.CreateEdgeFixture(vertices=[(-50, 0), (50, 0)], friction=0.2)
-        ground.CreateEdgeFixture(vertices=[(-50, 0), (-50, 10)], friction=0.2)
-        ground.CreateEdgeFixture(vertices=[(50, 0), (50, 10)], friction=0.2)
+        ground = self.world.create_static_body()
+        ground.create_edge_fixture(vertices=[(-50, 0), (50, 0)], friction=0.2)
+        ground.create_edge_fixture(vertices=[(-50, 0), (-50, 10)], friction=0.2)
+        ground.create_edge_fixture(vertices=[(50, 0), (50, 10)], friction=0.2)
 
         for i in range(2, 18, 2):
-            body = self.world.CreateDynamicBody(position=(-10.1, i))
-            body.CreatePolygonFixture(box=(3.0, 1.0), density=3.0)
+            body = self.world.create_dynamic_body(position=(-10.1, i))
+            body.create_polygon_fixture(box=(3.0, 1.0), density=3.0)
 
         self.blob_radius = 2
         self.bodies, self.joints = create_blob(

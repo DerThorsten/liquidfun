@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape, b2RopeJointDef)
+from pybox2d import (edge_shape, fixture_def, polygon_shape, rope_joint_def)
 
 # From the original C++ testbed example:
 # "This test shows how a rope joint can be used to stabilize a chain of bodies
@@ -40,15 +40,15 @@ class Rope (Framework):
         super(Rope, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
-            shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)]))
+        ground = self.world.create_body(
+            shapes=edge_shape(vertices=[(-40, 0), (40, 0)]))
 
-        shape = b2PolygonShape(box=(0.5, 0.125))
-        fd = b2FixtureDef(
+        shape = polygon_shape(box=(0.5, 0.125))
+        fd = fixture_def(
             shape=shape,
             friction=0.2,
             density=20,
-            categoryBits=0x0001,
+            category_bits=0x0001,
             maskBits=(0xFFFF & ~0x0002),
         )
 
@@ -58,23 +58,23 @@ class Rope (Framework):
         prevBody = ground
         for i in range(N):
             if i < N - 1:
-                body = self.world.CreateDynamicBody(
+                body = self.world.create_dynamic_body(
                     position=(0.5 + i, y),
                     fixtures=fd,
                 )
             else:
                 shape.box = (1.5, 1.5)
                 fd.density = 100
-                fd.categoryBits = 0x0002
-                body = self.world.CreateDynamicBody(
+                fd.category_bits = 0x0002
+                body = self.world.create_dynamic_body(
                     position=(i, y),
                     fixtures=fd,
-                    angularDamping=0.4,
+                    angular_damping=0.4,
                 )
 
-            self.world.CreateRevoluteJoint(
-                bodyA=prevBody,
-                bodyB=body,
+            self.world.create_revolute_joint(
+                body_a=prevBody,
+                body_b=body,
                 anchor=(i, y),
                 collideConnected=False,
             )
@@ -82,14 +82,14 @@ class Rope (Framework):
             prevBody = body
 
         extraLength = 0.01
-        self.rd = rd = b2RopeJointDef(
-            bodyA=ground,
-            bodyB=body,
+        self.rd = rd = rope_joint_def(
+            body_a=ground,
+            body_b=body,
             maxLength=N - 1.0 + extraLength,
-            localAnchorA=(0, y),
-            localAnchorB=(0, 0)
+            local_anchor_a=(0, y),
+            local_anchor_b=(0, 0)
         )
-        self.rope = self.world.CreateJoint(rd)
+        self.rope = self.world.create_joint(rd)
 
     def Step(self, settings):
         super(Rope, self).Step(settings)
@@ -102,10 +102,10 @@ class Rope (Framework):
     def Keyboard(self, key):
         if key == Keys.K_j:
             if self.rope:
-                self.world.DestroyJoint(self.rope)
+                self.world.destroy_joint(self.rope)
                 self.rope = None
             else:
-                self.rope = self.world.CreateJoint(self.rd)
+                self.rope = self.world.create_joint(self.rd)
 
 if __name__ == "__main__":
     main(Rope)

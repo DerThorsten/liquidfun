@@ -301,3 +301,13 @@ void b2Fixture::Dump(int32 bodyIndex)
 	b2Log("\n");
 	b2Log("    bodies[%d]->CreateFixture(&fd);\n", bodyIndex);
 }
+
+int32 b2Fixture::GetProxyCount() const
+{
+	return m_proxyCount;
+}
+
+const b2FixtureProxy * b2Fixture::GetProxies() const
+{
+	return m_proxies;
+}

@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, main)
-from Box2D import (b2EdgeShape, b2FixtureDef, b2PolygonShape, b2Random)
+from pybox2d import (edge_shape, fixture_def, polygon_shape, b2Random)
 
 
 class Bullet (Framework):
@@ -29,23 +29,23 @@ class Bullet (Framework):
     def __init__(self):
         super(Bullet, self).__init__()
 
-        ground = self.world.CreateStaticBody(
+        ground = self.world.create_static_body(
             position=(0, 0),
-            shapes=[b2EdgeShape(vertices=[(-10, 0), (10, 0)]),
-                    b2PolygonShape(box=(0.2, 1, (0.5, 1), 0))]
+            shapes=[edge_shape(vertices=[(-10, 0), (10, 0)]),
+                    polygon_shape(box=(0.2, 1, (0.5, 1), 0))]
         )
 
         self._x = 0.20352793
-        self.body = self.world.CreateDynamicBody(
+        self.body = self.world.create_dynamic_body(
             position=(0, 4),
-            fixtures=b2FixtureDef(
-                shape=b2PolygonShape(box=(2, 0.1)), density=1.0),
+            fixtures=fixture_def(
+                shape=polygon_shape(box=(2, 0.1)), density=1.0),
         )
 
-        self.bullet = self.world.CreateDynamicBody(
+        self.bullet = self.world.create_dynamic_body(
             position=(self._x, 10),
             bullet=True,
-            fixtures=b2FixtureDef(shape=b2PolygonShape(
+            fixtures=fixture_def(shape=polygon_shape(
                 box=(0.25, 0.25)), density=100.0),
             linearVelocity=(0, -50)
         )

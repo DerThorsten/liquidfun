@@ -19,8 +19,8 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 from .framework import (Framework, Keys, main)
-from Box2D import (b2CircleShape, b2FixtureDef, b2LoopShape, b2PolygonShape,
-                   b2RevoluteJointDef, b2_pi)
+from pybox2d import (circle_shape, fixture_def, b2LoopShape, polygon_shape,
+                   b2RevoluteJointDef)
 
 
 class Pinball (Framework):
@@ -34,7 +34,7 @@ class Pinball (Framework):
         super(Pinball, self).__init__()
 
         # The ground
-        ground = self.world.CreateBody(
+        ground = self.world.create_body(
             shapes=b2LoopShape(vertices=[(0, -2), (8, 6),
                                          (8, 20), (-8, 20),
                                          (-8, 6)]),
@@ -43,44 +43,44 @@ class Pinball (Framework):
         # Flippers
         p1, p2 = (-2, 0), (2, 0)
 
-        fixture = b2FixtureDef(shape=b2PolygonShape(box=(1.75, 0.1)), density=1)
+        fixture = fixture_def(shape=polygon_shape(box=(1.75, 0.1)), density=1)
         flipper = {'fixtures': fixture}
 
-        self.leftFlipper = self.world.CreateDynamicBody(
+        self.leftFlipper = self.world.create_dynamic_body(
             position=p1,
             **flipper
         )
-        self.rightFlipper = self.world.CreateDynamicBody(
+        self.rightFlipper = self.world.create_dynamic_body(
             position=p2,
             **flipper
         )
 
         rjd = b2RevoluteJointDef(
-            bodyA=ground,
-            bodyB=self.leftFlipper,
-            localAnchorA=p1,
-            localAnchorB=(0, 0),
-            enableMotor=True,
-            enableLimit=True,
-            maxMotorTorque=1000,
-            motorSpeed=0,
-            lowerAngle=-30.0 * b2_pi / 180.0,
-            upperAngle=5.0 * b2_pi / 180.0,
+            body_a=ground,
+            body_b=self.leftFlipper,
+            local_anchor_a=p1,
+            local_anchor_b=(0, 0),
+            enable_motor=True,
+            enable_limit=True,
+            max_motor_torque=1000,
+            motor_speed=0,
+            lower_angle=-30.0 * math.pi / 180.0,
+            upper_angle=5.0 * math.pi / 180.0,
         )
 
-        self.leftJoint = self.world.CreateJoint(rjd)
+        self.leftJoint = self.world.create_joint(rjd)
 
-        rjd.motorSpeed = 0
-        rjd.localAnchorA = p2
-        rjd.bodyB = self.rightFlipper
-        rjd.lowerAngle = -5.0 * b2_pi / 180.0
-        rjd.upperAngle = 30.0 * b2_pi / 180.0
-        self.rightJoint = self.world.CreateJoint(rjd)
+        rjd.motor_speed = 0
+        rjd.local_anchor_a = p2
+        rjd.body_b = self.rightFlipper
+        rjd.lower_angle = -5.0 * math.pi / 180.0
+        rjd.upper_angle = 30.0 * math.pi / 180.0
+        self.rightJoint = self.world.create_joint(rjd)
 
         # Ball
-        self.ball = self.world.CreateDynamicBody(
-            fixtures=b2FixtureDef(
-                shape=b2CircleShape(radius=0.2),
+        self.ball = self.world.create_dynamic_body(
+            fixtures=fixture_def(
+                shape=circle_shape(radius=0.2),
                 density=1.0),
             bullet=True,
             position=(1, 15))
@@ -97,11 +97,11 @@ class Pinball (Framework):
 
     def Step(self, settings):
         if self.pressed:
-            self.leftJoint.motorSpeed = 20
-            self.rightJoint.motorSpeed = -20
+            self.leftJoint.motor_speed = 20
+            self.rightJoint.motor_speed = -20
         else:
-            self.leftJoint.motorSpeed = -10
-            self.rightJoint.motorSpeed = 10
+            self.leftJoint.motor_speed = -10
+            self.rightJoint.motor_speed = 10
         super(Pinball, self).Step(settings)
 
 if __name__ == "__main__":

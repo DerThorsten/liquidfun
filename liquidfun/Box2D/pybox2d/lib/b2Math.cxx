@@ -5,6 +5,20 @@ namespace py = pybind11;
 
 
 
+b2Vec2 operator+ (const b2Vec2 & lhs, const py::tuple & rhs)
+{
+    return b2Vec2(
+        lhs.x + rhs[0].cast<float>()  ,
+        lhs.y + rhs[1].cast<float>()  
+    );
+}
+b2Vec2 operator+ (const py::tuple & lhs, const b2Vec2 & rhs)
+{
+    return b2Vec2(
+         lhs[0].cast<float>() + rhs.x   ,
+         lhs[1].cast<float>() + rhs.y   
+    );
+}
 
 void exportB2Math(py::module & pybox2dModule){
 
@@ -24,7 +38,7 @@ void exportB2Math(py::module & pybox2dModule){
        .def("Set",&b2Vec2::Set,py::arg("x"),py::arg("y"))
        //.def("Length",&b2Vec2::Length)
        .def("normalize",&b2Vec2::Normalize)
-       .def("isValid",&b2Vec2::IsValid)
+       .def("is_valid",&b2Vec2::IsValid)
        .def("skew",&b2Vec2::Skew)
        .def("__len__",[](const b2Vec2 & vec){return 2;})
        // operators
@@ -38,9 +52,10 @@ void exportB2Math(py::module & pybox2dModule){
        .def(py::self /  float32())
        .def(py::self +  py::self)
        .def(py::self -  py::self)
-
+       .def(py::self + py::tuple())
+       .def(py::tuple() + py::self)
        .def_property_readonly("length",&b2Vec2::Length)
-       .def_property_readonly("lengthSquared",&b2Vec2::LengthSquared)
+       .def_property_readonly("length_squared",&b2Vec2::LengthSquared)
     ;
 
     py::class_<b2Vec3>(pybox2dModule,"b2Vec3")
@@ -50,14 +65,15 @@ void exportB2Math(py::module & pybox2dModule){
         .def_readwrite("y", &b2Vec3::y)
         .def_readwrite("z", &b2Vec3::z)
         // member functions
-        .def("SetZero",&b2Vec3::SetZero)
-        .def("Set",&b2Vec3::Set,py::arg("x"),py::arg("y"),py::arg("z"))
-        .def("Length",&b2Vec3::Length)
-        .def("Normalize",&b2Vec3::Normalize)
+        .def("set_zero",&b2Vec3::SetZero)
+        .def("set",&b2Vec3::Set,py::arg("x"),py::arg("y"),py::arg("z"))
+        .def("normalize",&b2Vec3::Normalize)
         // operators
         .def(py::self += py::self)
         .def(py::self -= py::self)
         .def(py::self *= float32())
+        .def_property_readonly("length",&b2Vec3::Length)
+        // .def_property_readonly("length_squared",&b2Vec3::LengthSquared)
     ;
 
     py::class_<b2Vec4>(pybox2dModule,"b2Vec4")
@@ -67,8 +83,8 @@ void exportB2Math(py::module & pybox2dModule){
         .def_readwrite("y", &b2Vec4::y)
         .def_readwrite("z", &b2Vec4::z)
         .def_readwrite("z", &b2Vec4::w)
-        // member functions
-        // operators
+        //.def_property_readonly("length",&b2Vec4::Length)
+        //.def_property_readonly("length_squared",&b2Vec4::LengthSquared)
     ;
 
     py::class_<b2Mat22>(pybox2dModule,"b2Mat22")

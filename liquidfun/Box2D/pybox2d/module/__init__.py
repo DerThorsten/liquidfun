@@ -1,51 +1,33 @@
 
 
-from _pybox2d import *
+from . _pybox2d import *
 
-from tools import GenericB2dIter
-from extend_math import *
-from extend_draw import *
-from extend_world import *
-from extend_body import *
-from extend_fixture import *
-from extend_shapes import *
-from extend_joints import *
-from extend_particles import *
-from extend_collision import *
-from extend_contact import *
+from . tools import *
+from . extend_math import *
+from . extend_draw import *
+from . extend_world import *
+from . extend_body import *
+from . extend_fixture import *
+from . extend_shapes import *
+from . extend_joints import *
+from . extend_particles import *
+from . extend_collision import *
+from . extend_contact import *
+from . query_callback import *
 
-
-
-
+from . destruction_listener import DestructionListener
 
 class RayCastCallback(b2RayCastCallbackCaller):
 
     def __init__(self):
         super(RayCastCallback,self).__init__(self)
 
-    def ReportFixture(self, fixture, point1, point2):
+    def report_fixture(self, fixture, point1, point2):
         raise NotImplementedError 
-    #def ReportParticle(self, particleSystem, index):
+    #def report_particle(self, particleSystem, index):
     #    return False
-    #def ShouldQueryParticleSystem(self, particleSystem):
+    #def should_query_particle_system(self, particleSystem):
     #    return False
-
-
-
-class DestructionListener(b2DestructionListenerCaller):
-
-    def __init__(self):
-        super(DestructionListener,self).__init__(self)
-
-    def sayGoodbyeJoint(self, joint):
-        pass
-    def sayGoodbyeFixture(self, fixture):
-        pass
-    def sayGoodbyeParticleGroup(self, particleGroup):
-        pass
-    def sayGoodbyeParticleSystem(self, particleSystem,index):
-        pass
-
 
 
 class ContactListener(b2ContactListenerCaller):
@@ -53,61 +35,80 @@ class ContactListener(b2ContactListenerCaller):
     def __init__(self):
         super(ContactListener,self).__init__(self)
 
-    def beginContact(self, contact):
+    def begin_contact(self, contact):
         pass
 
-    def endContact(self, contact):
+    def end_contact(self, contact):
         pass
 
-    def beginContactParticleBody(self, particleSystem, particleBodyContact):
+    def begin_contact_particle_body(self, particleSystem, particleBodyContact):
         pass
 
-    def beginContactParticle(self, particleSystem, indexA, indexB):
+    def begin_contact_particle(self, particleSystem, indexA, indexB):
         pass
 
-    def endContactParticle(self, particleSystem, indexA, indexB):
+    def end_contact_particle(self, particleSystem, indexA, indexB):
         pass
 
-    def preSolve(self, contact, oldManifold):
+    def pre_solve(self, contact, oldManifold):
         pass
 
-    def postSolve(self, contact, impulse):
+    def post_solve(self, contact, impulse):
         pass
-
-class QueryCallback(b2QueryCallbackCaller):
-
-    def __init__(self):
-        super(QueryCallback,self).__init__(self)
-
-    def ReportFixture(self, fixture):
-        raise NotImplementedError 
-    def ReportParticle(self, particleSystem, index):
-        return False
-    def ShouldQueryParticleSystem(self, particleSystem):
-        return False
 
 
 class DebugDraw(b2DrawCaller):
-    def __init__(self):
-        super(DebugDraw,self).__init__(self)
+    def __init__(self, float_colors=True):
+        self.float_colors = float_colors
+        super(DebugDraw, self).__init__(self, bool(float_colors))
 
-    def DrawSolidCircle(self, center, radius, axis, c):
+    def draw_solid_circle(self, center, radius, axis, c):
         raise NotImplementedError 
 
-    def DrawCircle(self, center, radius, c):
+    def draw_circle(self, center, radius, c):
         raise NotImplementedError 
 
-    def DrawSegment(self,v1, v2, c):
+    def draw_segment(self,v1, v2, c):
         raise NotImplementedError 
 
-    def DrawPolygon(self,vertices, c):
+    def draw_polygon(self,vertices, c):
         raise NotImplementedError 
 
-    def DrawSolidPolygon(self,vertices, c):
+    def draw_solid_polygon(self,vertices, c):
         raise NotImplementedError 
 
-    def DrawParticles(self, centers, radius,  c=None):
+    def draw_particles(self, centers, radius,  c=None):
         raise NotImplementedError 
+    
+
+
+class BatchDebugDraw(DebugDraw):
+
+    def __init__(self, options = None, float_colors=True):
+        super(BatchDebugDraw, self).__init__(float_colors=float_colors)
+        if options is None:
+            options = BatchDebugDrawOptions()
+
+        self.options = options
+
+    def drawing_aabb(self, aabb):
+        pass
+
+    def draw_solid_polygons(self, points, connect, color):
+        pass
+
+    def draw_polygons(self, points, connect, color):
+        pass
+
+    def draw_segments(self, points, connect, color):
+        pass
+
+    def draw_circles(self, centers, radii, color):
+        pass
+
+    def draw_particles(self, centers, radius, colors):
+        pass
+
 
 
 
@@ -117,11 +118,57 @@ class ContactFilter(b2ContactFilterCaller):
         super(ContactFilter,self).__init__(self)
 
 
-    def shouldCollideFixtureFixture(self, fixtureA, fixtureB):
+    def should_collide_fixture_fixture(self, fixtureA, fixtureB):
         pass
 
-    def shouldCollideFixtureParticle(self, fixture, particleSystem, particleIndex):
+    def should_collide_fixture_particle(self, fixture, particleSystem, particleIndex):
         pass
 
-    def shouldCollideParticleParticle(self, particleSystem, particleIndexA, particleIndexB):
+    def should_collide_particle_particle(self, particleSystem, particleIndexA, particleIndexB):
         pass   
+
+
+    
+
+
+
+
+# class BatchDebugDraw(object):
+#     def __init__(self, world):
+#         opts = ExtendedDebugDrawOptions()
+#         self.edd = ExtendedDebugDraw(opts)
+#         self.world = world
+    
+
+#         self.inactive_body_color  = (0.5, 0.5, 0.3)
+#         self.static_body_color    = (0.5, 0.9, 0.5)
+#         self.kinematic_body_color = (0.5, 0.5, 0.9)
+#         self.sleeping_body_color  = (0.6, 0.6, 0.6)
+#         self.dynamic_body_color   = (0.9, 0.7, 0.7)
+
+#     def get_polygon_shapes(self):
+#         names = [
+#             "inactive_body",
+#             "static_body",
+#             "kinematic_body",
+#             "sleeping_body",
+#             "dynamic_body",
+#         ]
+#         ret = dict()
+#         for name in names:
+#             sub_dict = dict()
+            
+#             f = getattr(self.edd,"%s_polygon_shapes"%name)
+#             verts,connect = f()
+
+#             sub_dict['color'] = getattr(self, "%s_color"%name)
+#             sub_dict['vertices'] = verts.copy()
+#             sub_dict['connect'] = connect.copy()
+#             ret[name] = sub_dict
+#         return ret
+
+#     def fill(self):
+#         self.edd.fill(self.world)
+
+#     def clear(self):
+#         self.edd.clear()

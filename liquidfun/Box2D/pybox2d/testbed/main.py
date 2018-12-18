@@ -1,6 +1,5 @@
 import inspect
 import sys
-
 from framework import Framework,Testbed
 
 from examples import * 
@@ -21,14 +20,16 @@ for name, obj in inspect.getmembers(examples):
             if inspect.isclass(objCls):
                 if issubclass(objCls, Framework):
                     try:
-                        print objCls.name
+                        print(objCls.name)
                     except:
                         pass
                     exampleClassList.append(objCls)
 
 
 if __name__ == "__main__":
-
-    testbed = Testbed(guiType='kivy')
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    testbed = Testbed(guiType='pg')
     testbed.setExample(exampleClassList[0])
     testbed.run()
+# 
